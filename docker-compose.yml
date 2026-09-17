@@ -23,6 +23,12 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-FullProject2026!}
       SEGRETERIA_USERNAME: ${SEGRETERIA_USERNAME:-segreteria}
       SEGRETERIA_PASSWORD: ${SEGRETERIA_PASSWORD:-Segreteria2026!}
+      BACKUP_DIR: /app/backup
+      BACKUP_CRON: ${BACKUP_CRON:-0 0 2 * * *}
+    volumes:
+      # Cartella reale sul PC host: qui atterrano i file Excel di backup,
+      # consultabili anche se il gestionale non fosse raggiungibile.
+      - ./backup:/app/backup
     depends_on:
       - db
     ports:

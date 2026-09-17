@@ -24,6 +24,9 @@ app:
     username: ${SEGRETERIA_USERNAME:segreteria}
     password: ${SEGRETERIA_PASSWORD:Segreteria2026!}
     email: ${SEGRETERIA_EMAIL:segreteria@fullprojectstudio.it}
+  backup:
+    dir: ${BACKUP_DIR:./backup}
+    cron: ${BACKUP_CRON:0 0 2 * * *}
 
 ---
 spring:

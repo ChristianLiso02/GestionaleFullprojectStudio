@@ -11,6 +11,7 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Pagamenti** (metodo, stato, causale)
 - **Presenze** (appello per corso/data)
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, iscrizioni in scadenza, pagamenti in sospeso)
+- **Backup Excel automatico** ogni notte, così la segreteria può continuare a lavorare da un file locale anche se il gestionale non fosse raggiungibile (vedi sezione dedicata)
 
 Backend in **Java**, frontend statico (HTML/CSS/JS) — due progetti indipendenti.
 
@@ -80,6 +81,27 @@ mvn spring-boot:run -Dspring-boot.run.profiles=postgres \
 oppure imposta le variabili d'ambiente `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e avvia con
 `SPRING_PROFILES_ACTIVE=postgres`.
 
+## Backup Excel automatico
+
+Ogni notte (di default alle **02:00**) il backend genera in automatico un file Excel
+(`backup-AAAA-MM-GG.xlsx`, più una copia sempre aggiornata `backup-ultimo.xlsx`) con:
+
+- anagrafiche complete: Studenti, Istruttori, Sale, Corsi, Abbonamenti
+- Iscrizioni, Pagamenti e Presenze del **mese corrente e del mese precedente**
+
+Il file viene scritto nella cartella indicata da `BACKUP_DIR` (default `./backup` in locale,
+`/app/backup` nel container — mappata su `./backup` del PC host tramite `docker-compose.yml`).
+Così, anche se il gestionale smettesse di funzionare, la segreteria può aprire quell'Excel
+direttamente da Esplora File/Finder e continuare a lavorare con gli ultimi dati disponibili.
+
+**Generare un backup subito** (senza aspettare la notte), da autenticati:
+```bash
+curl -X POST http://localhost:8080/api/backup/genera -H "Authorization: Bearer <token>"
+```
+
+Per cambiare l'orario, imposta `BACKUP_CRON` (formato cron Spring: secondi minuti ore giorno mese giorno-settimana),
+es. `BACKUP_CRON=0 30 3 * * *` per le 03:30.
+
 ## Configurazione principale
 
 | Variabile | Descrizione | Default |
@@ -90,6 +112,8 @@ oppure imposta le variabili d'ambiente `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e 
 | `API_BASE_URL` (in `frontend/.../js/config.js`, non è una env var) | URL del backend visto dal browser | `http://localhost:8080` |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` / `ADMIN_EMAIL` | Credenziali dell'utente ADMIN creato al primo avvio | `admin` / `FullProject2026!` / `admin@fullprojectstudio.it` — **da cambiare in produzione** |
 | `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
+| `BACKUP_DIR` | Cartella dove scrivere i backup Excel | `./backup` |
+| `BACKUP_CRON` | Orario di generazione automatica (formato cron) | `0 0 2 * * *` (ogni notte alle 02:00) |
 
 ## Build
 
