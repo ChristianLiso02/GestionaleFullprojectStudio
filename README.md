@@ -41,11 +41,15 @@ cd backend
 mvn spring-boot:run
 ```
 
-Al primo avvio vengono creati automaticamente:
+Al primo avvio vengono creati automaticamente 2 utenti, con credenziali configurabili da
+variabili d'ambiente (vedi tabella sotto) — se non impostate, valgono questi default di sviluppo:
 
 - utente `admin` / `FullProject2026!` (ruolo ADMIN)
 - utente `segreteria` / `Segreteria2026!` (ruolo SEGRETERIA)
 - 2 sale, 2 istruttori, 4 tipi di abbonamento, 2 corsi di esempio
+
+**Prima di un uso reale con dati veri, cambia sempre `ADMIN_PASSWORD` e `SEGRETERIA_PASSWORD`**
+tramite variabili d'ambiente — non lasciare quelle di default.
 
 Frontend (porta **8081**):
 
@@ -76,6 +80,8 @@ oppure imposta le variabili d'ambiente `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e 
 | `JWT_EXPIRATION_MS` | Durata del token JWT | 28800000 (8 ore) |
 | `CORS_ALLOWED_ORIGINS` | Origini autorizzate a chiamare l'API | `http://localhost:8081` |
 | `BACKEND_BASE_URL` | URL del backend visto dal frontend | `http://localhost:8080` |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` / `ADMIN_EMAIL` | Credenziali dell'utente ADMIN creato al primo avvio | `admin` / `FullProject2026!` / `admin@fullprojectstudio.it` — **da cambiare in produzione** |
+| `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
 
 ## Build
 

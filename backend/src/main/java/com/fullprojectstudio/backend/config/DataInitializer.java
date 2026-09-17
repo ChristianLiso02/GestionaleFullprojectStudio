@@ -3,6 +3,7 @@ package com.fullprojectstudio.backend.config;
 import com.fullprojectstudio.backend.model.*;
 import com.fullprojectstudio.backend.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -23,27 +24,41 @@ public class DataInitializer implements CommandLineRunner {
     private final CorsoRepository corsoRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.admin.username}")
+    private String adminUsername;
+    @Value("${app.admin.password}")
+    private String adminPassword;
+    @Value("${app.admin.email}")
+    private String adminEmail;
+
+    @Value("${app.segreteria.username}")
+    private String segreteriaUsername;
+    @Value("${app.segreteria.password}")
+    private String segreteriaPassword;
+    @Value("${app.segreteria.email}")
+    private String segreteriaEmail;
+
     @Override
     public void run(String... args) {
-        if (!utenteRepository.existsByUsername("admin")) {
+        if (!utenteRepository.existsByUsername(adminUsername)) {
             utenteRepository.save(Utente.builder()
-                    .username("admin")
-                    .password(passwordEncoder.encode("FullProject2026!"))
+                    .username(adminUsername)
+                    .password(passwordEncoder.encode(adminPassword))
                     .nome("Amministratore")
                     .cognome("FullProject Studio")
-                    .email("admin@fullprojectstudio.it")
+                    .email(adminEmail)
                     .ruolo(Ruolo.ADMIN)
                     .attivo(true)
                     .build());
         }
 
-        if (!utenteRepository.existsByUsername("segreteria")) {
+        if (!utenteRepository.existsByUsername(segreteriaUsername)) {
             utenteRepository.save(Utente.builder()
-                    .username("segreteria")
-                    .password(passwordEncoder.encode("Segreteria2026!"))
+                    .username(segreteriaUsername)
+                    .password(passwordEncoder.encode(segreteriaPassword))
                     .nome("Segreteria")
                     .cognome("FullProject Studio")
-                    .email("segreteria@fullprojectstudio.it")
+                    .email(segreteriaEmail)
                     .ruolo(Ruolo.SEGRETERIA)
                     .attivo(true)
                     .build());
