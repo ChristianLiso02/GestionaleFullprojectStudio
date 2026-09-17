@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Studente</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head"><h2 id="formTitle">Nuovo studente</h2></div>
+          <form id="studenteForm" class="panel-body" style="padding:18px 20px">
+            <div class="row2">
+              <div class="field"><label>Nome</label><input id="fNome" required></div>
+              <div class="field"><label>Cognome</label><input id="fCognome" required></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Codice fiscale</label><input id="fCf"></div>
+              <div class="field"><label>Data di nascita</label><input id="fNascita" type="date"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Telefono</label><input id="fTelefono"></div>
+              <div class="field"><label>Email</label><input id="fEmail" type="email"></div>
+            </div>
+            <div class="field"><label>Indirizzo</label><input id="fIndirizzo"></div>
+            <div class="field"><label>Contatto emergenza</label><input id="fEmergenza"></div>
+            <div class="field"><label>Data iscrizione</label><input id="fDataIscr" type="date"></div>
+            <div class="field"><label>Note mediche / allergie</label><textarea id="fNote" rows="3"></textarea></div>
+            <div class="field"><label><input type="checkbox" id="fAttivo" checked style="width:auto;display:inline-block"> Attivo</label></div>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button type="submit" class="btn btn-accent">Salva</button>
+              <a class="btn btn-ghost" href="studenti.html">Annulla</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("studenti", "Studente", "Anagrafica e schede allievi");
+  </script>
+  <script src="js/studente-form.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Corso</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head"><h2 id="formTitle">Nuovo corso</h2></div>
+          <form id="corsoForm" class="panel-body" style="padding:18px 20px">
+            <div class="row2">
+              <div class="field"><label>Nome corso</label><input id="fNome" required></div>
+              <div class="field"><label>Stile di ballo</label><select id="fStile"></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Livello</label><select id="fLivello"></select></div>
+              <div class="field"><label>Istruttore</label><select id="fIstruttore"><option value="">-- nessuno --</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Sala</label><select id="fSala"><option value="">-- nessuna --</option></select></div>
+              <div class="field"><label>Capienza massima</label><input id="fCapienza" type="number"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Orario inizio</label><input id="fOrarioInizio" type="time"></div>
+              <div class="field"><label>Orario fine</label><input id="fOrarioFine" type="time"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Prezzo mensile (€)</label><input id="fPrezzo" type="number" step="0.01"></div>
+              <div class="field"><label>Data inizio</label><input id="fDataInizio" type="date"></div>
+            </div>
+            <div class="field"><label>Giorni della settimana</label>
+              <div class="checkbox-list" id="giorniContainer"></div>
+            </div>
+            <div class="field"><label><input type="checkbox" id="fAttivo" checked style="width:auto;display:inline-block"> Corso attivo</label></div>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button type="submit" class="btn btn-accent">Salva</button>
+              <a class="btn btn-ghost" href="corsi.html">Annulla</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("corsi", "Corso", "Stili, livelli e orari");
+  </script>
+  <script src="js/corso-form.js"></script>
+</body>
+</html>

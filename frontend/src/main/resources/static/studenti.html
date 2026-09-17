@@ -18,7 +18,7 @@
             <h2>Studenti</h2>
             <div class="toolbar">
               <div class="search"><input type="text" id="ricercaInput" placeholder="Cerca nome o cognome..."></div>
-              <button class="btn btn-accent" onclick="nuovoStudente()">+ Nuovo studente</button>
+              <a class="btn btn-accent" href="studente-form.html">+ Nuovo studente</a>
             </div>
           </div>
           <div class="table-wrap">
@@ -28,17 +28,6 @@
             </table>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="modalBackdrop" hidden>
-    <div class="modal">
-      <div class="modal-head"><h3 id="modalTitle">Nuovo studente</h3><button class="btn btn-ghost btn-sm" onclick="closeModal()">&#10005;</button></div>
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-foot">
-        <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
-        <button class="btn btn-accent" id="modalSave">Salva</button>
       </div>
     </div>
   </div>
