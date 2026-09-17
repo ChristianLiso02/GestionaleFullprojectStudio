@@ -30,8 +30,11 @@ JWT ottenuto al login viene salvato nel `localStorage` del browser e allegato ad
 chiamata come header `Authorization: Bearer ...`. Il backend abilita CORS per l'origine
 del frontend (`CORS_ALLOWED_ORIGINS`).
 
-Per cambiare l'URL del backend visto dal browser, modifica
-`frontend/src/main/resources/static/js/config.js` (`API_BASE_URL`).
+L'URL del backend usato dal browser (`API_BASE_URL` in `config.js`) è configurabile:
+- **Con Docker**: variabile d'ambiente `API_BASE_URL` (letta da `docker-entrypoint.sh`, che
+  rigenera `config.js` all'avvio del container — stessa immagine per locale e produzione)
+- **Senza Docker** (`mvn spring-boot:run`): modifica direttamente
+  `frontend/src/main/resources/static/js/config.js`
 
 Colori del brand: **nero, bianco, rosso** (FullProject Studio).
 
@@ -109,7 +112,7 @@ es. `BACKUP_CRON=0 30 3 * * *` per le 03:30.
 | `JWT_SECRET` | Chiave di firma dei token JWT (backend) | valore di sviluppo incluso, **da cambiare in produzione** |
 | `JWT_EXPIRATION_MS` | Durata del token JWT | 28800000 (8 ore) |
 | `CORS_ALLOWED_ORIGINS` | Origini autorizzate a chiamare l'API (backend) | `http://localhost:8081` |
-| `API_BASE_URL` (in `frontend/.../js/config.js`, non è una env var) | URL del backend visto dal browser | `http://localhost:8080` |
+| `API_BASE_URL` | URL del backend visto dal browser (frontend, solo con Docker — vedi sopra) | `http://localhost:8080` |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` / `ADMIN_EMAIL` | Credenziali dell'utente ADMIN creato al primo avvio | `admin` / `FullProject2026!` / `admin@fullprojectstudio.it` — **da cambiare in produzione** |
 | `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
 | `BACKUP_DIR` | Cartella dove scrivere i backup Excel | `./backup` |
