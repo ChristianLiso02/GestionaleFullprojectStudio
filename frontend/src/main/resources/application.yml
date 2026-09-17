@@ -4,11 +4,3 @@ server:
 spring:
   application:
     name: fullprojectstudio-frontend
-  thymeleaf:
-    cache: false
-
-app:
-  backend:
-    base-url: ${BACKEND_BASE_URL:http://localhost:8080}
-  branding:
-    nome-scuola: "FullProject Studio"

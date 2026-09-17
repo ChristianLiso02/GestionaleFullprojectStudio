@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Corsi</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Corsi</h2>
+            <button class="btn btn-accent" onclick="nuovoCorso()">+ Nuovo corso</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Stile</th><th>Livello</th><th>Istruttore</th><th>Sala</th><th>Orario</th><th>Prezzo/mese</th><th>Stato</th><th></th></tr></thead>
+              <tbody id="corsiBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal">
+      <div class="modal-head"><h3 id="modalTitle">Nuovo corso</h3><button class="btn btn-ghost btn-sm" onclick="closeModal()">&#10005;</button></div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+        <button class="btn btn-accent" id="modalSave">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("corsi", "Corsi", "Stili, livelli e orari");
+  </script>
+  <script src="js/corsi.js"></script>
+</body>
+</html>

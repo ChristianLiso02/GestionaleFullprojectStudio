@@ -12,17 +12,25 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Presenze** (appello per corso/data)
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, iscrizioni in scadenza, pagamenti in sospeso)
 
-Tutto realizzato in **Java**, con backend e frontend come due progetti Maven indipendenti.
+Backend in **Java**, frontend statico (HTML/CSS/JS) — due progetti indipendenti.
 
 ## Architettura
 
 ```
 backend/    API REST (Spring Boot, Spring Security + JWT, Spring Data JPA)
-frontend/   Web app (Spring Boot MVC + Thymeleaf) che consuma le API del backend
+frontend/   Pagine statiche (HTML/CSS/JS vanilla) servite da un piccolo Spring Boot,
+            senza controller/logica server-side: chiamano le API del backend
+            direttamente dal browser con fetch()
 ```
 
-Il frontend non ha accesso diretto al database: parla col backend solo via HTTP/REST,
-autenticandosi con un token JWT ottenuto al login e conservato nella sessione utente.
+Il frontend non ha accesso diretto al database né passa dal proprio server per i dati:
+ogni pagina, una volta caricata, chiama le API REST del backend via `fetch()`. Il token
+JWT ottenuto al login viene salvato nel `localStorage` del browser e allegato ad ogni
+chiamata come header `Authorization: Bearer ...`. Il backend abilita CORS per l'origine
+del frontend (`CORS_ALLOWED_ORIGINS`).
+
+Per cambiare l'URL del backend visto dal browser, modifica
+`frontend/src/main/resources/static/js/config.js` (`API_BASE_URL`).
 
 Colori del brand: **nero, bianco, rosso** (FullProject Studio).
 
@@ -78,8 +86,8 @@ oppure imposta le variabili d'ambiente `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e 
 |---|---|---|
 | `JWT_SECRET` | Chiave di firma dei token JWT (backend) | valore di sviluppo incluso, **da cambiare in produzione** |
 | `JWT_EXPIRATION_MS` | Durata del token JWT | 28800000 (8 ore) |
-| `CORS_ALLOWED_ORIGINS` | Origini autorizzate a chiamare l'API | `http://localhost:8081` |
-| `BACKEND_BASE_URL` | URL del backend visto dal frontend | `http://localhost:8080` |
+| `CORS_ALLOWED_ORIGINS` | Origini autorizzate a chiamare l'API (backend) | `http://localhost:8081` |
+| `API_BASE_URL` (in `frontend/.../js/config.js`, non è una env var) | URL del backend visto dal browser | `http://localhost:8080` |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` / `ADMIN_EMAIL` | Credenziali dell'utente ADMIN creato al primo avvio | `admin` / `FullProject2026!` / `admin@fullprojectstudio.it` — **da cambiare in produzione** |
 | `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
 

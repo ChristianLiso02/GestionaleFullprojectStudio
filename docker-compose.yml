@@ -28,10 +28,11 @@ services:
     ports:
       - "8080:8080"
 
+  # Il frontend è statico (HTML/CSS/JS): il browser chiama il backend direttamente,
+  # quindi l'URL in frontend/src/main/resources/static/js/config.js deve puntare
+  # a dove il backend è raggiungibile dal browser dell'utente (qui: http://localhost:8080).
   frontend:
     build: ./frontend
-    environment:
-      BACKEND_BASE_URL: http://backend:8080
     depends_on:
       - backend
     ports:
