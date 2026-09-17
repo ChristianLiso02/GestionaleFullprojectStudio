@@ -32,3 +32,24 @@
     showError(err.message);
   }
 })();
+
+async function generaBackup() {
+  const btn = document.getElementById("backupBtn");
+  const status = document.getElementById("backupStatus");
+  btn.disabled = true;
+  btn.textContent = "Generazione in corso...";
+  status.hidden = true;
+  try {
+    const result = await api.post("/api/backup/genera");
+    status.textContent = "Backup generato: " + result.percorsoFile;
+    status.style.color = "var(--verde)";
+    status.hidden = false;
+  } catch (err) {
+    status.textContent = "Errore: " + err.message;
+    status.style.color = "var(--rosso)";
+    status.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Genera backup ora";
+  }
+}

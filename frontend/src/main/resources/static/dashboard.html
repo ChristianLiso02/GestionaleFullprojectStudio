@@ -16,6 +16,21 @@
         <div class="stat-grid" id="statGrid"></div>
 
         <div class="panel">
+          <div class="panel-head">
+            <h2>Backup Excel</h2>
+            <button class="btn btn-ghost btn-sm" id="backupBtn" onclick="generaBackup()">Genera backup ora</button>
+          </div>
+          <div class="panel-body" style="padding:14px 18px">
+            <p style="margin:0 0 8px;color:var(--ink-faint);font-size:0.85rem">
+              Ogni notte alle 02:00 viene generato automaticamente un file Excel con anagrafiche,
+              iscrizioni, pagamenti e presenze del mese corrente e precedente, salvato sul server.
+              Puoi anche generarlo subito con il pulsante qui sopra.
+            </p>
+            <p id="backupStatus" style="margin:0;font-size:0.82rem" hidden></p>
+          </div>
+        </div>
+
+        <div class="panel">
           <div class="panel-head"><h2>Iscrizioni in scadenza (30 giorni)</h2></div>
           <div class="table-wrap">
             <table>
