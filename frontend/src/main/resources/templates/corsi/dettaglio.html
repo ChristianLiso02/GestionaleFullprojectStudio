@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${nomeScuola} + ' - ' + ${corso.nome}">Corso</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav('corsi')}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${corso.nome}">Corso</h1>
+        <a class="btn btn-dark" th:href="@{/corsi/{id}/modifica(id=${corso.id})}">Modifica</a>
+    </div>
+    <div class="card">
+        <div class="detail-grid">
+            <div class="detail-item"><div class="label">Stile</div><div class="value" th:text="${corso.stile}"></div></div>
+            <div class="detail-item"><div class="label">Livello</div><div class="value" th:text="${corso.livello}"></div></div>
+            <div class="detail-item"><div class="label">Istruttore</div><div class="value" th:text="${corso.istruttoreNome} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Sala</div><div class="value" th:text="${corso.salaNome} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Giorni</div><div class="value" th:text="${#strings.listJoin(corso.giorniSettimana, ', ')}"></div></div>
+            <div class="detail-item"><div class="label">Orario</div><div class="value" th:text="(${corso.orarioInizio} ?: '-') + ' - ' + (${corso.orarioFine} ?: '')"></div></div>
+            <div class="detail-item"><div class="label">Capienza massima</div><div class="value" th:text="${corso.capienzaMax} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Prezzo mensile</div><div class="value" th:text="${corso.prezzoMensile} != null ? ('€ ' + ${#numbers.formatDecimal(corso.prezzoMensile, 1, 2)}) : '-'"></div></div>
+            <div class="detail-item"><div class="label">Stato</div><div class="value"><span class="badge" th:classappend="${corso.attivo} ? 'badge-attivo' : 'badge-inattivo'" th:text="${corso.attivo} ? 'Attivo' : 'Inattivo'"></span></div></div>
+        </div>
+    </div>
+    <a class="btn btn-outline" th:href="@{/corsi}">&larr; Torna ai corsi</a>
+</div>
+</body>
+</html>

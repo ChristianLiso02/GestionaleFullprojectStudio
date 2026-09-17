@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${nomeScuola} + ' - Abbonamenti'">Abbonamenti</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav('abbonamenti')}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1>Tipi di abbonamento</h1>
+        <a class="btn btn-primary" th:href="@{/abbonamenti/nuovo}">+ Nuovo abbonamento</a>
+    </div>
+    <div class="card">
+        <table th:if="${not #lists.isEmpty(abbonamenti)}">
+            <thead><tr><th>Nome</th><th>Descrizione</th><th>Durata (gg)</th><th>N. lezioni</th><th>Prezzo</th><th>Stato</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="a : ${abbonamenti}">
+                <td th:text="${a.nome}"></td>
+                <td th:text="${a.descrizione}"></td>
+                <td th:text="${a.durataGiorni} ?: '-'"></td>
+                <td th:text="${a.numeroLezioni} ?: '-'"></td>
+                <td th:text="${'€ ' + #numbers.formatDecimal(a.prezzo, 1, 2)}"></td>
+                <td><span class="badge" th:classappend="${a.attivo} ? 'badge-attivo' : 'badge-inattivo'" th:text="${a.attivo} ? 'Attivo' : 'Inattivo'"></span></td>
+                <td class="actions-cell">
+                    <a class="btn btn-dark btn-sm" th:href="@{/abbonamenti/{id}/modifica(id=${a.id})}">Modifica</a>
+                    <form th:action="@{/abbonamenti/{id}/elimina(id=${a.id})}" method="post" onsubmit="return confirm('Eliminare questo abbonamento?');">
+                        <button type="submit" class="btn btn-primary btn-sm">Elimina</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" th:if="${#lists.isEmpty(abbonamenti)}">Nessun tipo di abbonamento registrato.</div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${nomeScuola} + ' - Studenti'">Studenti</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav('studenti')}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1>Studenti</h1>
+        <a class="btn btn-primary" th:href="@{/studenti/nuovo}">+ Nuovo studente</a>
+    </div>
+
+    <form class="search-box card" th:action="@{/studenti}" method="get" style="display:flex;align-items:center">
+        <input type="text" name="ricerca" placeholder="Cerca per nome o cognome..." th:value="${ricerca}">
+        <button type="submit" class="btn btn-outline">Cerca</button>
+    </form>
+
+    <div class="card">
+        <table th:if="${not #lists.isEmpty(studenti)}">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Telefono</th>
+                <th>Email</th>
+                <th>Iscritto dal</th>
+                <th>Stato</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${studenti}">
+                <td th:text="${s.nome}"></td>
+                <td th:text="${s.cognome}"></td>
+                <td th:text="${s.telefono}"></td>
+                <td th:text="${s.email}"></td>
+                <td th:text="${#temporals.format(s.dataIscrizione, 'dd/MM/yyyy')}"></td>
+                <td><span class="badge" th:classappend="${s.attivo} ? 'badge-attivo' : 'badge-inattivo'" th:text="${s.attivo} ? 'Attivo' : 'Inattivo'"></span></td>
+                <td class="actions-cell">
+                    <a class="btn btn-outline btn-sm" th:href="@{/studenti/{id}(id=${s.id})}">Dettaglio</a>
+                    <a class="btn btn-dark btn-sm" th:href="@{/studenti/{id}/modifica(id=${s.id})}">Modifica</a>
+                    <form th:action="@{/studenti/{id}/elimina(id=${s.id})}" method="post" onsubmit="return confirm('Eliminare questo studente?');">
+                        <button type="submit" class="btn btn-primary btn-sm">Elimina</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" th:if="${#lists.isEmpty(studenti)}">Nessuno studente trovato.</div>
+    </div>
+</div>
+</body>
+</html>

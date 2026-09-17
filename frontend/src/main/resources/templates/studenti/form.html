@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${nomeScuola} + ' - Studente'">Studente</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav('studenti')}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${studente.id} != null ? 'Modifica studente' : 'Nuovo studente'">Studente</h1>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/studenti/salva}" th:object="${studente}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="detail-grid">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" th:field="*{nome}" required>
+                </div>
+                <div class="form-group">
+                    <label>Cognome</label>
+                    <input type="text" th:field="*{cognome}" required>
+                </div>
+                <div class="form-group">
+                    <label>Codice fiscale</label>
+                    <input type="text" th:field="*{codiceFiscale}">
+                </div>
+                <div class="form-group">
+                    <label>Data di nascita</label>
+                    <input type="date" th:field="*{dataNascita}">
+                </div>
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input type="text" th:field="*{telefono}">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" th:field="*{email}">
+                </div>
+                <div class="form-group">
+                    <label>Indirizzo</label>
+                    <input type="text" th:field="*{indirizzo}">
+                </div>
+                <div class="form-group">
+                    <label>Contatto emergenza</label>
+                    <input type="text" th:field="*{contattoEmergenza}">
+                </div>
+                <div class="form-group">
+                    <label>Data iscrizione</label>
+                    <input type="date" th:field="*{dataIscrizione}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Note mediche / allergie</label>
+                <textarea th:field="*{noteMediche}" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" th:field="*{attivo}" style="width:auto;display:inline-block"> Studente attivo</label>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salva</button>
+                <a class="btn btn-outline" th:href="@{/studenti}">Annulla</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

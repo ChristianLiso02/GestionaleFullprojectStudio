@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${nomeScuola} + ' - ' + ${studente.nome} + ' ' + ${studente.cognome}">Studente</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav('studenti')}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${studente.nome} + ' ' + ${studente.cognome}">Studente</h1>
+        <a class="btn btn-dark" th:href="@{/studenti/{id}/modifica(id=${studente.id})}">Modifica</a>
+    </div>
+
+    <div class="card">
+        <div class="detail-grid">
+            <div class="detail-item"><div class="label">Codice fiscale</div><div class="value" th:text="${studente.codiceFiscale} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Data di nascita</div><div class="value" th:text="${studente.dataNascita} != null ? ${#temporals.format(studente.dataNascita, 'dd/MM/yyyy')} : '-'"></div></div>
+            <div class="detail-item"><div class="label">Telefono</div><div class="value" th:text="${studente.telefono} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Email</div><div class="value" th:text="${studente.email} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Indirizzo</div><div class="value" th:text="${studente.indirizzo} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Contatto emergenza</div><div class="value" th:text="${studente.contattoEmergenza} ?: '-'"></div></div>
+            <div class="detail-item"><div class="label">Iscritto dal</div><div class="value" th:text="${#temporals.format(studente.dataIscrizione, 'dd/MM/yyyy')}"></div></div>
+            <div class="detail-item"><div class="label">Stato</div><div class="value"><span class="badge" th:classappend="${studente.attivo} ? 'badge-attivo' : 'badge-inattivo'" th:text="${studente.attivo} ? 'Attivo' : 'Inattivo'"></span></div></div>
+        </div>
+        <div th:if="${studente.noteMediche}" style="margin-top:16px">
+            <div class="label" style="text-transform:uppercase;font-size:0.78rem;color:#888">Note mediche / allergie</div>
+            <div th:text="${studente.noteMediche}"></div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Iscrizioni</h2>
+    <div class="card">
+        <table th:if="${not #lists.isEmpty(iscrizioni)}">
+            <thead><tr><th>Corso</th><th>Abbonamento</th><th>Dal</th><th>Scadenza</th><th>Stato</th></tr></thead>
+            <tbody>
+            <tr th:each="i : ${iscrizioni}">
+                <td th:text="${i.corsoNome}"></td>
+                <td th:text="${i.tipoAbbonamentoNome} ?: '-'"></td>
+                <td th:text="${#temporals.format(i.dataIscrizione, 'dd/MM/yyyy')}"></td>
+                <td th:text="${i.dataScadenza} != null ? ${#temporals.format(i.dataScadenza, 'dd/MM/yyyy')} : '-'"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(i.stato)}" th:text="${i.stato}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" th:if="${#lists.isEmpty(iscrizioni)}">Nessuna iscrizione registrata.</div>
+    </div>
+
+    <h2 class="section-title">Pagamenti</h2>
+    <div class="card">
+        <table th:if="${not #lists.isEmpty(pagamenti)}">
+            <thead><tr><th>Data</th><th>Importo</th><th>Metodo</th><th>Causale</th><th>Stato</th></tr></thead>
+            <tbody>
+            <tr th:each="p : ${pagamenti}">
+                <td th:text="${#temporals.format(p.dataPagamento, 'dd/MM/yyyy')}"></td>
+                <td th:text="${'€ ' + #numbers.formatDecimal(p.importo, 1, 2)}"></td>
+                <td th:text="${p.metodo}"></td>
+                <td th:text="${p.causale}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(p.stato)}" th:text="${p.stato}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" th:if="${#lists.isEmpty(pagamenti)}">Nessun pagamento registrato.</div>
+    </div>
+</div>
+</body>
+</html>

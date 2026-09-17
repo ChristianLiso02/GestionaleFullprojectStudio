@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${nomeScuola} + ' - Sala'">Sala</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav('sale')}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${sala.id} != null ? 'Modifica sala' : 'Nuova sala'">Sala</h1>
+    </div>
+    <div class="card">
+        <form th:action="@{/sale/salva}" th:object="${sala}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" th:field="*{nome}" required>
+            </div>
+            <div class="form-group">
+                <label>Capienza</label>
+                <input type="number" th:field="*{capienza}">
+            </div>
+            <div class="form-group">
+                <label>Note</label>
+                <textarea th:field="*{note}" rows="3"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salva</button>
+                <a class="btn btn-outline" th:href="@{/sale}">Annulla</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
