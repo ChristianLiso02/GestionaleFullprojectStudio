@@ -20,7 +20,7 @@ function renderCorsi() {
           <td><a href="corso-dettaglio.html?id=${c.id}"><b>${escapeHtml(c.nome)}</b></a></td>
           <td>${c.stile}</td>
           <td>${c.livello}</td>
-          <td>${escapeHtml(c.istruttoreNome) || "-"}</td>
+          <td>${escapeHtml((c.istruttoriNomi || []).join(" + ")) || "-"}</td>
           <td>${escapeHtml(c.salaNome) || "-"}</td>
           <td>${(c.giorniSettimana || []).map(g => GIORNI_LABEL[g]).join(" · ")}<br>${c.orarioInizio || ""} - ${c.orarioFine || ""}</td>
           <td>${c.prezzoMensile != null ? formatEuro(c.prezzoMensile) : "-"}</td>

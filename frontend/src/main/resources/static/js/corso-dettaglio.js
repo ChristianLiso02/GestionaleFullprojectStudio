@@ -10,7 +10,7 @@ function renderCorsoInfo(c) {
   document.getElementById("corsoInfo").innerHTML = `
     <div class="row2">
       <div class="field"><label>Stile / Livello</label><div>${c.stile} &middot; ${c.livello}</div></div>
-      <div class="field"><label>Istruttore</label><div>${escapeHtml(c.istruttoreNome) || "-"}</div></div>
+      <div class="field"><label>Istruttori</label><div>${escapeHtml((c.istruttoriNomi || []).join(" + ")) || "-"}</div></div>
     </div>
     <div class="row2">
       <div class="field"><label>Sala</label><div>${escapeHtml(c.salaNome) || "-"}</div></div>

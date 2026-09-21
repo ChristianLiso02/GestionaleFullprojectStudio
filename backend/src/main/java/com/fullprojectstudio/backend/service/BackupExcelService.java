@@ -153,7 +153,9 @@ public class BackupExcelService {
             set(row, c++, co.getNome());
             set(row, c++, co.getStile() != null ? co.getStile().name() : null);
             set(row, c++, co.getLivello() != null ? co.getLivello().name() : null);
-            set(row, c++, co.getIstruttore() != null ? co.getIstruttore().getNome() + " " + co.getIstruttore().getCognome() : null);
+            set(row, c++, co.getIstruttori().stream()
+                    .map(i -> i.getNome() + " " + i.getCognome())
+                    .collect(Collectors.joining(" + ")));
             set(row, c++, co.getSala() != null ? co.getSala().getNome() : null);
             set(row, c++, co.getGiorniSettimana().stream().map(Enum::name).collect(Collectors.joining(", ")));
             set(row, c++, co.getOrarioInizio() != null ? co.getOrarioInizio().toString() : null);

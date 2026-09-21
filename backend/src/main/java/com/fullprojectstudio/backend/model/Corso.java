@@ -36,9 +36,14 @@ public class Corso {
     @Column(nullable = false)
     private Livello livello;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "istruttore_id")
-    private Istruttore istruttore;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "corso_istruttori",
+            joinColumns = @JoinColumn(name = "corso_id"),
+            inverseJoinColumns = @JoinColumn(name = "istruttore_id")
+    )
+    @Builder.Default
+    private Set<Istruttore> istruttori = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sala_id")

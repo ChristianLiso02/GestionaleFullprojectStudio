@@ -15,12 +15,13 @@ function fillSelectOptions() {
 
 async function loadLookups() {
   const [istruttori, sale] = await Promise.all([api.get("/api/istruttori"), api.get("/api/sale")]);
-  const istruttoreSel = document.getElementById("fIstruttore");
-  istruttori.forEach(i => {
-    const opt = document.createElement("option");
-    opt.value = i.id;
-    opt.textContent = `${i.nome} ${i.cognome}`;
-    istruttoreSel.appendChild(opt);
+  [document.getElementById("fIstruttore1"), document.getElementById("fIstruttore2")].forEach(sel => {
+    istruttori.forEach(i => {
+      const opt = document.createElement("option");
+      opt.value = i.id;
+      opt.textContent = `${i.nome} ${i.cognome}`;
+      sel.appendChild(opt);
+    });
   });
   const salaSel = document.getElementById("fSala");
   sale.forEach(s => {
@@ -35,7 +36,9 @@ function fillForm(c) {
   document.getElementById("fNome").value = c.nome || "";
   document.getElementById("fStile").value = c.stile || "SALSA_CUBANA";
   document.getElementById("fLivello").value = c.livello || "BASE";
-  document.getElementById("fIstruttore").value = c.istruttoreId || "";
+  const istruttoriIds = c.istruttoriIds || [];
+  document.getElementById("fIstruttore1").value = istruttoriIds[0] || "";
+  document.getElementById("fIstruttore2").value = istruttoriIds[1] || "";
   document.getElementById("fSala").value = c.salaId || "";
   document.getElementById("fCapienza").value = c.capienzaMax ?? "";
   document.getElementById("fOrarioInizio").value = c.orarioInizio || "";
@@ -52,7 +55,10 @@ function readForm() {
     nome: document.getElementById("fNome").value.trim(),
     stile: document.getElementById("fStile").value,
     livello: document.getElementById("fLivello").value,
-    istruttoreId: document.getElementById("fIstruttore").value ? parseInt(document.getElementById("fIstruttore").value) : null,
+    istruttoriIds: [document.getElementById("fIstruttore1").value, document.getElementById("fIstruttore2").value]
+      .filter(v => v)
+      .map(v => parseInt(v))
+      .filter((v, idx, arr) => arr.indexOf(v) === idx),
     salaId: document.getElementById("fSala").value ? parseInt(document.getElementById("fSala").value) : null,
     capienzaMax: document.getElementById("fCapienza").value ? parseInt(document.getElementById("fCapienza").value) : null,
     orarioInizio: document.getElementById("fOrarioInizio").value || null,
@@ -82,6 +88,9 @@ document.getElementById("corsoForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const dto = readForm();
   if (!dto.nome) { showError("Il nome è obbligatorio."); return; }
+  const i1 = document.getElementById("fIstruttore1").value;
+  const i2 = document.getElementById("fIstruttore2").value;
+  if (i1 && i2 && i1 === i2) { showError("Non puoi selezionare lo stesso istruttore due volte."); return; }
   try {
     if (corsoId) {
       await api.put(`/api/corsi/${corsoId}`, dto);

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CorsoRepository extends JpaRepository<Corso, Long> {
     List<Corso> findByAttivoTrue();
-    List<Corso> findByIstruttoreId(Long istruttoreId);
+    List<Corso> findByIstruttoriId(Long istruttoreId);
 }

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -22,8 +23,8 @@ public class CorsoDto {
     private String nome;
     private StileBallo stile;
     private Livello livello;
-    private Long istruttoreId;
-    private String istruttoreNome;
+    private List<Long> istruttoriIds;
+    private List<String> istruttoriNomi;
     private Long salaId;
     private String salaNome;
     private Set<DayOfWeek> giorniSettimana;

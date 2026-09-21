@@ -95,14 +95,14 @@ public class DataInitializer implements CommandLineRunner {
 
             corsoRepository.save(Corso.builder()
                     .nome("Salsa Cubana Base").stile(StileBallo.SALSA_CUBANA).livello(Livello.BASE)
-                    .istruttore(m1).sala(salaA)
+                    .istruttori(Set.of(m1, m2)).sala(salaA)
                     .giorniSettimana(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
                     .orarioInizio(LocalTime.of(19, 0)).orarioFine(LocalTime.of(20, 0))
                     .capienzaMax(25).prezzoMensile(new BigDecimal("60.00")).attivo(true).build());
 
             corsoRepository.save(Corso.builder()
                     .nome("Bachata Intermedio").stile(StileBallo.BACHATA).livello(Livello.INTERMEDIO)
-                    .istruttore(m2).sala(salaB)
+                    .istruttori(Set.of(m2)).sala(salaB)
                     .giorniSettimana(Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY))
                     .orarioInizio(LocalTime.of(20, 0)).orarioFine(LocalTime.of(21, 0))
                     .capienzaMax(15).prezzoMensile(new BigDecimal("60.00")).attivo(true).build());

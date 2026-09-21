@@ -12,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -61,13 +64,18 @@ public class CorsoService {
         corso.setDataFine(dto.getDataFine());
         corso.setAttivo(dto.isAttivo());
 
-        if (dto.getIstruttoreId() != null) {
-            Istruttore istruttore = istruttoreRepository.findById(dto.getIstruttoreId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Istruttore non trovato: " + dto.getIstruttoreId()));
-            corso.setIstruttore(istruttore);
-        } else {
-            corso.setIstruttore(null);
+        List<Long> istruttoriIds = dto.getIstruttoriIds() == null ? List.of() : dto.getIstruttoriIds();
+        Set<Long> idsUnici = new LinkedHashSet<>(istruttoriIds);
+        if (idsUnici.size() > 2) {
+            throw new IllegalArgumentException("Un corso può avere al massimo 2 istruttori");
         }
+        Set<Istruttore> istruttori = new LinkedHashSet<>();
+        for (Long istruttoreId : idsUnici) {
+            Istruttore istruttore = istruttoreRepository.findById(istruttoreId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Istruttore non trovato: " + istruttoreId));
+            istruttori.add(istruttore);
+        }
+        corso.setIstruttori(istruttori);
 
         if (dto.getSalaId() != null) {
             Sala sala = salaRepository.findById(dto.getSalaId())
@@ -84,13 +92,16 @@ public class CorsoService {
     }
 
     private CorsoDto toDto(Corso c) {
+        List<Istruttore> istruttoriOrdinati = c.getIstruttori().stream()
+                .sorted(Comparator.comparing(Istruttore::getCognome).thenComparing(Istruttore::getNome))
+                .toList();
         return CorsoDto.builder()
                 .id(c.getId())
                 .nome(c.getNome())
                 .stile(c.getStile())
                 .livello(c.getLivello())
-                .istruttoreId(c.getIstruttore() != null ? c.getIstruttore().getId() : null)
-                .istruttoreNome(c.getIstruttore() != null ? c.getIstruttore().getNome() + " " + c.getIstruttore().getCognome() : null)
+                .istruttoriIds(istruttoriOrdinati.stream().map(Istruttore::getId).toList())
+                .istruttoriNomi(istruttoriOrdinati.stream().map(i -> i.getNome() + " " + i.getCognome()).toList())
                 .salaId(c.getSala() != null ? c.getSala().getId() : null)
                 .salaNome(c.getSala() != null ? c.getSala().getNome() : null)
                 .giorniSettimana(c.getGiorniSettimana())
