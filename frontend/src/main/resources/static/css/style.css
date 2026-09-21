@@ -91,7 +91,9 @@ tbody td { padding: 11px 18px; border-bottom: 1px solid var(--grigio-bordo); ver
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: var(--grigio-chiaro); }
 .table-wrap { overflow-x: auto; }
-.cell-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.cell-actions { text-align: right; white-space: nowrap; }
+.cell-actions > * { margin-left: 6px; }
+.cell-actions > *:first-child { margin-left: 0; }
 .empty-state { padding: 40px 18px; text-align: center; color: var(--ink-faint); font-size: 0.85rem; }
 
 /* ---- buttons ---- */
