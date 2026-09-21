@@ -1,10 +1,10 @@
 const METODI_PAGAMENTO = ["CONTANTI", "CARTA", "BONIFICO", "ALTRO"];
 const STATI_PAGAMENTO = ["PAGATO", "IN_SOSPESO", "RIMBORSATO"];
 const pagamentoId = new URLSearchParams(window.location.search).get("id");
+const studenteIdIniziale = new URLSearchParams(window.location.search).get("studenteId");
 
-async function loadLookups() {
-  const [studenti, iscrizioni] = await Promise.all([api.get("/api/studenti"), api.get("/api/iscrizioni")]);
-
+async function loadStudenti() {
+  const studenti = await api.get("/api/studenti");
   const studenteSel = document.getElementById("fStudente");
   studenti.forEach(s => {
     const opt = document.createElement("option");
@@ -13,21 +13,40 @@ async function loadLookups() {
     studenteSel.appendChild(opt);
   });
 
-  const iscrizioneSel = document.getElementById("fIscrizione");
-  iscrizioni.forEach(i => {
-    const opt = document.createElement("option");
-    opt.value = i.id;
-    opt.textContent = `${i.studenteNomeCompleto} - ${i.corsoNome}`;
-    iscrizioneSel.appendChild(opt);
-  });
-
   document.getElementById("fMetodo").innerHTML = METODI_PAGAMENTO.map(m => `<option value="${m}">${m}</option>`).join("");
   document.getElementById("fStato").innerHTML = STATI_PAGAMENTO.map(s => `<option value="${s}">${s}</option>`).join("");
 }
 
+async function loadIscrizioniStudente(studenteId, iscrizioneSelezionata) {
+  const iscrizioneSel = document.getElementById("fIscrizione");
+  iscrizioneSel.innerHTML = "";
+
+  if (!studenteId) {
+    iscrizioneSel.innerHTML = `<option value="">-- seleziona prima uno studente --</option>`;
+    iscrizioneSel.disabled = true;
+    return;
+  }
+
+  iscrizioneSel.disabled = false;
+  iscrizioneSel.innerHTML = `<option value="">-- nessuna --</option>`;
+  try {
+    const iscrizioni = await api.get(`/api/iscrizioni?studenteId=${studenteId}`);
+    iscrizioni.forEach(i => {
+      const opt = document.createElement("option");
+      opt.value = i.id;
+      opt.textContent = `${i.corsoNome} (${i.stato})`;
+      iscrizioneSel.appendChild(opt);
+    });
+    if (iscrizioneSelezionata) {
+      iscrizioneSel.value = iscrizioneSelezionata;
+    }
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
 function fillForm(p) {
   document.getElementById("fStudente").value = p.studenteId || "";
-  document.getElementById("fIscrizione").value = p.iscrizioneId || "";
   document.getElementById("fImporto").value = p.importo ?? "";
   document.getElementById("fData").value = p.dataPagamento || todayISO();
   document.getElementById("fMetodo").value = p.metodo || "CONTANTI";
@@ -52,16 +71,27 @@ function readForm() {
 async function init() {
   document.getElementById("fData").value = todayISO();
   try {
-    await loadLookups();
+    await loadStudenti();
+
     if (pagamentoId) {
       document.getElementById("formTitle").textContent = "Modifica pagamento";
       const p = await api.get(`/api/pagamenti/${pagamentoId}`);
       fillForm(p);
+      await loadIscrizioniStudente(p.studenteId, p.iscrizioneId);
+    } else if (studenteIdIniziale) {
+      document.getElementById("fStudente").value = studenteIdIniziale;
+      await loadIscrizioniStudente(studenteIdIniziale);
+    } else {
+      await loadIscrizioniStudente(null);
     }
   } catch (err) {
     showError(err.message);
   }
 }
+
+document.getElementById("fStudente").addEventListener("change", (e) => {
+  loadIscrizioniStudente(e.target.value || null);
+});
 
 document.getElementById("pagamentoForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -74,7 +104,11 @@ document.getElementById("pagamentoForm").addEventListener("submit", async (e) =>
     } else {
       await api.post("/api/pagamenti", dto);
     }
-    window.location.href = "pagamenti.html";
+    if (studenteIdIniziale) {
+      window.location.href = `studente-dettaglio.html?id=${studenteIdIniziale}`;
+    } else {
+      window.location.href = "pagamenti.html";
+    }
   } catch (err) {
     showError(err.message);
   }

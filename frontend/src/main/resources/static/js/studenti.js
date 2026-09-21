@@ -16,11 +16,12 @@ function renderStudenti() {
     ? `<tr><td colspan="5" class="empty-state">Nessuno studente trovato.</td></tr>`
     : studentiCache.map(s => `
         <tr>
-          <td><b>${escapeHtml(s.nome)} ${escapeHtml(s.cognome)}</b></td>
+          <td><a href="studente-dettaglio.html?id=${s.id}"><b>${escapeHtml(s.nome)} ${escapeHtml(s.cognome)}</b></a></td>
           <td>${escapeHtml(s.telefono)}<br><span style="color:var(--ink-faint);font-size:0.78rem">${escapeHtml(s.email)}</span></td>
           <td>${formatDate(s.dataIscrizione)}</td>
           <td><span class="pill ${s.attivo ? "pill-success" : "pill-muted"}">${s.attivo ? "Attivo" : "Inattivo"}</span></td>
           <td class="cell-actions">
+            <a class="btn btn-ghost btn-sm" href="studente-dettaglio.html?id=${s.id}">Dettaglio</a>
             <a class="btn btn-ghost btn-sm" href="studente-form.html?id=${s.id}">Modifica</a>
             <button class="btn btn-ghost btn-sm" onclick="eliminaStudente(${s.id})">Elimina</button>
           </td>

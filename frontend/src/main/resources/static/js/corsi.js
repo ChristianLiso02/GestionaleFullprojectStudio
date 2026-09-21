@@ -17,7 +17,7 @@ function renderCorsi() {
     ? `<tr><td colspan="9" class="empty-state">Nessun corso registrato.</td></tr>`
     : corsiCache.map(c => `
         <tr>
-          <td><b>${escapeHtml(c.nome)}</b></td>
+          <td><a href="corso-dettaglio.html?id=${c.id}"><b>${escapeHtml(c.nome)}</b></a></td>
           <td>${c.stile}</td>
           <td>${c.livello}</td>
           <td>${escapeHtml(c.istruttoreNome) || "-"}</td>
@@ -26,6 +26,7 @@ function renderCorsi() {
           <td>${c.prezzoMensile != null ? formatEuro(c.prezzoMensile) : "-"}</td>
           <td><span class="pill ${c.attivo ? "pill-success" : "pill-muted"}">${c.attivo ? "Attivo" : "Inattivo"}</span></td>
           <td class="cell-actions">
+            <a class="btn btn-ghost btn-sm" href="corso-dettaglio.html?id=${c.id}">Iscritti</a>
             <a class="btn btn-ghost btn-sm" href="corso-form.html?id=${c.id}">Modifica</a>
             <button class="btn btn-ghost btn-sm" onclick="eliminaCorso(${c.id})">Elimina</button>
           </td>

@@ -40,7 +40,7 @@ public class StudenteService {
         Studente studente = getEntity(id);
         studente.setNome(dto.getNome());
         studente.setCognome(dto.getCognome());
-        studente.setCodiceFiscale(dto.getCodiceFiscale());
+        studente.setCodiceFiscale(blankToNull(dto.getCodiceFiscale()));
         studente.setDataNascita(dto.getDataNascita());
         studente.setTelefono(dto.getTelefono());
         studente.setEmail(dto.getEmail());
@@ -54,6 +54,10 @@ public class StudenteService {
     public void delete(Long id) {
         Studente studente = getEntity(id);
         studenteRepository.delete(studente);
+    }
+
+    private String blankToNull(String value) {
+        return (value == null || value.isBlank()) ? null : value;
     }
 
     private Studente getEntity(Long id) {
@@ -83,7 +87,7 @@ public class StudenteService {
                 .id(dto.getId())
                 .nome(dto.getNome())
                 .cognome(dto.getCognome())
-                .codiceFiscale(dto.getCodiceFiscale())
+                .codiceFiscale(blankToNull(dto.getCodiceFiscale()))
                 .dataNascita(dto.getDataNascita())
                 .telefono(dto.getTelefono())
                 .email(dto.getEmail())

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Dettaglio studente</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2 id="studenteNome">Studente</h2>
+            <div class="toolbar">
+              <a class="btn btn-ghost" id="linkModifica" href="#">Modifica studente</a>
+              <a class="btn btn-ghost" href="studenti.html">&larr; Torna agli studenti</a>
+            </div>
+          </div>
+          <div class="panel-body" style="padding:18px 20px" id="studenteInfo"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Corsi e iscrizioni</h2>
+            <a class="btn btn-accent" id="linkNuovaIscrizione" href="iscrizione-form.html">+ Nuova iscrizione</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Corso</th><th>Abbonamento</th><th>Data iscrizione</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead>
+              <tbody id="iscrizioniBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Pagamenti</h2>
+            <a class="btn btn-accent" id="linkNuovoPagamento" href="pagamento-form.html">+ Nuovo pagamento</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Importo</th><th>Metodo</th><th>Causale</th><th>Stato</th><th></th></tr></thead>
+              <tbody id="pagamentiBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("studenti", "Dettaglio studente", "Iscrizioni e pagamenti collegati");
+  </script>
+  <script src="js/studente-dettaglio.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Dettaglio corso</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2 id="corsoNome">Corso</h2>
+            <div class="toolbar">
+              <a class="btn btn-ghost" id="linkModifica" href="#">Modifica corso</a>
+              <a class="btn btn-ghost" href="corsi.html">&larr; Torna ai corsi</a>
+            </div>
+          </div>
+          <div class="panel-body" style="padding:18px 20px" id="corsoInfo"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Studenti iscritti</h2>
+            <a class="btn btn-accent" id="linkNuovaIscrizione" href="iscrizione-form.html">+ Aggiungi iscritto</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Studente</th><th>Abbonamento</th><th>Data iscrizione</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead>
+              <tbody id="iscrittiBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("corsi", "Dettaglio corso", "Elenco degli studenti iscritti al corso");
+  </script>
+  <script src="js/corso-dettaglio.js"></script>
+</body>
+</html>

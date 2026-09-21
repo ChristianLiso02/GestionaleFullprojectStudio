@@ -1,5 +1,7 @@
 const STATI_ISCRIZIONE = ["ATTIVA", "SCADUTA", "ANNULLATA"];
 const iscrizioneId = new URLSearchParams(window.location.search).get("id");
+const studenteIdIniziale = new URLSearchParams(window.location.search).get("studenteId");
+const corsoIdIniziale = new URLSearchParams(window.location.search).get("corsoId");
 
 async function loadLookups() {
   const [studenti, corsi, abbonamenti] = await Promise.all([
@@ -65,6 +67,9 @@ async function init() {
       document.getElementById("formTitle").textContent = "Modifica iscrizione";
       const i = await api.get(`/api/iscrizioni/${iscrizioneId}`);
       fillForm(i);
+    } else {
+      if (studenteIdIniziale) document.getElementById("fStudente").value = studenteIdIniziale;
+      if (corsoIdIniziale) document.getElementById("fCorso").value = corsoIdIniziale;
     }
   } catch (err) {
     showError(err.message);
@@ -81,7 +86,13 @@ document.getElementById("iscrizioneForm").addEventListener("submit", async (e) =
     } else {
       await api.post("/api/iscrizioni", dto);
     }
-    window.location.href = "iscrizioni.html";
+    if (studenteIdIniziale) {
+      window.location.href = `studente-dettaglio.html?id=${studenteIdIniziale}`;
+    } else if (corsoIdIniziale) {
+      window.location.href = `corso-dettaglio.html?id=${corsoIdIniziale}`;
+    } else {
+      window.location.href = "iscrizioni.html";
+    }
   } catch (err) {
     showError(err.message);
   }
