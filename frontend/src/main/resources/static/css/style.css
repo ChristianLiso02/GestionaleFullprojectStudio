@@ -117,16 +117,12 @@ tbody tr:hover { background: var(--grigio-chiaro); }
     padding: 8px 10px; border: 1px solid var(--grigio-bordo); border-radius: 6px; font-size: 0.86rem; font-family: inherit;
 }
 .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--rosso); outline-offset: 0; }
+.field input.field-invalid, .field select.field-invalid, .field textarea.field-invalid { border-color: var(--rosso); }
+.field-error-msg { color: var(--rosso); font-size: 0.76rem; margin-top: 4px; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .checkbox-list { display: flex; flex-wrap: wrap; gap: 10px; }
 .checkbox-list label { font-weight: normal; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
-
-.modal-backdrop { position: fixed; inset: 0; background: rgba(20,17,16,0.5); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
-.modal { background: var(--bianco); border-radius: 10px; max-width: 480px; width: 100%; max-height: 88vh; overflow: auto; }
-.modal-head { padding: 16px 20px; border-bottom: 1px solid var(--grigio-bordo); display: flex; align-items: center; justify-content: space-between; }
-.modal-head h3 { margin: 0; font-size: 1.15rem; }
-.modal-body { padding: 18px 20px; }
-.modal-foot { padding: 14px 20px; border-top: 1px solid var(--grigio-bordo); display: flex; justify-content: flex-end; gap: 8px; }
+.form-actions { display: flex; gap: 10px; margin-top: 10px; }
 
 /* ---- presenze checklist ---- */
 .checklist { display: flex; flex-direction: column; }

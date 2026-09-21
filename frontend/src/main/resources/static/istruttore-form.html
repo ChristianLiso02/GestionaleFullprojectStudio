@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>FullProject Studio - Studente</title>
+  <title>FullProject Studio - Istruttore</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,28 +14,25 @@
         <div id="errorBox" hidden></div>
 
         <div class="panel">
-          <div class="panel-head"><h2 id="formTitle">Nuovo studente</h2></div>
-          <form id="studenteForm" class="panel-body" style="padding:18px 20px" novalidate>
+          <div class="panel-head"><h2 id="formTitle">Nuovo istruttore</h2></div>
+          <form id="istruttoreForm" class="panel-body" style="padding:18px 20px" novalidate>
             <div class="row2">
               <div class="field"><label>Nome</label><input id="fNome" required></div>
               <div class="field"><label>Cognome</label><input id="fCognome" required></div>
             </div>
             <div class="row2">
-              <div class="field"><label>Codice fiscale</label><input id="fCf" placeholder="RSSMRA80A01H501U" maxlength="16" style="text-transform:uppercase"></div>
-              <div class="field"><label>Data di nascita</label><input id="fNascita" type="date"></div>
-            </div>
-            <div class="row2">
               <div class="field"><label>Telefono</label><input id="fTelefono"></div>
               <div class="field"><label>Email</label><input id="fEmail" type="email"></div>
             </div>
-            <div class="field"><label>Indirizzo</label><input id="fIndirizzo"></div>
-            <div class="field"><label>Contatto emergenza</label><input id="fEmergenza"></div>
-            <div class="field"><label>Data iscrizione</label><input id="fDataIscr" type="date"></div>
-            <div class="field"><label>Note mediche / allergie</label><textarea id="fNote" rows="3"></textarea></div>
+            <div class="field"><label>Compenso orario (€)</label><input id="fCompenso" type="number" step="0.01"></div>
+            <div class="field">
+              <label>Specializzazioni</label>
+              <div class="checkbox-list" id="specializzazioniContainer"></div>
+            </div>
             <div class="field"><label><input type="checkbox" id="fAttivo" checked style="width:auto;display:inline-block"> Attivo</label></div>
-            <div style="display:flex;gap:10px;margin-top:10px">
+            <div class="form-actions">
               <button type="submit" class="btn btn-accent">Salva</button>
-              <a class="btn btn-ghost" href="studenti.html">Annulla</a>
+              <a class="btn btn-ghost" href="istruttori.html">Annulla</a>
             </div>
           </form>
         </div>
@@ -51,8 +48,8 @@
   <script src="js/nav.js"></script>
   <script>
     requireAuth();
-    renderNav("studenti", "Studente", "Anagrafica e schede allievi");
+    renderNav("istruttori", "Istruttore", "Staff didattico");
   </script>
-  <script src="js/studente-form.js"></script>
+  <script src="js/istruttore-form.js"></script>
 </body>
 </html>

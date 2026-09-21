@@ -18,7 +18,7 @@ function readForm() {
   return {
     nome: document.getElementById("fNome").value.trim(),
     cognome: document.getElementById("fCognome").value.trim(),
-    codiceFiscale: document.getElementById("fCf").value.trim(),
+    codiceFiscale: document.getElementById("fCf").value.trim().toUpperCase(),
     dataNascita: document.getElementById("fNascita").value || null,
     telefono: document.getElementById("fTelefono").value.trim(),
     email: document.getElementById("fEmail").value.trim(),
@@ -44,10 +44,29 @@ async function init() {
   }
 }
 
+function validaForm(dto) {
+  clearAllFieldErrors(document.getElementById("studenteForm"));
+  let ok = true;
+
+  if (!dto.nome) { setFieldError("fNome", "Il nome è obbligatorio."); ok = false; }
+  if (!dto.cognome) { setFieldError("fCognome", "Il cognome è obbligatorio."); ok = false; }
+
+  const errCf = validateCodiceFiscale(dto.codiceFiscale);
+  if (errCf) { setFieldError("fCf", errCf); ok = false; }
+
+  const errTel = validateTelefono(dto.telefono);
+  if (errTel) { setFieldError("fTelefono", errTel); ok = false; }
+
+  const errEmail = validateEmail(dto.email);
+  if (errEmail) { setFieldError("fEmail", errEmail); ok = false; }
+
+  return ok;
+}
+
 document.getElementById("studenteForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const dto = readForm();
-  if (!dto.nome || !dto.cognome) { showError("Nome e cognome sono obbligatori."); return; }
+  if (!validaForm(dto)) return;
   try {
     if (studenteId) {
       await api.put(`/api/studenti/${studenteId}`, dto);

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Abbonamento</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head"><h2 id="formTitle">Nuovo abbonamento</h2></div>
+          <form id="abbonamentoForm" class="panel-body" style="padding:18px 20px" novalidate>
+            <div class="row2">
+              <div class="field"><label>Nome</label><input id="fNome" required></div>
+              <div class="field"><label>Prezzo (€)</label><input id="fPrezzo" type="number" step="0.01" required></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Durata (giorni)</label><input id="fDurata" type="number" placeholder="es. 30"></div>
+              <div class="field"><label>Numero lezioni</label><input id="fLezioni" type="number" placeholder="es. 10"></div>
+            </div>
+            <div class="field"><label>Descrizione</label><textarea id="fDescrizione" rows="2"></textarea></div>
+            <div class="field"><label><input type="checkbox" id="fAttivo" checked style="width:auto;display:inline-block"> Attivo</label></div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-accent">Salva</button>
+              <a class="btn btn-ghost" href="abbonamenti.html">Annulla</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("abbonamenti", "Abbonamento", "Tipi e prezzi");
+  </script>
+  <script src="js/abbonamento-form.js"></script>
+</body>
+</html>

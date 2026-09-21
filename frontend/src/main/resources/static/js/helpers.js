@@ -23,27 +23,38 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function openModal(title, bodyHtml, onSave) {
-  document.getElementById("modalTitle").textContent = title;
-  document.getElementById("modalBody").innerHTML = bodyHtml;
-  document.getElementById("modalBackdrop").hidden = false;
-  const saveBtn = document.getElementById("modalSave");
-  saveBtn.onclick = async () => {
-    const ok = await onSave();
-    if (ok !== false) closeModal();
-  };
-}
-
-function closeModal() {
-  document.getElementById("modalBackdrop").hidden = true;
-}
-
 function showError(message) {
   const box = document.getElementById("errorBox");
   if (!box) { alert(message); return; }
   box.textContent = message;
   box.hidden = false;
   setTimeout(() => { box.hidden = true; }, 5000);
+}
+
+function setFieldError(inputId, message) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.classList.add("field-invalid");
+  let msg = document.getElementById(inputId + "-error");
+  if (!msg) {
+    msg = document.createElement("div");
+    msg.id = inputId + "-error";
+    msg.className = "field-error-msg";
+    input.insertAdjacentElement("afterend", msg);
+  }
+  msg.textContent = message;
+}
+
+function clearFieldError(inputId) {
+  const input = document.getElementById(inputId);
+  if (input) input.classList.remove("field-invalid");
+  const msg = document.getElementById(inputId + "-error");
+  if (msg) msg.remove();
+}
+
+function clearAllFieldErrors(form) {
+  form.querySelectorAll(".field-invalid").forEach(el => el.classList.remove("field-invalid"));
+  form.querySelectorAll(".field-error-msg").forEach(el => el.remove());
 }
 
 function pillClass(stato) {

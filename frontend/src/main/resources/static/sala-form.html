@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Sala</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head"><h2 id="formTitle">Nuova sala</h2></div>
+          <form id="salaForm" class="panel-body" style="padding:18px 20px" novalidate>
+            <div class="field"><label>Nome</label><input id="fNome" required></div>
+            <div class="field"><label>Capienza</label><input id="fCapienza" type="number"></div>
+            <div class="field"><label>Note</label><textarea id="fNote" rows="3"></textarea></div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-accent">Salva</button>
+              <a class="btn btn-ghost" href="sale.html">Annulla</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("sale", "Sala", "Spazi della scuola");
+  </script>
+  <script src="js/sala-form.js"></script>
+</body>
+</html>
