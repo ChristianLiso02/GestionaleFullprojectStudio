@@ -1,5 +1,6 @@
 const GIORNI_LABEL_DETT = { MONDAY: "Lun", TUESDAY: "Mar", WEDNESDAY: "Mer", THURSDAY: "Gio", FRIDAY: "Ven", SATURDAY: "Sab", SUNDAY: "Dom" };
 const corsoId = new URLSearchParams(window.location.search).get("id");
+let iscrittiAttiviCache = [];
 
 function renderCorsoInfo(c) {
   document.getElementById("corsoNome").textContent = c.nome;
@@ -41,6 +42,34 @@ function renderIscritti(iscrizioni) {
       `).join("");
 }
 
+async function loadPresenzeDelGiorno() {
+  const data = document.getElementById("dataPresenzeInput").value;
+  const body = document.getElementById("presenzeCorsoBody");
+  if (!data) { body.innerHTML = `<tr><td colspan="2" class="empty-state">Seleziona una data.</td></tr>`; return; }
+
+  try {
+    const presenze = await api.get(`/api/presenze?corsoId=${corsoId}&data=${data}`);
+    const presenzeMap = {};
+    presenze.forEach(p => { presenzeMap[p.iscrizioneId] = p.presente; });
+
+    body.innerHTML = iscrittiAttiviCache.length === 0
+      ? `<tr><td colspan="2" class="empty-state">Nessuno studente iscritto a questo corso.</td></tr>`
+      : iscrittiAttiviCache.map(i => {
+          const stato = presenzeMap[i.id];
+          const label = stato === undefined ? "Non registrato" : (stato ? "Presente" : "Assente");
+          const cls = stato === undefined ? "pill-muted" : (stato ? "pill-success" : "pill-danger");
+          return `
+            <tr>
+              <td>${escapeHtml(i.studenteNomeCompleto)}</td>
+              <td><span class="pill ${cls}">${label}</span></td>
+            </tr>
+          `;
+        }).join("");
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
 async function init() {
   if (!corsoId) { showError("Corso non specificato."); return; }
   try {
@@ -50,6 +79,12 @@ async function init() {
     ]);
     renderCorsoInfo(corso);
     renderIscritti(iscrizioni);
+    iscrittiAttiviCache = iscrizioni.filter(i => i.stato === "ATTIVA");
+
+    document.getElementById("linkGestisciPresenze").href = `presenze.html?corsoId=${corsoId}`;
+    document.getElementById("dataPresenzeInput").value = todayISO();
+    document.getElementById("dataPresenzeInput").addEventListener("change", loadPresenzeDelGiorno);
+    await loadPresenzeDelGiorno();
   } catch (err) {
     showError(err.message);
   }

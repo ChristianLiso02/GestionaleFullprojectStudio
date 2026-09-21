@@ -54,17 +54,32 @@ function renderPagamenti(pagamenti) {
       `).join("");
 }
 
+function renderPresenze(presenze) {
+  const body = document.getElementById("presenzeBody");
+  body.innerHTML = presenze.length === 0
+    ? `<tr><td colspan="3" class="empty-state">Nessuna presenza registrata.</td></tr>`
+    : presenze.map(p => `
+        <tr>
+          <td>${formatDate(p.dataLezione)}</td>
+          <td>${escapeHtml(p.corsoNome)}</td>
+          <td><span class="pill ${p.presente ? "pill-success" : "pill-danger"}">${p.presente ? "Presente" : "Assente"}</span></td>
+        </tr>
+      `).join("");
+}
+
 async function init() {
   if (!studenteDettId) { showError("Studente non specificato."); return; }
   try {
-    const [studente, iscrizioni, pagamenti] = await Promise.all([
+    const [studente, iscrizioni, pagamenti, presenze] = await Promise.all([
       api.get(`/api/studenti/${studenteDettId}`),
       api.get(`/api/iscrizioni?studenteId=${studenteDettId}`),
-      api.get(`/api/pagamenti?studenteId=${studenteDettId}`)
+      api.get(`/api/pagamenti?studenteId=${studenteDettId}`),
+      api.get(`/api/presenze?studenteId=${studenteDettId}`)
     ]);
     renderStudenteInfo(studente);
     renderIscrizioni(iscrizioni);
     renderPagamenti(pagamenti);
+    renderPresenze(presenze);
   } catch (err) {
     showError(err.message);
   }

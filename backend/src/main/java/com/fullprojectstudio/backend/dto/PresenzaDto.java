@@ -15,6 +15,7 @@ public class PresenzaDto {
     private Long id;
     private Long iscrizioneId;
     private String studenteNomeCompleto;
+    private String corsoNome;
     private LocalDate dataLezione;
     private boolean presente;
     private String note;

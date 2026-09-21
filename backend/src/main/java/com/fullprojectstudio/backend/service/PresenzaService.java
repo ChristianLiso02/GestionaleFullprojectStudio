@@ -25,6 +25,10 @@ public class PresenzaService {
         return presenzaRepository.findByIscrizioneId(iscrizioneId).stream().map(this::toDto).toList();
     }
 
+    public List<PresenzaDto> findByStudente(Long studenteId) {
+        return presenzaRepository.findByIscrizioneStudenteIdOrderByDataLezioneDesc(studenteId).stream().map(this::toDto).toList();
+    }
+
     public List<PresenzaDto> findByCorsoEData(Long corsoId, LocalDate data) {
         return presenzaRepository.findByIscrizioneCorsoIdAndDataLezione(corsoId, data).stream().map(this::toDto).toList();
     }
@@ -53,6 +57,7 @@ public class PresenzaService {
                 .id(p.getId())
                 .iscrizioneId(p.getIscrizione().getId())
                 .studenteNomeCompleto(p.getIscrizione().getStudente().getNome() + " " + p.getIscrizione().getStudente().getCognome())
+                .corsoNome(p.getIscrizione().getCorso().getNome())
                 .dataLezione(p.getDataLezione())
                 .presente(p.isPresente())
                 .note(p.getNote())

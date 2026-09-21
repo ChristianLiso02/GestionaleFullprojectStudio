@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
     List<Presenza> findByIscrizioneId(Long iscrizioneId);
+    List<Presenza> findByIscrizioneStudenteIdOrderByDataLezioneDesc(Long studenteId);
     List<Presenza> findByIscrizioneCorsoIdAndDataLezione(Long corsoId, LocalDate dataLezione);
     Optional<Presenza> findByIscrizioneIdAndDataLezione(Long iscrizioneId, LocalDate dataLezione);
     List<Presenza> findByDataLezioneBetween(LocalDate da, LocalDate a);

@@ -20,10 +20,14 @@ public class PresenzaController {
 
     @GetMapping
     public List<PresenzaDto> find(@RequestParam(required = false) Long iscrizioneId,
+                                   @RequestParam(required = false) Long studenteId,
                                    @RequestParam(required = false) Long corsoId,
                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         if (iscrizioneId != null) {
             return presenzaService.findByIscrizione(iscrizioneId);
+        }
+        if (studenteId != null) {
+            return presenzaService.findByStudente(studenteId);
         }
         if (corsoId != null && data != null) {
             return presenzaService.findByCorsoEData(corsoId, data);

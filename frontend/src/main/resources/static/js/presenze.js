@@ -1,4 +1,5 @@
 let corsiLookupPresenze = [];
+const corsoIdPreselezionato = new URLSearchParams(window.location.search).get("corsoId");
 
 async function initPresenze() {
   try {
@@ -11,6 +12,11 @@ async function initPresenze() {
 
     select.addEventListener("change", loadAppello);
     document.getElementById("dataInput").addEventListener("change", loadAppello);
+
+    if (corsoIdPreselezionato) {
+      select.value = corsoIdPreselezionato;
+      await loadAppello();
+    }
   } catch (err) {
     showError(err.message);
   }
