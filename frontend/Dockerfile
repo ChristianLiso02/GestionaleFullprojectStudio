@@ -12,6 +12,8 @@ WORKDIR /app
 COPY --from=build /app/target/frontend.jar app.jar
 COPY src/main/resources/static ./static
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x docker-entrypoint.sh
+# Normalizza i fine riga: se il file viene checkout-ato su Windows con CRLF,
+# lo shebang diventa "#!/bin/sh\r" e l'exec fallisce con "no such file or directory".
+RUN sed -i 's/\r$//' docker-entrypoint.sh && chmod +x docker-entrypoint.sh
 EXPOSE 8081
 ENTRYPOINT ["./docker-entrypoint.sh"]
