@@ -10,6 +10,26 @@ services:
     ports:
       - "5432:5432"
 
+  # Backup automatico del database PostgreSQL (disaster recovery vero,
+  # distinto dal backup Excel: qui c'è tutto il database, ripristinabile
+  # integralmente in caso di perdita totale del volume db-data).
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: fullprojectstudio
+      POSTGRES_USER: fullprojectstudio
+      POSTGRES_PASSWORD: fullprojectstudio
+      SCHEDULE: "@daily"
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+    volumes:
+      - ./backup/postgres:/backups
+    depends_on:
+      - db
+
   backend:
     build: ./backend
     environment:

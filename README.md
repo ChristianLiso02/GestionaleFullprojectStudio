@@ -105,6 +105,58 @@ curl -X POST http://localhost:8080/api/backup/genera -H "Authorization: Bearer <
 Per cambiare l'orario, imposta `BACKUP_CRON` (formato cron Spring: secondi minuti ore giorno mese giorno-settimana),
 es. `BACKUP_CRON=0 30 3 * * *` per le 03:30.
 
+**Importante**: questo è un backup "per continuare a lavorare offline", non un vero disaster
+recovery — non permette di ricostruire il database da zero. Per quello vedi la sezione seguente.
+
+## Backup e ripristino del database (disaster recovery)
+
+Oltre al backup Excel, il `docker-compose.yml` include un servizio `db-backup`
+(immagine [`prodrigestivill/postgres-backup-local`](https://github.com/prodrigestivill/docker-postgres-backup-local))
+che ogni notte esegue un dump completo del database PostgreSQL con `pg_dump`, in formato
+compresso, con rotazione automatica (`BACKUP_KEEP_DAYS`/`_WEEKS`/`_MONTHS` in `docker-compose.yml`).
+
+I file finiscono in `./backup/postgres/` sul PC host, organizzati per data:
+```
+backup/postgres/daily/fullprojectstudio-AAAAMMGG.sql.gz
+backup/postgres/weekly/...
+backup/postgres/monthly/...
+```
+
+A differenza del backup Excel (solo mese corrente/precedente, pensato per continuare a
+lavorare se il gestionale è irraggiungibile), questo è un dump **completo** del database:
+è il file da usare per ricostruire tutto da zero in caso di perdita totale (es. disco rotto,
+volume Docker cancellato per errore).
+
+**Generare un backup subito** (senza aspettare la notte):
+```bash
+docker run --rm -v "$(pwd)/backup/postgres:/backups" --network gestionalefullprojectstudio_default \
+  -e POSTGRES_HOST=db -e POSTGRES_DB=fullprojectstudio \
+  -e POSTGRES_USER=fullprojectstudio -e POSTGRES_PASSWORD=fullprojectstudio \
+  prodrigestivill/postgres-backup-local /backup.sh
+```
+
+**Ripristinare da un backup** (procedura testata: dump → distruzione totale del database →
+ripristino → verifica che l'app rilegga correttamente tutti i dati, incluse le relazioni
+come i due istruttori per corso):
+
+```bash
+# 1. Ferma l'app (il db resta attivo)
+docker compose stop backend frontend
+
+# 2. Scompatta il backup più recente
+gunzip -k backup/postgres/daily/fullprojectstudio-AAAAMMGG.sql.gz
+
+# 3. Ricrea il database da zero
+docker compose exec db psql -U fullprojectstudio -d postgres -c "DROP DATABASE fullprojectstudio;"
+docker compose exec db psql -U fullprojectstudio -d postgres -c "CREATE DATABASE fullprojectstudio OWNER fullprojectstudio;"
+
+# 4. Ripristina
+docker compose exec -T db psql -U fullprojectstudio -d fullprojectstudio < backup/postgres/daily/fullprojectstudio-AAAAMMGG.sql
+
+# 5. Riavvia l'app
+docker compose start backend frontend
+```
+
 ## Configurazione principale
 
 | Variabile | Descrizione | Default |
