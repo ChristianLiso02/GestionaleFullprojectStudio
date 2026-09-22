@@ -24,6 +24,9 @@ function renderCorsoInfo(c) {
       <div class="field"><label>Prezzo mensile</label><div>${c.prezzoMensile != null ? formatEuro(c.prezzoMensile) : "-"}</div></div>
       <div class="field"><label>Stato</label><div><span class="pill ${c.attivo ? "pill-success" : "pill-muted"}">${c.attivo ? "Attivo" : "Inattivo"}</span></div></div>
     </div>
+    <div class="row2">
+      <div class="field"><label>Posti occupati</label><div>${formatPosti(c.iscrittiAttivi, c.capienzaMax)}</div></div>
+    </div>
   `;
 }
 

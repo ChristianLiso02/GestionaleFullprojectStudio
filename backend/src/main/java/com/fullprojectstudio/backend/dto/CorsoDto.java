@@ -33,6 +33,7 @@ public class CorsoDto {
     private LocalTime orarioInizio;
     private LocalTime orarioFine;
     private Integer capienzaMax;
+    private int iscrittiAttivi;
     private BigDecimal prezzoMensile;
     private LocalDate dataInizio;
     private LocalDate dataFine;

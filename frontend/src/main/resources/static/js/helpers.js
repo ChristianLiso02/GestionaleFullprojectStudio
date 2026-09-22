@@ -73,6 +73,14 @@ async function initSelettoreStagione(selectId, onChange) {
   }
 }
 
+function formatPosti(iscrittiAttivi, capienzaMax) {
+  if (capienzaMax == null) return String(iscrittiAttivi ?? 0);
+  const pieno = (iscrittiAttivi ?? 0) >= capienzaMax;
+  return pieno
+    ? `<span class="pill pill-danger">${iscrittiAttivi}/${capienzaMax} pieno</span>`
+    : `${iscrittiAttivi}/${capienzaMax}`;
+}
+
 function pillClass(stato) {
   const map = {
     "ATTIVA": "pill-success", "ATTIVO": "pill-success", "PAGATO": "pill-success",

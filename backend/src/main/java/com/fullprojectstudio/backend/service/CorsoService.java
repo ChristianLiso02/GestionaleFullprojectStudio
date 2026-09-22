@@ -6,7 +6,9 @@ import com.fullprojectstudio.backend.model.Corso;
 import com.fullprojectstudio.backend.model.Istruttore;
 import com.fullprojectstudio.backend.model.Sala;
 import com.fullprojectstudio.backend.model.Stagione;
+import com.fullprojectstudio.backend.model.StatoIscrizione;
 import com.fullprojectstudio.backend.repository.CorsoRepository;
+import com.fullprojectstudio.backend.repository.IscrizioneRepository;
 import com.fullprojectstudio.backend.repository.IstruttoreRepository;
 import com.fullprojectstudio.backend.repository.SalaRepository;
 import com.fullprojectstudio.backend.repository.StagioneRepository;
@@ -29,6 +31,7 @@ public class CorsoService {
     private final IstruttoreRepository istruttoreRepository;
     private final SalaRepository salaRepository;
     private final StagioneRepository stagioneRepository;
+    private final IscrizioneRepository iscrizioneRepository;
 
     public List<CorsoDto> findAll() {
         return corsoRepository.findAll().stream().map(this::toDto).toList();
@@ -127,6 +130,7 @@ public class CorsoService {
                 .orarioInizio(c.getOrarioInizio())
                 .orarioFine(c.getOrarioFine())
                 .capienzaMax(c.getCapienzaMax())
+                .iscrittiAttivi((int) iscrizioneRepository.countByCorsoIdAndStato(c.getId(), StatoIscrizione.ATTIVA))
                 .prezzoMensile(c.getPrezzoMensile())
                 .dataInizio(c.getDataInizio())
                 .dataFine(c.getDataFine())

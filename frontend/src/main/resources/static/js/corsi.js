@@ -17,7 +17,7 @@ async function loadCorsi() {
 function renderCorsi() {
   const body = document.getElementById("corsiBody");
   body.innerHTML = corsiCache.length === 0
-    ? `<tr><td colspan="9" class="empty-state">Nessun corso registrato.</td></tr>`
+    ? `<tr><td colspan="10" class="empty-state">Nessun corso registrato.</td></tr>`
     : corsiCache.map(c => `
         <tr>
           <td><a href="corso-dettaglio.html?id=${c.id}"><b>${escapeHtml(c.nome)}</b></a></td>
@@ -26,6 +26,7 @@ function renderCorsi() {
           <td>${escapeHtml((c.istruttoriNomi || []).join(" + ")) || "-"}</td>
           <td>${escapeHtml(c.salaNome) || "-"}</td>
           <td>${(c.giorniSettimana || []).map(g => GIORNI_LABEL[g]).join(" · ")}<br>${c.orarioInizio || ""} - ${c.orarioFine || ""}</td>
+          <td>${formatPosti(c.iscrittiAttivi, c.capienzaMax)}</td>
           <td>${c.prezzoMensile != null ? formatEuro(c.prezzoMensile) : "-"}</td>
           <td><span class="pill ${c.attivo ? "pill-success" : "pill-muted"}">${c.attivo ? "Attivo" : "Inattivo"}</span></td>
           <td class="cell-actions">
