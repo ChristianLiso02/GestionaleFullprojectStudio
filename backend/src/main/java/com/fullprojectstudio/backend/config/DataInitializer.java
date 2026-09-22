@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     private final IstruttoreRepository istruttoreRepository;
     private final TipoAbbonamentoRepository tipoAbbonamentoRepository;
     private final CorsoRepository corsoRepository;
+    private final StagioneRepository stagioneRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.admin.username}")
@@ -64,6 +66,24 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
         }
 
+        // Garantisce che esista sempre una stagione corrente: se manca (primo avvio in assoluto,
+        // o aggiornamento di un'installazione creata prima dell'introduzione delle stagioni),
+        // ne crea una col nome calcolato dalla data odierna.
+        Stagione stagioneCorrente = stagioneRepository.findByCorrenteTrue()
+                .orElseGet(() -> stagioneRepository.save(Stagione.builder()
+                        .nome(calcolaNomeStagioneCorrente())
+                        .corrente(true)
+                        .build()));
+
+        // Backfill: eventuali corsi già esistenti (creati prima di questa funzionalità)
+        // senza stagione assegnata vengono agganciati a quella corrente.
+        corsoRepository.findAll().stream()
+                .filter(c -> c.getStagione() == null)
+                .forEach(c -> {
+                    c.setStagione(stagioneCorrente);
+                    corsoRepository.save(c);
+                });
+
         if (salaRepository.count() == 0) {
             Sala salaA = salaRepository.save(Sala.builder().nome("Sala Rossa").capienza(25).note("Sala principale con specchi").build());
             Sala salaB = salaRepository.save(Sala.builder().nome("Sala Nera").capienza(15).note("Sala per lezioni private").build());
@@ -95,17 +115,23 @@ public class DataInitializer implements CommandLineRunner {
 
             corsoRepository.save(Corso.builder()
                     .nome("Salsa Cubana Base").stile(StileBallo.SALSA_CUBANA).livello(Livello.BASE)
-                    .istruttori(Set.of(m1, m2)).sala(salaA)
+                    .istruttori(Set.of(m1, m2)).sala(salaA).stagione(stagioneCorrente)
                     .giorniSettimana(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
                     .orarioInizio(LocalTime.of(19, 0)).orarioFine(LocalTime.of(20, 0))
                     .capienzaMax(25).prezzoMensile(new BigDecimal("60.00")).attivo(true).build());
 
             corsoRepository.save(Corso.builder()
                     .nome("Bachata Intermedio").stile(StileBallo.BACHATA).livello(Livello.INTERMEDIO)
-                    .istruttori(Set.of(m2)).sala(salaB)
+                    .istruttori(Set.of(m2)).sala(salaB).stagione(stagioneCorrente)
                     .giorniSettimana(Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY))
                     .orarioInizio(LocalTime.of(20, 0)).orarioFine(LocalTime.of(21, 0))
                     .capienzaMax(15).prezzoMensile(new BigDecimal("60.00")).attivo(true).build());
         }
+    }
+
+    private String calcolaNomeStagioneCorrente() {
+        LocalDate oggi = LocalDate.now();
+        int anno = oggi.getYear();
+        return oggi.getMonthValue() >= 9 ? anno + "/" + (anno + 1) : (anno - 1) + "/" + anno;
     }
 }

@@ -13,4 +13,6 @@ public interface IscrizioneRepository extends JpaRepository<Iscrizione, Long> {
     List<Iscrizione> findByStato(StatoIscrizione stato);
     List<Iscrizione> findByStatoAndDataScadenzaBetween(StatoIscrizione stato, LocalDate da, LocalDate a);
     long countByCorsoIdAndStato(Long corsoId, StatoIscrizione stato);
+    List<Iscrizione> findByCorso_StagioneId(Long stagioneId);
+    long countByCorso_StagioneIdAndStato(Long stagioneId, StatoIscrizione stato);
 }

@@ -9,6 +9,7 @@ const NAV_ITEMS = [
     { view: "presenze", href: "presenze.html", label: "Presenze" }
   ]},
   { group: "Organizzazione", items: [
+    { view: "stagioni", href: "stagioni.html", label: "Stagioni" },
     { view: "corsi", href: "corsi.html", label: "Corsi" },
     { view: "istruttori", href: "istruttori.html", label: "Istruttori" },
     { view: "sale", href: "sale.html", label: "Sale" },

@@ -27,6 +27,8 @@ public class CorsoDto {
     private List<String> istruttoriNomi;
     private Long salaId;
     private String salaNome;
+    private Long stagioneId;
+    private String stagioneNome;
     private Set<DayOfWeek> giorniSettimana;
     private LocalTime orarioInizio;
     private LocalTime orarioFine;

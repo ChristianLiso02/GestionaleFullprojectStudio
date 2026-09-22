@@ -57,6 +57,22 @@ function clearAllFieldErrors(form) {
   form.querySelectorAll(".field-error-msg").forEach(el => el.remove());
 }
 
+async function initSelettoreStagione(selectId, onChange) {
+  const select = document.getElementById(selectId);
+  try {
+    const stagioni = await api.get("/api/stagioni");
+    select.innerHTML = stagioni.map(s =>
+      `<option value="${s.id}">${escapeHtml(s.nome)}${s.corrente ? " (corrente)" : ""}</option>`
+    ).join("");
+    const corrente = stagioni.find(s => s.corrente);
+    if (corrente) select.value = corrente.id;
+    select.addEventListener("change", () => onChange(select.value ? parseInt(select.value) : null));
+    onChange(select.value ? parseInt(select.value) : null);
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
 function pillClass(stato) {
   const map = {
     "ATTIVA": "pill-success", "ATTIVO": "pill-success", "PAGATO": "pill-success",

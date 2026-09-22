@@ -1,10 +1,13 @@
 const GIORNI_LABEL = { MONDAY: "Lun", TUESDAY: "Mar", WEDNESDAY: "Mer", THURSDAY: "Gio", FRIDAY: "Ven", SATURDAY: "Sab", SUNDAY: "Dom" };
 
 let corsiCache = [];
+let stagioneSelezionata = null;
 
 async function loadCorsi() {
   try {
-    corsiCache = await api.get("/api/corsi");
+    corsiCache = stagioneSelezionata
+      ? await api.get(`/api/corsi?stagioneId=${stagioneSelezionata}`)
+      : await api.get("/api/corsi");
     renderCorsi();
   } catch (err) {
     showError(err.message);
@@ -42,4 +45,7 @@ async function eliminaCorso(id) {
   } catch (err) { showError(err.message); }
 }
 
-loadCorsi();
+initSelettoreStagione("stagioneSelect", (id) => {
+  stagioneSelezionata = id;
+  loadCorsi();
+});

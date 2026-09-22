@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class DashboardStatsDto {
+    private String stagioneCorrenteNome;
     private long studentiAttivi;
     private long corsiAttivi;
     private long iscrizioniAttive;

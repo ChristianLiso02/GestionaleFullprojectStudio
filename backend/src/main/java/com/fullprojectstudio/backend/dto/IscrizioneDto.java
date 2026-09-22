@@ -18,6 +18,7 @@ public class IscrizioneDto {
     private String studenteNomeCompleto;
     private Long corsoId;
     private String corsoNome;
+    private String stagioneNome;
     private Long tipoAbbonamentoId;
     private String tipoAbbonamentoNome;
     private LocalDate dataIscrizione;

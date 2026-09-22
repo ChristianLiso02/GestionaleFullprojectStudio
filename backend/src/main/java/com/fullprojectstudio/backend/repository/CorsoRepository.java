@@ -8,4 +8,6 @@ import java.util.List;
 public interface CorsoRepository extends JpaRepository<Corso, Long> {
     List<Corso> findByAttivoTrue();
     List<Corso> findByIstruttoriId(Long istruttoreId);
+    List<Corso> findByStagioneId(Long stagioneId);
+    long countByStagioneIdAndAttivoTrue(Long stagioneId);
 }

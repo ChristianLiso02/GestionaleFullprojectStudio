@@ -18,7 +18,10 @@ public class CorsoController {
     private final CorsoService corsoService;
 
     @GetMapping
-    public List<CorsoDto> findAll() {
+    public List<CorsoDto> findAll(@RequestParam(required = false) Long stagioneId) {
+        if (stagioneId != null) {
+            return corsoService.findByStagione(stagioneId);
+        }
         return corsoService.findAll();
     }
 

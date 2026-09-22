@@ -1,8 +1,11 @@
 let iscrizioniCache = [];
+let stagioneSelezionata = null;
 
 async function loadIscrizioni() {
   try {
-    iscrizioniCache = await api.get("/api/iscrizioni");
+    iscrizioniCache = stagioneSelezionata
+      ? await api.get(`/api/iscrizioni?stagioneId=${stagioneSelezionata}`)
+      : await api.get("/api/iscrizioni");
     renderIscrizioni();
   } catch (err) {
     showError(err.message);
@@ -37,4 +40,7 @@ async function eliminaIscrizione(id) {
   } catch (err) { showError(err.message); }
 }
 
-loadIscrizioni();
+initSelettoreStagione("stagioneSelect", (id) => {
+  stagioneSelezionata = id;
+  loadIscrizioni();
+});

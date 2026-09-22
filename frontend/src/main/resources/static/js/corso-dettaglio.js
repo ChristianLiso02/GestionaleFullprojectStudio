@@ -18,6 +18,9 @@ function renderCorsoInfo(c) {
       <div class="field"><label>Orario</label><div>${giorni || "-"} ${c.orarioInizio || ""} - ${c.orarioFine || ""}</div></div>
     </div>
     <div class="row2">
+      <div class="field"><label>Stagione</label><div>${escapeHtml(c.stagioneNome) || "-"}</div></div>
+    </div>
+    <div class="row2">
       <div class="field"><label>Prezzo mensile</label><div>${c.prezzoMensile != null ? formatEuro(c.prezzoMensile) : "-"}</div></div>
       <div class="field"><label>Stato</label><div><span class="pill ${c.attivo ? "pill-success" : "pill-muted"}">${c.attivo ? "Attivo" : "Inattivo"}</span></div></div>
     </div>

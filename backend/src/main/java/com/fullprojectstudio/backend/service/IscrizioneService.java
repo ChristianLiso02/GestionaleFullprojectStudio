@@ -40,6 +40,10 @@ public class IscrizioneService {
         return iscrizioneRepository.findByCorsoId(corsoId).stream().map(this::toDto).toList();
     }
 
+    public List<IscrizioneDto> findByStagione(Long stagioneId) {
+        return iscrizioneRepository.findByCorso_StagioneId(stagioneId).stream().map(this::toDto).toList();
+    }
+
     public List<IscrizioneDto> findInScadenza(int giorni) {
         LocalDate oggi = LocalDate.now();
         return iscrizioneRepository.findByStatoAndDataScadenzaBetween(StatoIscrizione.ATTIVA, oggi, oggi.plusDays(giorni))
@@ -124,6 +128,7 @@ public class IscrizioneService {
                 .studenteNomeCompleto(i.getStudente().getNome() + " " + i.getStudente().getCognome())
                 .corsoId(i.getCorso().getId())
                 .corsoNome(i.getCorso().getNome())
+                .stagioneNome(i.getCorso().getStagione() != null ? i.getCorso().getStagione().getNome() : null)
                 .tipoAbbonamentoId(i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().getId() : null)
                 .tipoAbbonamentoNome(i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().getNome() : null)
                 .dataIscrizione(i.getDataIscrizione())

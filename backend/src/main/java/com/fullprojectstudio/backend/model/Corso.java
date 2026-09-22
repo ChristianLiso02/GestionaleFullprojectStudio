@@ -49,6 +49,13 @@ public class Corso {
     @JoinColumn(name = "sala_id")
     private Sala sala;
 
+    // Nullable a livello di schema per compatibilità con installazioni esistenti
+    // (DataInitializer assegna automaticamente una stagione ai corsi che non ce l'hanno).
+    // Il vincolo "sempre presente" è applicato a livello applicativo in CorsoService.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stagione_id")
+    private Stagione stagione;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "corso_giorni", joinColumns = @JoinColumn(name = "corso_id"))
     @Enumerated(EnumType.STRING)

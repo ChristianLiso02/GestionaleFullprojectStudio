@@ -5,9 +5,11 @@ import com.fullprojectstudio.backend.exception.ResourceNotFoundException;
 import com.fullprojectstudio.backend.model.Corso;
 import com.fullprojectstudio.backend.model.Istruttore;
 import com.fullprojectstudio.backend.model.Sala;
+import com.fullprojectstudio.backend.model.Stagione;
 import com.fullprojectstudio.backend.repository.CorsoRepository;
 import com.fullprojectstudio.backend.repository.IstruttoreRepository;
 import com.fullprojectstudio.backend.repository.SalaRepository;
+import com.fullprojectstudio.backend.repository.StagioneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +28,14 @@ public class CorsoService {
     private final CorsoRepository corsoRepository;
     private final IstruttoreRepository istruttoreRepository;
     private final SalaRepository salaRepository;
+    private final StagioneRepository stagioneRepository;
 
     public List<CorsoDto> findAll() {
         return corsoRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    public List<CorsoDto> findByStagione(Long stagioneId) {
+        return corsoRepository.findByStagioneId(stagioneId).stream().map(this::toDto).toList();
     }
 
     public CorsoDto findById(Long id) {
@@ -84,6 +91,16 @@ public class CorsoService {
         } else {
             corso.setSala(null);
         }
+
+        Long stagioneId = dto.getStagioneId();
+        if (stagioneId != null) {
+            Stagione stagione = stagioneRepository.findById(stagioneId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Stagione non trovata: " + stagioneId));
+            corso.setStagione(stagione);
+        } else if (corso.getStagione() == null) {
+            // Nessuna stagione specificata su un corso nuovo: default alla stagione corrente.
+            stagioneRepository.findByCorrenteTrue().ifPresent(corso::setStagione);
+        }
     }
 
     private Corso getEntity(Long id) {
@@ -104,6 +121,8 @@ public class CorsoService {
                 .istruttoriNomi(istruttoriOrdinati.stream().map(i -> i.getNome() + " " + i.getCognome()).toList())
                 .salaId(c.getSala() != null ? c.getSala().getId() : null)
                 .salaNome(c.getSala() != null ? c.getSala().getNome() : null)
+                .stagioneId(c.getStagione() != null ? c.getStagione().getId() : null)
+                .stagioneNome(c.getStagione() != null ? c.getStagione().getNome() : null)
                 .giorniSettimana(c.getGiorniSettimana())
                 .orarioInizio(c.getOrarioInizio())
                 .orarioFine(c.getOrarioFine())

@@ -2,6 +2,11 @@
   try {
     const stats = await api.get("/api/dashboard/stats");
 
+    if (stats.stagioneCorrenteNome) {
+      const sub = document.querySelector("#topbar-container .sub");
+      if (sub) sub.textContent = `Panoramica della scuola — Stagione ${stats.stagioneCorrenteNome}`;
+    }
+
     const cards = [
       { num: stats.studentiAttivi, lbl: "Studenti attivi" },
       { num: stats.corsiAttivi, lbl: "Corsi attivi" },

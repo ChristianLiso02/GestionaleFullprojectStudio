@@ -14,7 +14,7 @@ function fillSelectOptions() {
 }
 
 async function loadLookups() {
-  const [istruttori, sale] = await Promise.all([api.get("/api/istruttori"), api.get("/api/sale")]);
+  const [istruttori, sale, stagioni] = await Promise.all([api.get("/api/istruttori"), api.get("/api/sale"), api.get("/api/stagioni")]);
   [document.getElementById("fIstruttore1"), document.getElementById("fIstruttore2")].forEach(sel => {
     istruttori.forEach(i => {
       const opt = document.createElement("option");
@@ -30,6 +30,10 @@ async function loadLookups() {
     opt.textContent = s.nome;
     salaSel.appendChild(opt);
   });
+  const stagioneSel = document.getElementById("fStagione");
+  stagioneSel.innerHTML = stagioni.map(s => `<option value="${s.id}">${escapeHtml(s.nome)}${s.corrente ? " (corrente)" : ""}</option>`).join("");
+  const corrente = stagioni.find(s => s.corrente);
+  if (corrente) stagioneSel.value = corrente.id;
 }
 
 function fillForm(c) {
@@ -40,6 +44,7 @@ function fillForm(c) {
   document.getElementById("fIstruttore1").value = istruttoriIds[0] || "";
   document.getElementById("fIstruttore2").value = istruttoriIds[1] || "";
   document.getElementById("fSala").value = c.salaId || "";
+  if (c.stagioneId) document.getElementById("fStagione").value = c.stagioneId;
   document.getElementById("fCapienza").value = c.capienzaMax ?? "";
   document.getElementById("fOrarioInizio").value = c.orarioInizio || "";
   document.getElementById("fOrarioFine").value = c.orarioFine || "";
@@ -60,6 +65,7 @@ function readForm() {
       .map(v => parseInt(v))
       .filter((v, idx, arr) => arr.indexOf(v) === idx),
     salaId: document.getElementById("fSala").value ? parseInt(document.getElementById("fSala").value) : null,
+    stagioneId: document.getElementById("fStagione").value ? parseInt(document.getElementById("fStagione").value) : null,
     capienzaMax: document.getElementById("fCapienza").value ? parseInt(document.getElementById("fCapienza").value) : null,
     orarioInizio: document.getElementById("fOrarioInizio").value || null,
     orarioFine: document.getElementById("fOrarioFine").value || null,

@@ -20,12 +20,16 @@ public class IscrizioneController {
     @GetMapping
     public List<IscrizioneDto> findAll(@RequestParam(required = false) Long studenteId,
                                         @RequestParam(required = false) Long corsoId,
+                                        @RequestParam(required = false) Long stagioneId,
                                         @RequestParam(required = false) Integer inScadenzaGiorni) {
         if (studenteId != null) {
             return iscrizioneService.findByStudente(studenteId);
         }
         if (corsoId != null) {
             return iscrizioneService.findByCorso(corsoId);
+        }
+        if (stagioneId != null) {
+            return iscrizioneService.findByStagione(stagioneId);
         }
         if (inScadenzaGiorni != null) {
             return iscrizioneService.findInScadenza(inScadenzaGiorni);
