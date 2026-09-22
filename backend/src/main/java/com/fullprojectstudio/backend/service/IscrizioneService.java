@@ -75,6 +75,11 @@ public class IscrizioneService {
         Corso corso = corsoRepository.findById(dto.getCorsoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Corso non trovato: " + dto.getCorsoId()));
 
+        StatoIscrizione statoPrecedente = iscrizione.getStato();
+        Long corsoPrecedenteId = iscrizione.getCorso() != null ? iscrizione.getCorso().getId() : null;
+        StatoIscrizione statoNuovo = dto.getStato() != null ? dto.getStato() : StatoIscrizione.ATTIVA;
+        verificaCapienza(corso, statoNuovo, statoPrecedente, corsoPrecedenteId);
+
         iscrizione.setStudente(studente);
         iscrizione.setCorso(corso);
 
@@ -92,6 +97,19 @@ public class IscrizioneService {
         iscrizione.setDataScadenza(dto.getDataScadenza());
         iscrizione.setStato(dto.getStato() != null ? dto.getStato() : StatoIscrizione.ATTIVA);
         iscrizione.setNote(dto.getNote());
+    }
+
+    private void verificaCapienza(Corso corso, StatoIscrizione statoNuovo, StatoIscrizione statoPrecedente, Long corsoPrecedenteId) {
+        if (statoNuovo != StatoIscrizione.ATTIVA || corso.getCapienzaMax() == null) return;
+
+        boolean giaOccupavaUnPosto = statoPrecedente == StatoIscrizione.ATTIVA && corso.getId().equals(corsoPrecedenteId);
+        if (giaOccupavaUnPosto) return;
+
+        long attivi = iscrizioneRepository.countByCorsoIdAndStato(corso.getId(), StatoIscrizione.ATTIVA);
+        if (attivi >= corso.getCapienzaMax()) {
+            throw new IllegalArgumentException("Capienza massima del corso raggiunta (" + corso.getCapienzaMax()
+                    + " iscritti attivi). Segna un'iscrizione come scaduta o annullata prima di aggiungerne un'altra.");
+        }
     }
 
     private Iscrizione getEntity(Long id) {

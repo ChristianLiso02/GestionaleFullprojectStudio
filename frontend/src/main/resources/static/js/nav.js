@@ -52,6 +52,7 @@ function renderNav(activeView, pageTitle, pageSub) {
         <div class="user-chip">
           <div class="avatar">${initials}</div>
           <div class="who"><b>${user.nome || ""} ${user.cognome || ""}</b><span>ruolo ${user.ruolo || ""}</span></div>
+          <a class="btn btn-ghost btn-sm" href="cambia-password.html">Cambia password</a>
           <button class="btn btn-ghost btn-sm" onclick="logout()">Esci</button>
         </div>
       </div>
