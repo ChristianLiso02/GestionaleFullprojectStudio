@@ -1,7 +1,9 @@
 package com.fullprojectstudio.backend.dto;
 
+import com.fullprojectstudio.backend.model.Sesso;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +24,9 @@ public class StudenteDto {
 
     @NotBlank(message = "Il cognome è obbligatorio")
     private String cognome;
+
+    @NotNull(message = "Indica se lo studente è uomo o donna")
+    private Sesso sesso;
 
     @Pattern(regexp = "^$|^[A-Za-z]{6}[0-9]{2}[A-Za-z][0-9]{2}[A-Za-z][0-9]{3}[A-Za-z]$",
             message = "Codice fiscale non valido")

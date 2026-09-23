@@ -80,7 +80,7 @@ public class BackupExcelService {
     }
 
     private void scriviStudenti(Workbook wb, CellStyle headerStyle) {
-        String[] headers = {"ID", "Nome", "Cognome", "Codice fiscale", "Data nascita", "Telefono", "Email",
+        String[] headers = {"ID", "Nome", "Cognome", "Sesso", "Codice fiscale", "Data nascita", "Telefono", "Email",
                 "Indirizzo", "Contatto emergenza", "Note mediche", "Data iscrizione", "Attivo"};
         List<Studente> studenti = studenteRepository.findAll();
         Sheet sheet = nuovoSheet(wb, "Studenti", headers, headerStyle);
@@ -91,6 +91,7 @@ public class BackupExcelService {
             set(row, c++, s.getId());
             set(row, c++, s.getNome());
             set(row, c++, s.getCognome());
+            set(row, c++, s.getSesso() == Sesso.UOMO ? "Uomo" : s.getSesso() == Sesso.DONNA ? "Donna" : "");
             set(row, c++, s.getCodiceFiscale());
             set(row, c++, formatta(s.getDataNascita()));
             set(row, c++, s.getTelefono());

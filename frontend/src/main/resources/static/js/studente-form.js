@@ -3,6 +3,7 @@ const studenteId = new URLSearchParams(window.location.search).get("id");
 function fillForm(s) {
   document.getElementById("fNome").value = s.nome || "";
   document.getElementById("fCognome").value = s.cognome || "";
+  document.querySelectorAll('input[name="sesso"]').forEach(r => { r.checked = r.value === s.sesso; });
   document.getElementById("fCf").value = s.codiceFiscale || "";
   document.getElementById("fNascita").value = s.dataNascita || "";
   document.getElementById("fTelefono").value = s.telefono || "";
@@ -18,6 +19,7 @@ function readForm() {
   return {
     nome: document.getElementById("fNome").value.trim(),
     cognome: document.getElementById("fCognome").value.trim(),
+    sesso: document.querySelector('input[name="sesso"]:checked')?.value || null,
     codiceFiscale: document.getElementById("fCf").value.trim().toUpperCase(),
     dataNascita: document.getElementById("fNascita").value || null,
     telefono: document.getElementById("fTelefono").value.trim(),
@@ -50,6 +52,7 @@ function validaForm(dto) {
 
   if (!dto.nome) { setFieldError("fNome", "Il nome è obbligatorio."); ok = false; }
   if (!dto.cognome) { setFieldError("fCognome", "Il cognome è obbligatorio."); ok = false; }
+  if (!dto.sesso) { setFieldError("fSesso", "Indica se lo studente è uomo o donna."); ok = false; }
 
   const errCf = validateCodiceFiscale(dto.codiceFiscale);
   if (errCf) { setFieldError("fCf", errCf); ok = false; }

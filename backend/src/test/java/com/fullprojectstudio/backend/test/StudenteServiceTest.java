@@ -1,6 +1,7 @@
 package com.fullprojectstudio.backend.test;
 
 import com.fullprojectstudio.backend.dto.StudenteDto;
+import com.fullprojectstudio.backend.model.Sesso;
 import com.fullprojectstudio.backend.model.Studente;
 import com.fullprojectstudio.backend.repository.StudenteRepository;
 import com.fullprojectstudio.backend.service.StudenteService;
@@ -50,5 +51,15 @@ class StudenteServiceTest {
         ArgumentCaptor<Studente> captor = ArgumentCaptor.forClass(Studente.class);
         verify(studenteRepository).save(captor.capture());
         assertThat(captor.getValue().getCodiceFiscale()).isEqualTo("RSSMRA80A01H501U");
+    }
+
+    @Test
+    void salvaIlSessoDelloStudente() {
+        when(studenteRepository.save(any(Studente.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        StudenteDto risultato = studenteService.create(StudenteDto.builder()
+                .nome("Anna").cognome("Verdi").sesso(Sesso.DONNA).attivo(true).build());
+
+        assertThat(risultato.getSesso()).isEqualTo(Sesso.DONNA);
     }
 }

@@ -34,6 +34,8 @@ public class CorsoDto {
     private LocalTime orarioFine;
     private Integer capienzaMax;
     private int iscrittiAttivi;
+    private int iscrittiUomini;
+    private int iscrittiDonne;
     private BigDecimal prezzoMensile;
     private LocalDate dataInizio;
     private LocalDate dataFine;

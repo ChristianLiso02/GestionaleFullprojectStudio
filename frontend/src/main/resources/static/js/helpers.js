@@ -81,6 +81,21 @@ function formatPosti(iscrittiAttivi, capienzaMax) {
     : `${iscrittiAttivi}/${capienzaMax}`;
 }
 
+function formatUominiDonne(uomini, donne, totale) {
+  const u = uomini ?? 0;
+  const d = donne ?? 0;
+  const nd = Math.max((totale ?? 0) - u - d, 0);
+  const ndHtml = nd > 0 ? `<div class="bilancia-nd">+${nd} non specificati</div>` : "";
+  if (u + d === 0) return nd > 0 ? ndHtml : "-";
+  const pu = Math.round((u * 100) / (u + d));
+  return `
+    <div class="bilancia" title="${u} uomini (${pu}%), ${d} donne (${100 - pu}%)">
+      <div class="bilancia-testo"><span class="u">U ${u}</span><span class="d">D ${d}</span></div>
+      <div class="bilancia-barra"><span class="u" style="width:${pu}%"></span><span class="d" style="width:${100 - pu}%"></span></div>
+      ${ndHtml}
+    </div>`;
+}
+
 function pillClass(stato) {
   const map = {
     "ATTIVA": "pill-success", "ATTIVO": "pill-success", "PAGATO": "pill-success",

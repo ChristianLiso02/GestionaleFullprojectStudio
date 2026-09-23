@@ -4,6 +4,7 @@ import com.fullprojectstudio.backend.dto.CorsoDto;
 import com.fullprojectstudio.backend.model.Corso;
 import com.fullprojectstudio.backend.model.Istruttore;
 import com.fullprojectstudio.backend.model.Livello;
+import com.fullprojectstudio.backend.model.Sesso;
 import com.fullprojectstudio.backend.model.StatoIscrizione;
 import com.fullprojectstudio.backend.model.StileBallo;
 import com.fullprojectstudio.backend.repository.CorsoRepository;
@@ -89,5 +90,21 @@ class CorsoServiceTest {
         CorsoDto risultato = corsoService.create(dto(List.of()));
 
         assertThat(risultato.getIscrittiAttivi()).isEqualTo(18);
+    }
+
+    @Test
+    void popolaIlConteggioUominiDonneDegliIscrittiAttivi() {
+        when(corsoRepository.save(any(Corso.class))).thenAnswer(inv -> {
+            Corso c = inv.getArgument(0);
+            c.setId(7L);
+            return c;
+        });
+        when(iscrizioneRepository.countByCorsoIdAndStatoAndStudente_Sesso(7L, StatoIscrizione.ATTIVA, Sesso.UOMO)).thenReturn(8L);
+        when(iscrizioneRepository.countByCorsoIdAndStatoAndStudente_Sesso(7L, StatoIscrizione.ATTIVA, Sesso.DONNA)).thenReturn(12L);
+
+        CorsoDto risultato = corsoService.create(dto(List.of()));
+
+        assertThat(risultato.getIscrittiUomini()).isEqualTo(8);
+        assertThat(risultato.getIscrittiDonne()).isEqualTo(12);
     }
 }

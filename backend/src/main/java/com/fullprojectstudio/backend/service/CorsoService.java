@@ -5,6 +5,7 @@ import com.fullprojectstudio.backend.exception.ResourceNotFoundException;
 import com.fullprojectstudio.backend.model.Corso;
 import com.fullprojectstudio.backend.model.Istruttore;
 import com.fullprojectstudio.backend.model.Sala;
+import com.fullprojectstudio.backend.model.Sesso;
 import com.fullprojectstudio.backend.model.Stagione;
 import com.fullprojectstudio.backend.model.StatoIscrizione;
 import com.fullprojectstudio.backend.repository.CorsoRepository;
@@ -131,6 +132,8 @@ public class CorsoService {
                 .orarioFine(c.getOrarioFine())
                 .capienzaMax(c.getCapienzaMax())
                 .iscrittiAttivi((int) iscrizioneRepository.countByCorsoIdAndStato(c.getId(), StatoIscrizione.ATTIVA))
+                .iscrittiUomini((int) iscrizioneRepository.countByCorsoIdAndStatoAndStudente_Sesso(c.getId(), StatoIscrizione.ATTIVA, Sesso.UOMO))
+                .iscrittiDonne((int) iscrizioneRepository.countByCorsoIdAndStatoAndStudente_Sesso(c.getId(), StatoIscrizione.ATTIVA, Sesso.DONNA))
                 .prezzoMensile(c.getPrezzoMensile())
                 .dataInizio(c.getDataInizio())
                 .dataFine(c.getDataFine())

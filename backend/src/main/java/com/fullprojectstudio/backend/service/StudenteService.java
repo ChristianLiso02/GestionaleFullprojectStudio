@@ -40,6 +40,7 @@ public class StudenteService {
         Studente studente = getEntity(id);
         studente.setNome(dto.getNome());
         studente.setCognome(dto.getCognome());
+        studente.setSesso(dto.getSesso());
         studente.setCodiceFiscale(blankToNull(dto.getCodiceFiscale()));
         studente.setDataNascita(dto.getDataNascita());
         studente.setTelefono(dto.getTelefono());
@@ -70,6 +71,7 @@ public class StudenteService {
                 .id(s.getId())
                 .nome(s.getNome())
                 .cognome(s.getCognome())
+                .sesso(s.getSesso())
                 .codiceFiscale(s.getCodiceFiscale())
                 .dataNascita(s.getDataNascita())
                 .telefono(s.getTelefono())
@@ -87,6 +89,7 @@ public class StudenteService {
                 .id(dto.getId())
                 .nome(dto.getNome())
                 .cognome(dto.getCognome())
+                .sesso(dto.getSesso())
                 .codiceFiscale(blankToNull(dto.getCodiceFiscale()))
                 .dataNascita(dto.getDataNascita())
                 .telefono(dto.getTelefono())

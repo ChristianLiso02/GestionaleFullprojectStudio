@@ -12,7 +12,10 @@ function renderStudenteInfo(s) {
       <div class="field"><label>Codice fiscale</label><div>${escapeHtml(s.codiceFiscale) || "-"}</div></div>
     </div>
     <div class="row2">
+      <div class="field"><label>Sesso</label><div>${s.sesso === "UOMO" ? "Uomo" : s.sesso === "DONNA" ? "Donna" : "Non specificato"}</div></div>
       <div class="field"><label>Iscritto dal</label><div>${formatDate(s.dataIscrizione)}</div></div>
+    </div>
+    <div class="row2">
       <div class="field"><label>Stato</label><div><span class="pill ${s.attivo ? "pill-success" : "pill-muted"}">${s.attivo ? "Attivo" : "Inattivo"}</span></div></div>
     </div>
   `;

@@ -27,6 +27,10 @@ public class Studente {
     @Column(nullable = false)
     private String cognome;
 
+    // Nullable a livello di schema: gli studenti inseriti prima di questo campo non ce l'hanno.
+    @Enumerated(EnumType.STRING)
+    private Sesso sesso;
+
     @Column(unique = true)
     private String codiceFiscale;
 

@@ -26,6 +26,7 @@ function renderCorsoInfo(c) {
     </div>
     <div class="row2">
       <div class="field"><label>Posti occupati</label><div>${formatPosti(c.iscrittiAttivi, c.capienzaMax)}</div></div>
+      <div class="field"><label>Uomini / Donne (iscritti attivi)</label><div style="max-width:260px">${formatUominiDonne(c.iscrittiUomini, c.iscrittiDonne, c.iscrittiAttivi)}</div></div>
     </div>
   `;
 }
