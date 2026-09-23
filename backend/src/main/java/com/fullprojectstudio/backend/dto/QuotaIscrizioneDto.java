@@ -20,6 +20,7 @@ public class QuotaIscrizioneDto {
     // DA_RINNOVARE = non ancora pagata ma entro la scadenza; SCADUTO = scadenza passata senza pagamento.
     public enum StatoQuota { SCADUTO, DA_RINNOVARE, PAGATO_IN_RITARDO, PAGATO_IN_TEMPO }
 
+    private YearMonth mese;
     private Long iscrizioneId;
     private Long studenteId;
     private String studenteNomeCompleto;

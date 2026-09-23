@@ -1,6 +1,7 @@
 package com.fullprojectstudio.backend.controller;
 
 import com.fullprojectstudio.backend.dto.PagamentoDto;
+import com.fullprojectstudio.backend.dto.QuotaIscrizioneDto;
 import com.fullprojectstudio.backend.dto.QuoteMeseDto;
 import com.fullprojectstudio.backend.model.StatoPagamento;
 import com.fullprojectstudio.backend.service.PagamentoService;
@@ -26,6 +27,11 @@ public class PagamentoController {
     @GetMapping("/quote")
     public QuoteMeseDto quote(@RequestParam YearMonth mese, @RequestParam(required = false) Long stagioneId) {
         return quoteService.situazione(mese, stagioneId, LocalDate.now());
+    }
+
+    @GetMapping("/quote/scadute")
+    public List<QuotaIscrizioneDto> quoteScaduteStudente(@RequestParam Long studenteId) {
+        return quoteService.scaduteStudente(studenteId, LocalDate.now());
     }
 
     @GetMapping

@@ -4,6 +4,8 @@ const pagamentoId = new URLSearchParams(window.location.search).get("id");
 const studenteIdIniziale = new URLSearchParams(window.location.search).get("studenteId");
 const iscrizioneIdIniziale = new URLSearchParams(window.location.search).get("iscrizioneId");
 const meseIniziale = new URLSearchParams(window.location.search).get("mese");
+// "studente" = aperto dal dettaglio studente: al salvataggio si torna lì invece che alle quote del mese.
+const tornaAlloStudente = new URLSearchParams(window.location.search).get("ritorno") === "studente";
 let iscrizioniStudente = [];
 
 async function loadStudenti() {
@@ -97,7 +99,8 @@ function readForm() {
 async function init() {
   document.getElementById("fData").value = todayISO();
   document.getElementById("fMese").value = meseIniziale || todayISO().slice(0, 7);
-  if (meseIniziale) document.getElementById("linkAnnulla").href = `quote.html?mese=${meseIniziale}`;
+  if (tornaAlloStudente) document.getElementById("linkAnnulla").href = `studente-dettaglio.html?id=${studenteIdIniziale}`;
+  else if (meseIniziale) document.getElementById("linkAnnulla").href = `quote.html?mese=${meseIniziale}`;
   try {
     await loadStudenti();
 
@@ -136,7 +139,9 @@ document.getElementById("pagamentoForm").addEventListener("submit", async (e) =>
     } else {
       await api.post("/api/pagamenti", dto);
     }
-    if (meseIniziale) {
+    if (tornaAlloStudente) {
+      window.location.href = `studente-dettaglio.html?id=${studenteIdIniziale}`;
+    } else if (meseIniziale) {
       window.location.href = `quote.html?mese=${meseIniziale}`;
     } else if (studenteIdIniziale) {
       window.location.href = `studente-dettaglio.html?id=${studenteIdIniziale}`;

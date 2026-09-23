@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.lenient;
@@ -320,5 +321,29 @@ class QuoteServiceTest {
 
         assertThat(settembre.getStato()).isEqualTo(StatoQuota.SCADUTO);
         assertThat(settembre.getDataRitiroProposta()).isEqualTo(LocalDate.of(2026, 8, 1));
+    }
+
+    // ---- quote scadute nel dettaglio studente ----
+
+    @Test
+    void dettaglioStudenteMostraTuttiIMesiScadutiAncheArretratiEDiCorsiLasciati() {
+        Iscrizione attiva = iscrizione(1, mensile, LocalDate.of(2026, 7, 1));
+        Iscrizione lasciata = conRitiri(periodo(LocalDate.of(2026, 9, 20), null));
+        lasciata.setId(2L);
+        lasciata.setStudente(attiva.getStudente());
+        lasciata.setCorso(Corso.builder().id(2L).nome("Bachata").prezzoMensile(new BigDecimal("50")).build());
+        when(iscrizioneRepository.findByStudenteId(1L)).thenReturn(List.of(attiva, lasciata));
+        when(pagamentoRepository.findByIscrizioneIdInAndStato(anyCollection(), any())).thenReturn(List.of(
+                pagamento(attiva, LocalDate.of(2026, 7, 3), LUGLIO, 1),
+                pagamento(attiva, LocalDate.of(2026, 9, 2), YearMonth.of(2026, 9), 1)));
+
+        List<QuotaIscrizioneDto> scadute = quoteService.scaduteStudente(1L, LocalDate.of(2026, 9, 23));
+
+        // Salsa: agosto arretrato (settembre pagato); Bachata: settembre, visto che si è ritirato dopo il 7
+        assertThat(scadute).extracting(QuotaIscrizioneDto::getMese, QuotaIscrizioneDto::getCorsoNome).containsExactly(
+                tuple(YearMonth.of(2026, 8), "Salsa"),
+                tuple(YearMonth.of(2026, 9), "Bachata"));
+        // Ha pagato settembre di Salsa: sta frequentando, l'arretrato di agosto non è un possibile ritiro.
+        assertThat(scadute.get(0).getDataRitiroProposta()).isNull();
     }
 }

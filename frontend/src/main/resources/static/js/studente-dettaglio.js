@@ -71,16 +71,40 @@ function renderPresenze(presenze) {
       `).join("");
 }
 
+function renderQuoteScadute(quote) {
+  const totale = quote.reduce((somma, q) => somma + Number(q.quotaImporto || 0), 0);
+  document.getElementById("totaleScadute").innerHTML = quote.length === 0
+    ? `<span class="pill pill-success">In regola</span>`
+    : `<span class="pill pill-danger">${quote.length} ${quote.length === 1 ? "quota" : "quote"} · ${formatEuro(totale)}</span>`;
+
+  document.getElementById("quoteScaduteBody").innerHTML = quote.length === 0
+    ? `<tr><td colspan="5" class="empty-state">Nessuna quota scaduta.</td></tr>`
+    : quote.map(q => `
+        <tr>
+          <td><b>${formatMese(q.mese)}</b></td>
+          <td>${escapeHtml(q.corsoNome)}${q.statoIscrizione === "RITIRATO" ? `<br><span class="testo-tenue">ritirato dal corso</span>` : ""}</td>
+          <td>${escapeHtml(q.tipoAbbonamentoNome) || "-"}<br><span class="testo-tenue">${formatEuro(q.quotaImporto)}</span></td>
+          <td>${formatDate(q.scadenza)}</td>
+          <td class="cell-actions">
+            <a class="btn btn-accent btn-sm" href="pagamento-form.html?studenteId=${q.studenteId}&iscrizioneId=${q.iscrizioneId}&mese=${q.mese}&ritorno=studente">Registra pagamento</a>
+            ${q.dataRitiroProposta ? `<button class="btn btn-ghost btn-sm" onclick="ritiraIscrizione(${q.iscrizioneId}, '${q.dataRitiroProposta}')">Segna ritirato</button>` : ""}
+          </td>
+        </tr>
+      `).join("");
+}
+
 async function init() {
   if (!studenteDettId) { showError("Studente non specificato."); return; }
   try {
-    const [studente, iscrizioni, pagamenti, presenze] = await Promise.all([
+    const [studente, quoteScadute, iscrizioni, pagamenti, presenze] = await Promise.all([
       api.get(`/api/studenti/${studenteDettId}`),
+      api.get(`/api/pagamenti/quote/scadute?studenteId=${studenteDettId}`),
       api.get(`/api/iscrizioni?studenteId=${studenteDettId}`),
       api.get(`/api/pagamenti?studenteId=${studenteDettId}`),
       api.get(`/api/presenze?studenteId=${studenteDettId}`)
     ]);
     renderStudenteInfo(studente);
+    renderQuoteScadute(quoteScadute);
     renderIscrizioni(iscrizioni);
     renderPagamenti(pagamenti);
     renderPresenze(presenze);

@@ -89,6 +89,33 @@ public class QuoteService {
                 .toList();
     }
 
+    /** Tutte le quote scadute di uno studente, su tutte le sue iscrizioni (anche arretrati e corsi da cui si è ritirato). */
+    public List<QuotaIscrizioneDto> scaduteStudente(Long studenteId, LocalDate oggi) {
+        List<Iscrizione> iscrizioni = iscrizioneRepository.findByStudenteId(studenteId);
+        Map<Long, List<Pagamento>> pagamenti = pagamentiPagati(iscrizioni);
+        YearMonth corrente = YearMonth.from(oggi);
+        YearMonth limite = corrente.minusMonths(MAX_MESI_A_RITROSO - 1L);
+
+        List<QuotaIscrizioneDto> scadute = new ArrayList<>();
+        for (Iscrizione i : iscrizioni) {
+            if (i.getDataIscrizione() == null) {
+                continue;
+            }
+            List<Pagamento> pagamentiIscrizione = pagamenti.getOrDefault(i.getId(), List.of());
+            YearMonth inizio = YearMonth.from(i.getDataIscrizione());
+            for (YearMonth mese = inizio.isBefore(limite) ? limite : inizio; !mese.isAfter(corrente); mese = mese.plusMonths(1)) {
+                if (quotaDovuta(i, mese)) {
+                    QuotaIscrizioneDto riga = riga(i, mese, oggi, pagamentiIscrizione);
+                    if (riga.getStato() == StatoQuota.SCADUTO) {
+                        scadute.add(riga);
+                    }
+                }
+            }
+        }
+        scadute.sort(Comparator.comparing(QuotaIscrizioneDto::getMese).thenComparing(QuotaIscrizioneDto::getCorsoNome));
+        return scadute;
+    }
+
     private Optional<QuotaScadutaDto> quotaScaduta(Iscrizione i, LocalDate oggi, List<Pagamento> pagamenti) {
         List<YearMonth> mesiScaduti = mesiScadutiConsecutivi(i, oggi, pagamenti);
         if (mesiScaduti.isEmpty() || mesiScaduti.size() < mesiScadutiDaVerificare) {
@@ -163,14 +190,18 @@ public class QuoteService {
         LocalDate scadenza = scadenza(mese, i);
         Optional<Pagamento> pagamento = pagamentoCheCopre(pagamenti, mese);
         StatoQuota stato = statoQuota(pagamento, scadenza, oggi);
+        // Proposta di ritiro solo se da quel mese in poi non ha più pagato: chi paga i mesi successivi sta frequentando.
         LocalDate dataRitiroProposta = null;
         if (stato == StatoQuota.SCADUTO && i.getStato() == StatoIscrizione.ATTIVA) {
             List<YearMonth> scaduti = mesiScadutiConsecutivi(i, oggi, pagamenti);
-            dataRitiroProposta = dataRitiroProposta(i, scaduti.isEmpty() ? mese : scaduti.get(0));
+            if (scaduti.contains(mese)) {
+                dataRitiroProposta = dataRitiroProposta(i, scaduti.get(0));
+            }
         }
 
         TipoAbbonamento tipo = i.getTipoAbbonamento();
         return QuotaIscrizioneDto.builder()
+                .mese(mese)
                 .iscrizioneId(i.getId())
                 .studenteId(i.getStudente().getId())
                 .studenteNomeCompleto(i.getStudente().getNome() + " " + i.getStudente().getCognome())
