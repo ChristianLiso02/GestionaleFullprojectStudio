@@ -1,6 +1,7 @@
 const NAV_ITEMS = [
   { group: "Panoramica", items: [
-    { view: "dashboard", href: "dashboard.html", label: "Dashboard" }
+    { view: "dashboard", href: "dashboard.html", label: "Dashboard" },
+    { view: "statistiche", href: "statistiche.html", label: "Statistiche" }
   ]},
   { group: "Segreteria", items: [
     { view: "studenti", href: "studenti.html", label: "Studenti" },

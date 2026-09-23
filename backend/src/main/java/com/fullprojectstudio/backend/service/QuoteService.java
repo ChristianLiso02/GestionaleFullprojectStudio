@@ -116,6 +116,14 @@ public class QuoteService {
         return scadute;
     }
 
+    /** Stato della quota di un mese, vuoto se in quel mese la quota non è dovuta (non ancora iscritto o ritirato). */
+    public Optional<StatoQuota> statoQuotaMese(Iscrizione i, YearMonth mese, LocalDate oggi, List<Pagamento> pagamentiIscrizione) {
+        if (!quotaDovuta(i, mese)) {
+            return Optional.empty();
+        }
+        return Optional.of(statoQuota(pagamentoCheCopre(pagamentiIscrizione, mese), scadenza(mese, i), oggi));
+    }
+
     private Optional<QuotaScadutaDto> quotaScaduta(Iscrizione i, LocalDate oggi, List<Pagamento> pagamenti) {
         List<YearMonth> mesiScaduti = mesiScadutiConsecutivi(i, oggi, pagamenti);
         if (mesiScaduti.isEmpty() || mesiScaduti.size() < mesiScadutiDaVerificare) {

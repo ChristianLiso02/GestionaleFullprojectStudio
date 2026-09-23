@@ -13,4 +13,5 @@ public interface PagamentoRepository extends JpaRepository<Pagamento, Long> {
     List<Pagamento> findByStato(StatoPagamento stato);
     List<Pagamento> findByDataPagamentoBetween(LocalDate da, LocalDate a);
     List<Pagamento> findByIscrizioneIdInAndStato(Collection<Long> iscrizioniIds, StatoPagamento stato);
+    List<Pagamento> findByIscrizioneIsNullAndStatoAndDataPagamentoBetween(StatoPagamento stato, LocalDate da, LocalDate a);
 }

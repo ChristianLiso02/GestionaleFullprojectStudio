@@ -12,6 +12,7 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Presenze** (appello per corso/data)
 - **Quote mensili**: per ogni mese, chi ha pagato in tempo (entro il 7), in ritardo o non ha ancora pagato; il trimestrale copre 3 mesi
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, quote non pagate del mese, pagamenti in sospeso)
+- **Statistiche** mese per mese, per tutta la scuola e per singolo corso: iscritti attivi (uomini/donne), nuove iscrizioni, ritiri e rientri, incassi, puntualità delle quote, con grafici e tabella
 - **Backup Excel automatico** ogni notte, così la segreteria può continuare a lavorare da un file locale anche se il gestionale non fosse raggiungibile (vedi sezione dedicata)
 
 Backend in **Java**, frontend statico (HTML/CSS/JS) — due progetti indipendenti.

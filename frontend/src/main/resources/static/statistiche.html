@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>FullProject Studio - Statistiche</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2 id="titoloStatistiche">Statistiche</h2>
+            <div class="toolbar">
+              <label class="filtro">Stagione <select id="stagioneSelect"></select></label>
+              <label class="filtro">Vista <select id="vistaSelect"></select></label>
+              <label class="filtro">Mese <select id="meseSelect"></select></label>
+            </div>
+          </div>
+          <div class="nota-quote">Iscritti attivi = iscrizioni a cui è dovuta la quota del mese (chi è ritirato non conta). Gli incassi sono per data di pagamento; nella vista "Tutta la scuola" includono anche i pagamenti non legati a un corso.</div>
+        </div>
+
+        <h3 class="kpi-titolo" id="kpiTitolo"></h3>
+        <div class="kpi-grid" id="kpi"></div>
+
+        <div class="grafici-griglia">
+          <div class="panel grafico-card">
+            <div class="panel-head"><h2>Iscritti attivi</h2></div>
+            <div class="grafico-corpo" id="graficoIscritti"></div>
+          </div>
+          <div class="panel grafico-card">
+            <div class="panel-head"><h2>Incassi</h2></div>
+            <div class="grafico-corpo" id="graficoIncassi"></div>
+          </div>
+          <div class="panel grafico-card">
+            <div class="panel-head"><h2>Nuove iscrizioni e ritiri</h2></div>
+            <div class="grafico-corpo" id="graficoMovimenti"></div>
+          </div>
+          <div class="panel grafico-card">
+            <div class="panel-head"><h2>Stato delle quote</h2></div>
+            <div class="grafico-corpo" id="graficoQuote"></div>
+          </div>
+        </div>
+
+        <div class="panel" id="pannelloCorsi">
+          <div class="panel-head"><h2 id="titoloConfronto">Confronto corsi</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Corso</th><th>Iscritti</th><th>Uomini / Donne</th><th>Quote scadute</th><th>Nuove (stagione)</th><th>Ritiri (stagione)</th><th>Incassi (stagione)</th><th>Puntualità (stagione)</th><th></th></tr></thead>
+              <tbody id="corsiBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Mese per mese</h2></div>
+          <div class="table-wrap">
+            <table class="tabella-numeri">
+              <thead id="mesiHead"></thead>
+              <tbody id="mesiBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/grafici.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("statistiche", "Statistiche", "Andamento della scuola mese per mese");
+  </script>
+  <script src="js/statistiche.js"></script>
+</body>
+</html>
