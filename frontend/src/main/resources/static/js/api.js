@@ -37,3 +37,32 @@ const api = {
   put: (path, body) => apiCall(path, { method: "PUT", body }),
   del: (path) => apiCall(path, { method: "DELETE" })
 };
+
+// Scarica un file dal backend (serve il token, quindi non basta un semplice link).
+async function scaricaFile(path, nomeDiRiserva) {
+  const response = await fetch(API_BASE_URL + path, { headers: { "Authorization": "Bearer " + getToken() } });
+  if (response.status === 401) {
+    clearSession();
+    window.location.href = "login.html";
+    return;
+  }
+  if (!response.ok) {
+    const testo = await response.text();
+    let messaggio = "Errore " + response.status;
+    try { messaggio = JSON.parse(testo).message || messaggio; } catch (e) { /* risposta non JSON */ }
+    throw new Error(messaggio);
+  }
+  const disposizione = response.headers.get("Content-Disposition") || "";
+  const utf8 = disposizione.match(/filename\*=UTF-8''([^;]+)/i);
+  const semplice = disposizione.match(/filename="([^"]+)"/i);
+  const nome = utf8 ? decodeURIComponent(utf8[1]) : semplice ? semplice[1] : nomeDiRiserva;
+
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = nome;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}

@@ -97,6 +97,22 @@ async function loadAndamento(corso) {
   }
 }
 
+async function scaricaCorso() {
+  const pulsante = document.getElementById("btnScarica");
+  pulsante.disabled = true;
+  pulsante.textContent = "Preparazione file...";
+  try {
+    await scaricaFile(`/api/corsi/${corsoId}/esporta`, `corso-${corsoId}.xlsx`);
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    pulsante.disabled = false;
+    pulsante.textContent = "Scarica Excel";
+  }
+}
+
+document.getElementById("btnScarica").addEventListener("click", scaricaCorso);
+
 async function init() {
   if (!corsoId) { showError("Corso non specificato."); return; }
   try {

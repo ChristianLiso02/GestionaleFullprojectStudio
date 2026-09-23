@@ -91,7 +91,20 @@ public class QuoteService {
 
     /** Tutte le quote scadute di uno studente, su tutte le sue iscrizioni (anche arretrati e corsi da cui si è ritirato). */
     public List<QuotaIscrizioneDto> scaduteStudente(Long studenteId, LocalDate oggi) {
-        List<Iscrizione> iscrizioni = iscrizioneRepository.findByStudenteId(studenteId);
+        List<QuotaIscrizioneDto> scadute = quoteAperte(iscrizioneRepository.findByStudenteId(studenteId), oggi, false);
+        scadute.sort(Comparator.comparing(QuotaIscrizioneDto::getMese).thenComparing(QuotaIscrizioneDto::getCorsoNome));
+        return scadute;
+    }
+
+    /** Per il backup: tutte le quote scadute della scuola più quelle del mese ancora da rinnovare, per studente. */
+    public List<QuotaIscrizioneDto> quoteDaIncassare(LocalDate oggi) {
+        List<QuotaIscrizioneDto> aperte = quoteAperte(iscrizioneRepository.findAll(), oggi, true);
+        aperte.sort(Comparator.comparing(QuotaIscrizioneDto::getStudenteNomeCompleto, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(QuotaIscrizioneDto::getMese));
+        return aperte;
+    }
+
+    private List<QuotaIscrizioneDto> quoteAperte(List<Iscrizione> iscrizioni, LocalDate oggi, boolean ancheDaRinnovare) {
         Map<Long, List<Pagamento>> pagamenti = pagamentiPagati(iscrizioni);
         YearMonth corrente = YearMonth.from(oggi);
         YearMonth limite = corrente.minusMonths(MAX_MESI_A_RITROSO - 1L);
@@ -106,13 +119,12 @@ public class QuoteService {
             for (YearMonth mese = inizio.isBefore(limite) ? limite : inizio; !mese.isAfter(corrente); mese = mese.plusMonths(1)) {
                 if (quotaDovuta(i, mese)) {
                     QuotaIscrizioneDto riga = riga(i, mese, oggi, pagamentiIscrizione);
-                    if (riga.getStato() == StatoQuota.SCADUTO) {
+                    if (riga.getStato() == StatoQuota.SCADUTO || (ancheDaRinnovare && riga.getStato() == StatoQuota.DA_RINNOVARE)) {
                         scadute.add(riga);
                     }
                 }
             }
         }
-        scadute.sort(Comparator.comparing(QuotaIscrizioneDto::getMese).thenComparing(QuotaIscrizioneDto::getCorsoNome));
         return scadute;
     }
 

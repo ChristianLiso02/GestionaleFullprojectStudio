@@ -1,5 +1,6 @@
 package com.fullprojectstudio.backend.service;
 
+import com.fullprojectstudio.backend.dto.QuotaIscrizioneDto;
 import com.fullprojectstudio.backend.model.*;
 import com.fullprojectstudio.backend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.fullprojectstudio.backend.service.ExcelSupport.*;
+
 /**
  * Genera un backup Excel (anagrafiche complete + movimenti del mese corrente
  * e precedente) su disco, cosi la segreteria puo continuare a lavorare da
@@ -30,8 +33,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BackupExcelService {
 
-    private static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
     private final StudenteRepository studenteRepository;
     private final IstruttoreRepository istruttoreRepository;
     private final SalaRepository salaRepository;
@@ -40,6 +41,8 @@ public class BackupExcelService {
     private final IscrizioneRepository iscrizioneRepository;
     private final PagamentoRepository pagamentoRepository;
     private final PresenzaRepository presenzaRepository;
+    private final StagioneRepository stagioneRepository;
+    private final QuoteService quoteService;
 
     @Value("${app.backup.dir}")
     private String backupDir;
@@ -50,11 +53,13 @@ public class BackupExcelService {
         LocalDate inizioPeriodo = inizioMeseCorrente.minusMonths(1);
 
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            CellStyle headerStyle = creaStileHeader(workbook);
+            CellStyle headerStyle = stileIntestazione(workbook);
 
+            scriviQuoteDaIncassare(workbook, headerStyle, oggi);
             scriviStudenti(workbook, headerStyle);
             scriviIstruttori(workbook, headerStyle);
             scriviSale(workbook, headerStyle);
+            scriviStagioni(workbook, headerStyle);
             scriviCorsi(workbook, headerStyle);
             scriviAbbonamenti(workbook, headerStyle);
             scriviIscrizioni(workbook, headerStyle, inizioPeriodo);
@@ -103,7 +108,7 @@ public class BackupExcelService {
             set(row, c++, formatta(s.getDataIscrizione()));
             set(row, c, s.isAttivo() ? "Si" : "No");
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviIstruttori(Workbook wb, CellStyle headerStyle) {
@@ -123,7 +128,7 @@ public class BackupExcelService {
             set(row, c++, i.getCompensoOrario());
             set(row, c, i.isAttivo() ? "Si" : "No");
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviSale(Workbook wb, CellStyle headerStyle) {
@@ -139,11 +144,11 @@ public class BackupExcelService {
             set(row, c++, s.getCapienza());
             set(row, c, s.getNote());
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviCorsi(Workbook wb, CellStyle headerStyle) {
-        String[] headers = {"ID", "Nome", "Stile", "Livello", "Istruttore", "Sala", "Giorni", "Orario inizio",
+        String[] headers = {"ID", "Nome", "Stagione", "Stile", "Livello", "Istruttore", "Sala", "Giorni", "Orario inizio",
                 "Orario fine", "Capienza max", "Prezzo mensile", "Attivo"};
         List<Corso> corsi = corsoRepository.findAll();
         Sheet sheet = nuovoSheet(wb, "Corsi", headers, headerStyle);
@@ -153,20 +158,21 @@ public class BackupExcelService {
             int c = 0;
             set(row, c++, co.getId());
             set(row, c++, co.getNome());
+            set(row, c++, co.getStagione() != null ? co.getStagione().getNome() : null);
             set(row, c++, co.getStile() != null ? co.getStile().name() : null);
             set(row, c++, co.getLivello() != null ? co.getLivello().name() : null);
             set(row, c++, co.getIstruttori().stream()
                     .map(i -> i.getNome() + " " + i.getCognome())
                     .collect(Collectors.joining(" + ")));
             set(row, c++, co.getSala() != null ? co.getSala().getNome() : null);
-            set(row, c++, co.getGiorniSettimana().stream().map(Enum::name).collect(Collectors.joining(", ")));
+            set(row, c++, giorni(co.getGiorniSettimana()));
             set(row, c++, co.getOrarioInizio() != null ? co.getOrarioInizio().toString() : null);
             set(row, c++, co.getOrarioFine() != null ? co.getOrarioFine().toString() : null);
             set(row, c++, co.getCapienzaMax());
             set(row, c++, co.getPrezzoMensile());
             set(row, c, co.isAttivo() ? "Si" : "No");
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviAbbonamenti(Workbook wb, CellStyle headerStyle) {
@@ -185,7 +191,7 @@ public class BackupExcelService {
             set(row, c++, a.getPrezzo());
             set(row, c, a.isAttivo() ? "Si" : "No");
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviIscrizioni(Workbook wb, CellStyle headerStyle, LocalDate inizioPeriodo) {
@@ -211,7 +217,7 @@ public class BackupExcelService {
                     .collect(Collectors.joining("; ")));
             set(row, c, i.getNote());
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviPagamenti(Workbook wb, CellStyle headerStyle, LocalDate inizioPeriodo, LocalDate oggi) {
@@ -225,7 +231,7 @@ public class BackupExcelService {
             set(row, c++, p.getId());
             set(row, c++, p.getStudente().getNome() + " " + p.getStudente().getCognome());
             set(row, c++, formatta(p.getDataPagamento()));
-            set(row, c++, p.getMeseRiferimento() != null ? YearMonth.from(p.getMeseRiferimento()).toString() : null);
+            set(row, c++, p.getMeseRiferimento() != null ? formatta(YearMonth.from(p.getMeseRiferimento())) : null);
             set(row, c++, p.getMesiCoperti() != null ? p.getMesiCoperti() : 1);
             set(row, c++, p.getImporto());
             set(row, c++, p.getMetodo() != null ? p.getMetodo().name() : null);
@@ -233,7 +239,7 @@ public class BackupExcelService {
             set(row, c++, p.getStato() != null ? p.getStato().name() : null);
             set(row, c, p.getNote());
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     private void scriviPresenze(Workbook wb, CellStyle headerStyle, LocalDate inizioPeriodo, LocalDate oggi) {
@@ -251,51 +257,45 @@ public class BackupExcelService {
             set(row, c++, p.isPresente() ? "Si" : "No");
             set(row, c, p.getNote());
         }
-        autoSize(sheet, headers.length);
+        larghezzaColonne(sheet, headers.length);
     }
 
     // ---- helper ----
 
-    private Sheet nuovoSheet(Workbook wb, String nome, String[] headers, CellStyle headerStyle) {
-        Sheet sheet = wb.createSheet(nome);
-        Row header = sheet.createRow(0);
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = header.createCell(i);
-            cell.setCellValue(headers[i]);
-            cell.setCellStyle(headerStyle);
+    // Primo foglio: chi deve ancora pagare (quote scadute di tutti i mesi + quelle del mese da rinnovare),
+    // così anche a gestionale fermo la segreteria sa chi sollecitare.
+    private void scriviQuoteDaIncassare(Workbook wb, CellStyle headerStyle, LocalDate oggi) {
+        String[] headers = {"Studente", "Telefono", "Corso", "Mese", "Stato", "Scadenza", "Abbonamento", "Quota", "Iscrizione"};
+        Sheet sheet = nuovoSheet(wb, "Quote da incassare", headers, headerStyle);
+        int r = 1;
+        for (QuotaIscrizioneDto q : quoteService.quoteDaIncassare(oggi)) {
+            Row row = sheet.createRow(r++);
+            int c = 0;
+            set(row, c++, q.getStudenteNomeCompleto());
+            set(row, c++, studenteRepository.findById(q.getStudenteId()).map(Studente::getTelefono).orElse(null));
+            set(row, c++, q.getCorsoNome());
+            set(row, c++, formatta(q.getMese()));
+            set(row, c++, q.getStato() == QuotaIscrizioneDto.StatoQuota.SCADUTO ? "Scaduta" : "Da rinnovare");
+            set(row, c++, formatta(q.getScadenza()));
+            set(row, c++, q.getTipoAbbonamentoNome());
+            set(row, c++, q.getQuotaImporto());
+            set(row, c, q.getStatoIscrizione() == StatoIscrizione.RITIRATO ? "Ritirato" : "Attiva");
         }
-        return sheet;
+        larghezzaColonne(sheet, headers.length);
     }
 
-    private CellStyle creaStileHeader(Workbook wb) {
-        CellStyle style = wb.createCellStyle();
-        Font font = wb.createFont();
-        font.setBold(true);
-        font.setColor(IndexedColors.WHITE.getIndex());
-        style.setFont(font);
-        style.setFillForegroundColor(IndexedColors.BLACK.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        return style;
-    }
-
-    private void autoSize(Sheet sheet, int numColonne) {
-        for (int i = 0; i < numColonne; i++) {
-            sheet.setColumnWidth(i, 22 * 256);
+    private void scriviStagioni(Workbook wb, CellStyle headerStyle) {
+        String[] headers = {"ID", "Nome", "Data inizio", "Data fine", "Corrente"};
+        Sheet sheet = nuovoSheet(wb, "Stagioni", headers, headerStyle);
+        int r = 1;
+        for (Stagione s : stagioneRepository.findAll()) {
+            Row row = sheet.createRow(r++);
+            set(row, 0, s.getId());
+            set(row, 1, s.getNome());
+            set(row, 2, formatta(s.getDataInizio()));
+            set(row, 3, formatta(s.getDataFine()));
+            set(row, 4, s.isCorrente() ? "Si" : "No");
         }
-    }
-
-    private String formatta(LocalDate data) {
-        return data != null ? data.format(DATA) : null;
-    }
-
-    private void set(Row row, int col, Object value) {
-        Cell cell = row.createCell(col);
-        if (value == null) {
-            cell.setBlank();
-        } else if (value instanceof Number n) {
-            cell.setCellValue(n.doubleValue());
-        } else {
-            cell.setCellValue(value.toString());
-        }
+        larghezzaColonne(sheet, headers.length);
     }
 }

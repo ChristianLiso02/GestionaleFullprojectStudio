@@ -2,12 +2,18 @@ package com.fullprojectstudio.backend.controller;
 
 import com.fullprojectstudio.backend.dto.CorsoDto;
 import com.fullprojectstudio.backend.service.CorsoService;
+import com.fullprojectstudio.backend.service.EsportazioneCorsoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -16,6 +22,17 @@ import java.util.List;
 public class CorsoController {
 
     private final CorsoService corsoService;
+    private final EsportazioneCorsoService esportazioneCorsoService;
+
+    @GetMapping("/{id}/esporta")
+    public ResponseEntity<byte[]> esporta(@PathVariable Long id) {
+        EsportazioneCorsoService.FileEsportato file = esportazioneCorsoService.esporta(id, LocalDate.now());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename(file.nome(), StandardCharsets.UTF_8).build().toString())
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(file.contenuto());
+    }
 
     @GetMapping
     public List<CorsoDto> findAll(@RequestParam(required = false) Long stagioneId) {

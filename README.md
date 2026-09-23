@@ -13,6 +13,7 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Quote mensili**: per ogni mese, chi ha pagato in tempo (entro il 7), in ritardo o non ha ancora pagato; il trimestrale copre 3 mesi
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, quote non pagate del mese, pagamenti in sospeso)
 - **Statistiche** mese per mese, per tutta la scuola e per singolo corso: iscritti attivi (uomini/donne), nuove iscrizioni, ritiri e rientri, incassi, puntualità delle quote, con grafici e tabella
+- **Esportazione Excel di ogni corso** (pulsante "Scarica Excel" nel dettaglio corso): dati del corso, iscritti con contatti, griglia delle quote mese per mese, pagamenti, presenze e statistiche. Contiene dati personali e sanitari (note mediche): va conservato e condiviso con attenzione
 - **Backup Excel automatico** ogni notte, così la segreteria può continuare a lavorare da un file locale anche se il gestionale non fosse raggiungibile (vedi sezione dedicata)
 
 Backend in **Java**, frontend statico (HTML/CSS/JS) — due progetti indipendenti.
@@ -91,8 +92,9 @@ oppure imposta le variabili d'ambiente `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e 
 Ogni notte (di default alle **02:00**) il backend genera in automatico un file Excel
 (`backup-AAAA-MM-GG.xlsx`, più una copia sempre aggiornata `backup-ultimo.xlsx`) con:
 
-- anagrafiche complete: Studenti, Istruttori, Sale, Corsi, Abbonamenti
-- Iscrizioni, Pagamenti e Presenze del **mese corrente e del mese precedente**
+- **Quote da incassare** (primo foglio): tutte le quote scadute e quelle del mese ancora da rinnovare, con telefono dello studente, così la segreteria sa chi sollecitare anche a gestionale fermo
+- anagrafiche complete: Studenti (con sesso), Istruttori, Sale, Stagioni, Corsi (con stagione), Abbonamenti
+- Iscrizioni (con periodi di ritiro), Pagamenti (con mese di riferimento) e Presenze del **mese corrente e del mese precedente**
 
 Il file viene scritto nella cartella indicata da `BACKUP_DIR` (default `./backup` in locale,
 `/app/backup` nel container — mappata su `./backup` del PC host tramite `docker-compose.yml`).
