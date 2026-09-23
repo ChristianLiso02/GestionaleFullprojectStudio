@@ -1,6 +1,5 @@
 package com.fullprojectstudio.backend.dto;
 
-import com.fullprojectstudio.backend.model.StatoIscrizione;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,26 +7,23 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
+/** Iscrizione attiva con quote scadute: o ha pagato e va registrato, o si è ritirata senza avvisare. */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IscrizioneDto {
-    private Long id;
+public class QuotaScadutaDto {
+    private Long iscrizioneId;
     private Long studenteId;
     private String studenteNomeCompleto;
     private Long corsoId;
     private String corsoNome;
-    private String stagioneNome;
-    private Long tipoAbbonamentoId;
     private String tipoAbbonamentoNome;
     private BigDecimal quotaImporto;
-    private int quotaMesi;
-    private LocalDate dataIscrizione;
-    private LocalDate dataRitiro;
-    private List<PeriodoRitiroDto> ritiri;
-    private StatoIscrizione stato;
-    private String note;
+    private List<YearMonth> mesiScaduti;
+    private LocalDate ultimoPagamento;
+    private LocalDate dataRitiroProposta;
 }

@@ -24,16 +24,16 @@ function renderStudenteInfo(s) {
 function renderIscrizioni(iscrizioni) {
   const body = document.getElementById("iscrizioniBody");
   body.innerHTML = iscrizioni.length === 0
-    ? `<tr><td colspan="7" class="empty-state">Nessuna iscrizione a corsi.</td></tr>`
+    ? `<tr><td colspan="6" class="empty-state">Nessuna iscrizione a corsi.</td></tr>`
     : iscrizioni.map(i => `
         <tr>
           <td><a href="corso-dettaglio.html?id=${i.corsoId}"><b>${escapeHtml(i.corsoNome)}</b></a></td>
           <td>${escapeHtml(i.stagioneNome) || "-"}</td>
           <td>${escapeHtml(i.tipoAbbonamentoNome) || "-"}</td>
           <td>${formatDate(i.dataIscrizione)}</td>
-          <td>${i.dataScadenza ? formatDate(i.dataScadenza) : "-"}</td>
-          <td><span class="pill ${pillClass(i.stato)}">${i.stato}</span></td>
+          <td>${statoIscrizioneHtml(i)}</td>
           <td class="cell-actions">
+            ${azioneStatoIscrizione(i)}
             <a class="btn btn-ghost btn-sm" href="iscrizione-form.html?id=${i.id}">Modifica</a>
           </td>
         </tr>

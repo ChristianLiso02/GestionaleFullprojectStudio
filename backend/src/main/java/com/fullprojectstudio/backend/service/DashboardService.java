@@ -1,7 +1,7 @@
 package com.fullprojectstudio.backend.service;
 
 import com.fullprojectstudio.backend.dto.DashboardStatsDto;
-import com.fullprojectstudio.backend.dto.IscrizioneDto;
+import com.fullprojectstudio.backend.dto.QuotaScadutaDto;
 import com.fullprojectstudio.backend.model.Pagamento;
 import com.fullprojectstudio.backend.model.Stagione;
 import com.fullprojectstudio.backend.model.StatoIscrizione;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,6 @@ public class DashboardService {
     private final CorsoRepository corsoRepository;
     private final IscrizioneRepository iscrizioneRepository;
     private final PagamentoRepository pagamentoRepository;
-    private final IscrizioneService iscrizioneService;
     private final StagioneRepository stagioneRepository;
     private final QuoteService quoteService;
 
@@ -38,7 +37,7 @@ public class DashboardService {
                 .map(Pagamento::getImporto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        java.util.List<IscrizioneDto> inScadenza = iscrizioneService.findInScadenza(30);
+        List<QuotaScadutaDto> quoteScadute = quoteService.quoteScaduteDaVerificare(oggi);
 
         java.util.Optional<Stagione> stagioneCorrente = stagioneRepository.findByCorrenteTrue();
         long corsiAttivi = stagioneCorrente
@@ -55,8 +54,8 @@ public class DashboardService {
                 .iscrizioniAttive(iscrizioniAttive)
                 .incassiMeseCorrente(incassiMese)
                 .pagamentiInSospeso(pagamentoRepository.findByStato(StatoPagamento.IN_SOSPESO).size())
-                .quoteNonPagateMese(quoteService.contaNonPagate(YearMonth.from(oggi), oggi))
-                .iscrizioniInScadenza(inScadenza)
+                .quoteScadute(quoteScadute.size())
+                .quoteScaduteDaVerificare(quoteScadute)
                 .build();
     }
 }

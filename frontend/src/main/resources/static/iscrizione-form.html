@@ -19,17 +19,24 @@
             <div class="field"><label>Studente</label><select id="fStudente" required><option value="">-- seleziona --</option></select></div>
             <div class="field"><label>Corso</label><select id="fCorso" required><option value="">-- seleziona --</option></select></div>
             <div class="field"><label>Tipo abbonamento</label><select id="fAbbonamento"><option value="">-- nessuno --</option></select></div>
-            <div class="row2">
-              <div class="field"><label>Data iscrizione</label><input id="fDataIscr" type="date"></div>
-              <div class="field"><label>Data scadenza</label><input id="fDataScad" type="date"></div>
-            </div>
-            <div class="field"><label>Stato</label><select id="fStato"></select></div>
+            <div class="field"><label>Data iscrizione</label><input id="fDataIscr" type="date"></div>
             <div class="field"><label>Note</label><textarea id="fNote" rows="2"></textarea></div>
             <div style="display:flex;gap:10px;margin-top:10px">
               <button type="submit" class="btn btn-accent">Salva</button>
               <a class="btn btn-ghost" href="iscrizioni.html">Annulla</a>
             </div>
           </form>
+        </div>
+
+        <div class="panel" id="pannelloRitiri" hidden>
+          <div class="panel-head"><h2>Periodi di ritiro</h2></div>
+          <div class="nota-quote">I mesi coperti da un periodo di ritiro non sono dovuti. Se un ritiro è stato inserito per errore puoi annullarlo: quei mesi torneranno dovuti.</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Ritirato dal</th><th>Rientrato il</th><th></th></tr></thead>
+              <tbody id="ritiriBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

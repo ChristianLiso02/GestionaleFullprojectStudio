@@ -4,9 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "iscrizioni")
@@ -35,7 +40,18 @@ public class Iscrizione {
     @Builder.Default
     private LocalDate dataIscrizione = LocalDate.now();
 
-    private LocalDate dataScadenza;
+    // Storico dei ritiri dal corso (ogni periodo va dal ritiro al rientro).
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "iscrizione_id", nullable = false)
+    @OrderBy("dataRitiro ASC")
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<PeriodoRitiro> ritiri = new ArrayList<>();
+
+    public Optional<PeriodoRitiro> ritiroInCorso() {
+        return ritiri.stream().filter(p -> p.getDataRientro() == null).findFirst();
+    }
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

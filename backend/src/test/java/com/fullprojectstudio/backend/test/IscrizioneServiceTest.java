@@ -83,21 +83,103 @@ class IscrizioneServiceTest {
         assertThat(risultato).isNotNull();
     }
 
-    @Test
-    void calcolaLaDataDiScadenzaDalTipoAbbonamento() {
-        TipoAbbonamento abbonamento = TipoAbbonamento.builder().id(5L).nome("Mensile")
-                .durataGiorni(30).build();
-        IscrizioneDto dto = dto(10L, 1L);
-        dto.setTipoAbbonamentoId(5L);
-        dto.setDataIscrizione(LocalDate.of(2026, 1, 1));
+    private Iscrizione esistente(long id, Corso corso, StatoIscrizione stato) {
+        return Iscrizione.builder().id(id).studente(studente(10L)).corso(corso)
+                .dataIscrizione(LocalDate.of(2026, 9, 1)).stato(stato).build();
+    }
 
-        when(studenteRepository.findById(10L)).thenReturn(Optional.of(studente(10L)));
-        when(corsoRepository.findById(1L)).thenReturn(Optional.of(corso(1L, null)));
-        when(tipoAbbonamentoRepository.findById(5L)).thenReturn(Optional.of(abbonamento));
+    @Test
+    void ritirareApreUnPeriodoDiRitiroConLaDataScelta() {
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(esistente(5L, corso(1L, null), StatoIscrizione.ATTIVA)));
         when(iscrizioneRepository.save(any(Iscrizione.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        IscrizioneDto risultato = iscrizioneService.create(dto);
+        IscrizioneDto risultato = iscrizioneService.ritira(5L, LocalDate.of(2026, 9, 15));
 
-        assertThat(risultato.getDataScadenza()).isEqualTo(LocalDate.of(2026, 1, 31));
+        assertThat(risultato.getStato()).isEqualTo(StatoIscrizione.RITIRATO);
+        assertThat(risultato.getDataRitiro()).isEqualTo(LocalDate.of(2026, 9, 15));
+        assertThat(risultato.getRitiri()).hasSize(1);
+    }
+
+    @Test
+    void nonSiPuoRitirareConUnaDataFutura() {
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(esistente(5L, corso(1L, null), StatoIscrizione.ATTIVA)));
+
+        assertThatThrownBy(() -> iscrizioneService.ritira(5L, LocalDate.now().plusDays(1)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("futuro");
+    }
+
+    @Test
+    void riattivareChiudeIlPeriodoDiRitiro() {
+        Iscrizione ritirata = esistente(5L, corso(1L, 10), StatoIscrizione.RITIRATO);
+        ritirata.getRitiri().add(PeriodoRitiro.builder().id(1L).dataRitiro(LocalDate.of(2026, 9, 10)).build());
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(ritirata));
+        when(iscrizioneRepository.countByCorsoIdAndStato(1L, StatoIscrizione.ATTIVA)).thenReturn(3L);
+        when(iscrizioneRepository.save(any(Iscrizione.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        IscrizioneDto risultato = iscrizioneService.riattiva(5L, LocalDate.of(2026, 9, 20));
+
+        assertThat(risultato.getStato()).isEqualTo(StatoIscrizione.ATTIVA);
+        assertThat(risultato.getRitiri().get(0).getDataRientro()).isEqualTo(LocalDate.of(2026, 9, 20));
+    }
+
+    @Test
+    void ilRientroNonPuoPrecedereIlRitiro() {
+        Iscrizione ritirata = esistente(5L, corso(1L, null), StatoIscrizione.RITIRATO);
+        ritirata.getRitiri().add(PeriodoRitiro.builder().id(1L).dataRitiro(LocalDate.of(2026, 9, 10)).build());
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(ritirata));
+
+        assertThatThrownBy(() -> iscrizioneService.riattiva(5L, LocalDate.of(2026, 9, 5)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("precedente al ritiro");
+    }
+
+    @Test
+    void riattivareUnaVecchiaIscrizioneSenzaStoricoCreaIlPeriodoDallIscrizione() {
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(esistente(5L, corso(1L, null), StatoIscrizione.RITIRATO)));
+        when(iscrizioneRepository.save(any(Iscrizione.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        IscrizioneDto risultato = iscrizioneService.riattiva(5L, LocalDate.of(2026, 9, 20));
+
+        assertThat(risultato.getRitiri()).singleElement().satisfies(p -> {
+            assertThat(p.getDataRitiro()).isEqualTo(LocalDate.of(2026, 9, 1));
+            assertThat(p.getDataRientro()).isEqualTo(LocalDate.of(2026, 9, 20));
+        });
+    }
+
+    @Test
+    void nonSiRiattivaSeIlCorsoEPieno() {
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(esistente(5L, corso(1L, 2), StatoIscrizione.RITIRATO)));
+        when(iscrizioneRepository.countByCorsoIdAndStato(1L, StatoIscrizione.ATTIVA)).thenReturn(2L);
+
+        assertThatThrownBy(() -> iscrizioneService.riattiva(5L, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Capienza massima");
+    }
+
+    @Test
+    void annullareUnRitiroInCorsoRiportaLIscrizioneAttiva() {
+        Iscrizione ritirata = esistente(5L, corso(1L, null), StatoIscrizione.RITIRATO);
+        ritirata.getRitiri().add(PeriodoRitiro.builder().id(9L).dataRitiro(LocalDate.of(2026, 9, 10)).build());
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(ritirata));
+        when(iscrizioneRepository.save(any(Iscrizione.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        IscrizioneDto risultato = iscrizioneService.annullaRitiro(5L, 9L);
+
+        assertThat(risultato.getStato()).isEqualTo(StatoIscrizione.ATTIVA);
+        assertThat(risultato.getRitiri()).isEmpty();
+    }
+
+    @Test
+    void laModificaNonCambiaLoStatoDellIscrizione() {
+        Corso corso = corso(1L, null);
+        when(iscrizioneRepository.findById(5L)).thenReturn(Optional.of(esistente(5L, corso, StatoIscrizione.RITIRATO)));
+        when(studenteRepository.findById(10L)).thenReturn(Optional.of(studente(10L)));
+        when(corsoRepository.findById(1L)).thenReturn(Optional.of(corso));
+        when(iscrizioneRepository.save(any(Iscrizione.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        IscrizioneDto risultato = iscrizioneService.update(5L, dto(10L, 1L));
+
+        assertThat(risultato.getStato()).isEqualTo(StatoIscrizione.RITIRATO);
     }
 }

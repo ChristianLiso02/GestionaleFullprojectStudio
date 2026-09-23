@@ -30,6 +30,8 @@ app:
   pagamenti:
     # Giorno del mese entro cui va pagata la quota mensile
     giorno-scadenza: ${PAGAMENTI_GIORNO_SCADENZA:7}
+    # Mesi consecutivi scaduti dopo i quali lo studente compare tra le quote da verificare (pagato o ritirato?)
+    mesi-scaduti-da-verificare: ${PAGAMENTI_MESI_SCADUTI_DA_VERIFICARE:1}
 
 ---
 spring:

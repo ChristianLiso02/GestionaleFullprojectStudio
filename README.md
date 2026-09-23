@@ -7,11 +7,11 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Sale**
 - **Corsi** (stile di ballo, livello, istruttore, sala, orari, capienza, prezzo)
 - **Tipi di abbonamento** (mensile, trimestrale, annuale, pacchetti a lezioni)
-- **Iscrizioni** (studente ↔ corso, con scadenza calcolata dall'abbonamento)
+- **Iscrizioni** (studente ↔ corso): si fanno una volta e restano attive finché lo studente non viene segnato come *ritirato* (riattivabile in qualsiasi momento)
 - **Pagamenti** (metodo, stato, causale)
 - **Presenze** (appello per corso/data)
 - **Quote mensili**: per ogni mese, chi ha pagato in tempo (entro il 7), in ritardo o non ha ancora pagato; il trimestrale copre 3 mesi
-- **Dashboard** con statistiche (studenti attivi, incassi del mese, iscrizioni in scadenza, pagamenti in sospeso)
+- **Dashboard** con statistiche (studenti attivi, incassi del mese, quote non pagate del mese, pagamenti in sospeso)
 - **Backup Excel automatico** ogni notte, così la segreteria può continuare a lavorare da un file locale anche se il gestionale non fosse raggiungibile (vedi sezione dedicata)
 
 Backend in **Java**, frontend statico (HTML/CSS/JS) — due progetti indipendenti.
@@ -170,7 +170,8 @@ docker compose start backend frontend
 | `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
 | `BACKUP_DIR` | Cartella dove scrivere i backup Excel | `./backup` |
 | `BACKUP_CRON` | Orario di generazione automatica (formato cron) | `0 0 2 * * *` (ogni notte alle 02:00) |
-| `PAGAMENTI_GIORNO_SCADENZA` | Giorno del mese entro cui va pagata la quota (pagina "Quote mensili") | `7` |
+| `PAGAMENTI_GIORNO_SCADENZA` | Ultimo giorno del mese in cui la quota non pagata è "da rinnovare"; dal giorno dopo è "scaduta" | `7` |
+| `PAGAMENTI_MESI_SCADUTI_DA_VERIFICARE` | Mesi consecutivi scaduti dopo i quali lo studente compare in dashboard tra le quote da verificare (ha pagato o si è ritirato senza avvisare?) | `1` |
 
 ## Build
 

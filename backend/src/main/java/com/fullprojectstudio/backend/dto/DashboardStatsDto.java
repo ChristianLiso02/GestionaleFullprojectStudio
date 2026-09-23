@@ -19,6 +19,6 @@ public class DashboardStatsDto {
     private long iscrizioniAttive;
     private BigDecimal incassiMeseCorrente;
     private long pagamentiInSospeso;
-    private long quoteNonPagateMese;
-    private List<IscrizioneDto> iscrizioniInScadenza;
+    private long quoteScadute;
+    private List<QuotaScadutaDto> quoteScaduteDaVerificare;
 }

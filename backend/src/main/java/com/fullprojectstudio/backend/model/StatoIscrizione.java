@@ -2,6 +2,6 @@ package com.fullprojectstudio.backend.model;
 
 public enum StatoIscrizione {
     ATTIVA,
-    SCADUTA,
-    ANNULLATA
+    // Lo studente ha lasciato il corso: non gli vengono più chieste quote. Può essere riattivato.
+    RITIRATO
 }

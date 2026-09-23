@@ -1,4 +1,3 @@
-const STATI_ISCRIZIONE = ["ATTIVA", "SCADUTA", "ANNULLATA"];
 const iscrizioneId = new URLSearchParams(window.location.search).get("id");
 const studenteIdIniziale = new URLSearchParams(window.location.search).get("studenteId");
 const corsoIdIniziale = new URLSearchParams(window.location.search).get("corsoId");
@@ -33,8 +32,6 @@ async function loadLookups() {
     opt.textContent = a.nome;
     abbonamentoSel.appendChild(opt);
   });
-
-  document.getElementById("fStato").innerHTML = STATI_ISCRIZIONE.map(s => `<option value="${s}">${s}</option>`).join("");
 }
 
 function fillForm(i) {
@@ -42,9 +39,27 @@ function fillForm(i) {
   document.getElementById("fCorso").value = i.corsoId || "";
   document.getElementById("fAbbonamento").value = i.tipoAbbonamentoId || "";
   document.getElementById("fDataIscr").value = i.dataIscrizione || todayISO();
-  document.getElementById("fDataScad").value = i.dataScadenza || "";
-  document.getElementById("fStato").value = i.stato || "ATTIVA";
   document.getElementById("fNote").value = i.note || "";
+}
+
+function renderRitiri(i) {
+  const ritiri = i.ritiri || [];
+  document.getElementById("pannelloRitiri").hidden = ritiri.length === 0;
+  document.getElementById("ritiriBody").innerHTML = ritiri.map(p => `
+    <tr>
+      <td>${formatDate(p.dataRitiro)}</td>
+      <td>${p.dataRientro ? formatDate(p.dataRientro) : '<span class="pill pill-muted">ancora ritirato</span>'}</td>
+      <td class="cell-actions"><button type="button" class="btn btn-ghost btn-sm" onclick="annullaRitiro(${p.id})">Annulla ritiro</button></td>
+    </tr>
+  `).join("");
+}
+
+async function annullaRitiro(periodoId) {
+  if (!confirm("Annullare questo periodo di ritiro? I mesi che copriva torneranno dovuti.")) return;
+  try {
+    const i = await api.del(`/api/iscrizioni/${iscrizioneId}/ritiri/${periodoId}`);
+    renderRitiri(i);
+  } catch (err) { showError(err.message); }
 }
 
 function readForm() {
@@ -53,8 +68,6 @@ function readForm() {
     corsoId: parseInt(document.getElementById("fCorso").value),
     tipoAbbonamentoId: document.getElementById("fAbbonamento").value ? parseInt(document.getElementById("fAbbonamento").value) : null,
     dataIscrizione: document.getElementById("fDataIscr").value || todayISO(),
-    dataScadenza: document.getElementById("fDataScad").value || null,
-    stato: document.getElementById("fStato").value,
     note: document.getElementById("fNote").value.trim()
   };
 }
@@ -67,6 +80,7 @@ async function init() {
       document.getElementById("formTitle").textContent = "Modifica iscrizione";
       const i = await api.get(`/api/iscrizioni/${iscrizioneId}`);
       fillForm(i);
+      renderRitiri(i);
     } else {
       if (studenteIdIniziale) document.getElementById("fStudente").value = studenteIdIniziale;
       if (corsoIdIniziale) document.getElementById("fCorso").value = corsoIdIniziale;

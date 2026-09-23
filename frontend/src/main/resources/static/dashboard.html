@@ -31,11 +31,15 @@
         </div>
 
         <div class="panel">
-          <div class="panel-head"><h2>Iscrizioni in scadenza (30 giorni)</h2></div>
+          <div class="panel-head">
+            <h2>Quote scadute da verificare</h2>
+            <a class="btn btn-ghost" href="quote.html">Tutte le quote</a>
+          </div>
+          <div class="nota-quote">Studenti attivi che non hanno rinnovato. Se hanno pagato, registra il pagamento; se hanno smesso di venire senza avvisare, segnali come ritirati.</div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Studente</th><th>Corso</th><th>Scadenza</th><th>Stato</th></tr></thead>
-              <tbody id="scadenzeBody"></tbody>
+              <thead><tr><th>Studente</th><th>Corso</th><th>Mesi scaduti</th><th>Ultimo pagamento</th><th></th></tr></thead>
+              <tbody id="quoteScaduteBody"></tbody>
             </table>
           </div>
         </div>

@@ -1,6 +1,6 @@
 const STATI_QUOTA = {
-  NON_PAGATO: { label: "Non pagato", plurale: "Non pagati", pill: "pill-danger" },
-  DA_PAGARE: { label: "Da pagare", plurale: "Da pagare", pill: "pill-muted" },
+  SCADUTO: { label: "Scaduto", plurale: "Scaduti", pill: "pill-danger" },
+  DA_RINNOVARE: { label: "Da rinnovare", plurale: "Da rinnovare", pill: "pill-muted" },
   PAGATO_IN_RITARDO: { label: "Pagato in ritardo", plurale: "Pagati in ritardo", pill: "pill-warning" },
   PAGATO_IN_TEMPO: { label: "Pagato in tempo", plurale: "Pagati in tempo", pill: "pill-success" }
 };
@@ -17,9 +17,10 @@ async function loadQuote() {
     righe = dati.righe;
     document.getElementById("titoloMese").textContent = `Quote di ${formatMese(meseSelezionato)}`;
     document.getElementById("notaScadenza").textContent =
-      `La quota va pagata entro il giorno ${dati.giornoScadenza} del mese. ` +
-      `Chi si iscrive dopo il ${dati.giornoScadenza} paga al momento dell'iscrizione. ` +
-      `Il trimestrale copre 3 mesi a partire dal mese di riferimento del pagamento.`;
+      `Fino al giorno ${dati.giornoScadenza} la quota non pagata è "da rinnovare"; dal giorno successivo è "scaduta". ` +
+      `Una quota scaduta non ritira lo studente: può sempre pagare in ritardo; se invece ha smesso di venire senza avvisare, usa "Segna ritirato". ` +
+      `Chi si iscrive o rientra dopo il ${dati.giornoScadenza} rinnova quel giorno. ` +
+      `I mesi in cui lo studente era ritirato non sono dovuti. Il trimestrale copre 3 mesi.`;
     render();
   } catch (err) {
     showError(err.message);
@@ -47,10 +48,11 @@ function render() {
           ? `<br><span class="testo-tenue">copre fino a ${formatMese(r.coperturaFino)}</span>` : "";
         const azione = pagata
           ? `<a class="btn btn-ghost btn-sm" href="pagamento-form.html?id=${r.pagamentoId}&mese=${meseSelezionato}">Vedi pagamento</a>`
-          : `<a class="btn btn-accent btn-sm" href="pagamento-form.html?studenteId=${r.studenteId}&iscrizioneId=${r.iscrizioneId}&mese=${meseSelezionato}">Registra pagamento</a>`;
+          : `<a class="btn btn-accent btn-sm" href="pagamento-form.html?studenteId=${r.studenteId}&iscrizioneId=${r.iscrizioneId}&mese=${meseSelezionato}">Registra pagamento</a>` +
+            (r.dataRitiroProposta ? ` <button class="btn btn-ghost btn-sm" onclick="ritiraIscrizione(${r.iscrizioneId}, '${r.dataRitiroProposta}')">Segna ritirato</button>` : "");
         return `
           <tr>
-            <td><a href="studente-dettaglio.html?id=${r.studenteId}"><b>${escapeHtml(r.studenteNomeCompleto)}</b></a></td>
+            <td><a href="studente-dettaglio.html?id=${r.studenteId}"><b>${escapeHtml(r.studenteNomeCompleto)}</b></a>${r.statoIscrizione === "RITIRATO" ? `<br><span class="testo-tenue">ritirato dal corso</span>` : ""}</td>
             <td><a href="corso-dettaglio.html?id=${r.corsoId}">${escapeHtml(r.corsoNome)}</a></td>
             <td>${escapeHtml(r.tipoAbbonamentoNome) || "-"}<br><span class="testo-tenue">${formatEuro(r.quotaImporto)}</span></td>
             <td>${formatDate(r.scadenza)}</td>

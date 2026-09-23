@@ -189,11 +189,11 @@ public class BackupExcelService {
     }
 
     private void scriviIscrizioni(Workbook wb, CellStyle headerStyle, LocalDate inizioPeriodo) {
-        String[] headers = {"ID", "Studente", "Corso", "Abbonamento", "Data iscrizione", "Data scadenza", "Stato", "Note"};
+        String[] headers = {"ID", "Studente", "Corso", "Abbonamento", "Data iscrizione", "Stato", "Periodi di ritiro", "Note"};
         List<Iscrizione> iscrizioni = iscrizioneRepository.findAll().stream()
                 .filter(i -> i.getStato() == StatoIscrizione.ATTIVA
                         || !i.getDataIscrizione().isBefore(inizioPeriodo)
-                        || (i.getDataScadenza() != null && !i.getDataScadenza().isBefore(inizioPeriodo)))
+                        || i.getRitiri().stream().anyMatch(p -> !p.getDataRitiro().isBefore(inizioPeriodo)))
                 .collect(Collectors.toList());
         Sheet sheet = nuovoSheet(wb, "Iscrizioni", headers, headerStyle);
         int r = 1;
@@ -205,8 +205,10 @@ public class BackupExcelService {
             set(row, c++, i.getCorso().getNome());
             set(row, c++, i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().getNome() : null);
             set(row, c++, formatta(i.getDataIscrizione()));
-            set(row, c++, formatta(i.getDataScadenza()));
             set(row, c++, i.getStato() != null ? i.getStato().name() : null);
+            set(row, c++, i.getRitiri().stream()
+                    .map(p -> "dal " + formatta(p.getDataRitiro()) + (p.getDataRientro() != null ? " al " + formatta(p.getDataRientro()) : " (in corso)"))
+                    .collect(Collectors.joining("; ")));
             set(row, c, i.getNote());
         }
         autoSize(sheet, headers.length);

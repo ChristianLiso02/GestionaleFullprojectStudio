@@ -4,10 +4,12 @@ import com.fullprojectstudio.backend.dto.IscrizioneDto;
 import com.fullprojectstudio.backend.service.IscrizioneService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -20,8 +22,7 @@ public class IscrizioneController {
     @GetMapping
     public List<IscrizioneDto> findAll(@RequestParam(required = false) Long studenteId,
                                         @RequestParam(required = false) Long corsoId,
-                                        @RequestParam(required = false) Long stagioneId,
-                                        @RequestParam(required = false) Integer inScadenzaGiorni) {
+                                        @RequestParam(required = false) Long stagioneId) {
         if (studenteId != null) {
             return iscrizioneService.findByStudente(studenteId);
         }
@@ -30,9 +31,6 @@ public class IscrizioneController {
         }
         if (stagioneId != null) {
             return iscrizioneService.findByStagione(stagioneId);
-        }
-        if (inScadenzaGiorni != null) {
-            return iscrizioneService.findInScadenza(inScadenzaGiorni);
         }
         return iscrizioneService.findAll();
     }
@@ -51,6 +49,23 @@ public class IscrizioneController {
     @PutMapping("/{id}")
     public IscrizioneDto update(@PathVariable Long id, @Valid @RequestBody IscrizioneDto dto) {
         return iscrizioneService.update(id, dto);
+    }
+
+    @PutMapping("/{id}/ritira")
+    public IscrizioneDto ritira(@PathVariable Long id,
+                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+        return iscrizioneService.ritira(id, data);
+    }
+
+    @PutMapping("/{id}/riattiva")
+    public IscrizioneDto riattiva(@PathVariable Long id,
+                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+        return iscrizioneService.riattiva(id, data);
+    }
+
+    @DeleteMapping("/{id}/ritiri/{periodoId}")
+    public IscrizioneDto annullaRitiro(@PathVariable Long id, @PathVariable Long periodoId) {
+        return iscrizioneService.annullaRitiro(id, periodoId);
     }
 
     @DeleteMapping("/{id}")
