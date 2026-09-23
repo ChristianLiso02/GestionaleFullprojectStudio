@@ -13,10 +13,11 @@ async function loadStudenti(ricerca) {
 function renderStudenti() {
   const body = document.getElementById("studentiBody");
   body.innerHTML = studentiCache.length === 0
-    ? `<tr><td colspan="5" class="empty-state">Nessuno studente trovato.</td></tr>`
+    ? `<tr><td colspan="6" class="empty-state">Nessuno studente trovato.</td></tr>`
     : studentiCache.map(s => `
         <tr>
           <td><a href="studente-dettaglio.html?id=${s.id}"><b>${escapeHtml(s.nome)} ${escapeHtml(s.cognome)}</b></a></td>
+          <td>${s.sesso === "UOMO" ? "Uomo" : s.sesso === "DONNA" ? "Donna" : '<span style="color:var(--ink-faint)">-</span>'}</td>
           <td>${escapeHtml(s.telefono)}<br><span style="color:var(--ink-faint);font-size:0.78rem">${escapeHtml(s.email)}</span></td>
           <td>${formatDate(s.dataIscrizione)}</td>
           <td><span class="pill ${s.attivo ? "pill-success" : "pill-muted"}">${s.attivo ? "Attivo" : "Inattivo"}</span></td>
