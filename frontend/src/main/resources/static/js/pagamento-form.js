@@ -2,6 +2,9 @@ const METODI_PAGAMENTO = ["CONTANTI", "CARTA", "BONIFICO", "ALTRO"];
 const STATI_PAGAMENTO = ["PAGATO", "IN_SOSPESO", "RIMBORSATO"];
 const pagamentoId = new URLSearchParams(window.location.search).get("id");
 const studenteIdIniziale = new URLSearchParams(window.location.search).get("studenteId");
+const iscrizioneIdIniziale = new URLSearchParams(window.location.search).get("iscrizioneId");
+const meseIniziale = new URLSearchParams(window.location.search).get("mese");
+let iscrizioniStudente = [];
 
 async function loadStudenti() {
   const studenti = await api.get("/api/studenti");
@@ -31,6 +34,7 @@ async function loadIscrizioniStudente(studenteId, iscrizioneSelezionata) {
   iscrizioneSel.innerHTML = `<option value="">-- nessuna --</option>`;
   try {
     const iscrizioni = await api.get(`/api/iscrizioni?studenteId=${studenteId}`);
+    iscrizioniStudente = iscrizioni;
     iscrizioni.forEach(i => {
       const opt = document.createElement("option");
       opt.value = i.id;
@@ -45,6 +49,24 @@ async function loadIscrizioniStudente(studenteId, iscrizioneSelezionata) {
   }
 }
 
+function impostaMesi(n) {
+  const sel = document.getElementById("fMesi");
+  if (![...sel.options].some(o => o.value === String(n))) sel.add(new Option(`${n} mesi`, n));
+  sel.value = String(n);
+}
+
+// Su un nuovo pagamento propone importo e mesi coperti dall'abbonamento dell'iscrizione scelta.
+function precompilaDaIscrizione() {
+  if (pagamentoId) return;
+  const id = parseInt(document.getElementById("fIscrizione").value);
+  const iscrizione = iscrizioniStudente.find(i => i.id === id);
+  if (!iscrizione) return;
+  if (iscrizione.quotaImporto != null) document.getElementById("fImporto").value = iscrizione.quotaImporto;
+  impostaMesi(iscrizione.quotaMesi || 1);
+  const causale = document.getElementById("fCausale");
+  if (!causale.value) causale.value = `Quota ${iscrizione.corsoNome}`;
+}
+
 function fillForm(p) {
   document.getElementById("fStudente").value = p.studenteId || "";
   document.getElementById("fImporto").value = p.importo ?? "";
@@ -52,6 +74,8 @@ function fillForm(p) {
   document.getElementById("fMetodo").value = p.metodo || "CONTANTI";
   document.getElementById("fStato").value = p.stato || "PAGATO";
   document.getElementById("fCausale").value = p.causale || "";
+  document.getElementById("fMese").value = p.meseRiferimento || "";
+  impostaMesi(p.mesiCoperti || 1);
   document.getElementById("fNote").value = p.note || "";
 }
 
@@ -61,6 +85,8 @@ function readForm() {
     iscrizioneId: document.getElementById("fIscrizione").value ? parseInt(document.getElementById("fIscrizione").value) : null,
     importo: parseFloat(document.getElementById("fImporto").value) || 0,
     dataPagamento: document.getElementById("fData").value || todayISO(),
+    meseRiferimento: document.getElementById("fMese").value || null,
+    mesiCoperti: parseInt(document.getElementById("fMesi").value) || 1,
     metodo: document.getElementById("fMetodo").value,
     stato: document.getElementById("fStato").value,
     causale: document.getElementById("fCausale").value.trim(),
@@ -70,6 +96,8 @@ function readForm() {
 
 async function init() {
   document.getElementById("fData").value = todayISO();
+  document.getElementById("fMese").value = meseIniziale || todayISO().slice(0, 7);
+  if (meseIniziale) document.getElementById("linkAnnulla").href = `quote.html?mese=${meseIniziale}`;
   try {
     await loadStudenti();
 
@@ -80,7 +108,8 @@ async function init() {
       await loadIscrizioniStudente(p.studenteId, p.iscrizioneId);
     } else if (studenteIdIniziale) {
       document.getElementById("fStudente").value = studenteIdIniziale;
-      await loadIscrizioniStudente(studenteIdIniziale);
+      await loadIscrizioniStudente(studenteIdIniziale, iscrizioneIdIniziale);
+      precompilaDaIscrizione();
     } else {
       await loadIscrizioniStudente(null);
     }
@@ -93,18 +122,23 @@ document.getElementById("fStudente").addEventListener("change", (e) => {
   loadIscrizioniStudente(e.target.value || null);
 });
 
+document.getElementById("fIscrizione").addEventListener("change", precompilaDaIscrizione);
+
 document.getElementById("pagamentoForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const dto = readForm();
   clearAllFieldErrors(document.getElementById("pagamentoForm"));
   if (!dto.studenteId) { setFieldError("fStudente", "Lo studente è obbligatorio."); return; }
+  if (!dto.meseRiferimento) { setFieldError("fMese", "Indica il mese a cui si riferisce il pagamento."); return; }
   try {
     if (pagamentoId) {
       await api.put(`/api/pagamenti/${pagamentoId}`, dto);
     } else {
       await api.post("/api/pagamenti", dto);
     }
-    if (studenteIdIniziale) {
+    if (meseIniziale) {
+      window.location.href = `quote.html?mese=${meseIniziale}`;
+    } else if (studenteIdIniziale) {
       window.location.href = `studente-dettaglio.html?id=${studenteIdIniziale}`;
     } else {
       window.location.href = "pagamenti.html";

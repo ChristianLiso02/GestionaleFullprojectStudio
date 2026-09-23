@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>FullProject Studio - Pagamenti</title>
+  <title>FullProject Studio - Quote mensili</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,16 +15,18 @@
 
         <div class="panel">
           <div class="panel-head">
-            <h2>Pagamenti</h2>
+            <h2 id="titoloMese">Quote mensili</h2>
             <div class="toolbar">
-              <a class="btn btn-ghost" href="quote.html">Quote mensili</a>
-              <a class="btn btn-accent" href="pagamento-form.html">+ Nuovo pagamento</a>
+              <select id="stagioneSelect"></select>
+              <input type="month" id="meseInput">
             </div>
           </div>
+          <div class="riepilogo-quote" id="riepilogoQuote"></div>
+          <div class="nota-quote" id="notaScadenza"></div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Studente</th><th>Data</th><th>Mese di riferimento</th><th>Importo</th><th>Metodo</th><th>Causale</th><th>Stato</th><th></th></tr></thead>
-              <tbody id="pagamentiBody"></tbody>
+              <thead><tr><th>Studente</th><th>Corso</th><th>Quota</th><th>Scadenza</th><th>Stato</th><th>Pagamento</th><th></th></tr></thead>
+              <tbody id="quoteBody"></tbody>
             </table>
           </div>
         </div>
@@ -39,8 +41,8 @@
   <script src="js/nav.js"></script>
   <script>
     requireAuth();
-    renderNav("pagamenti", "Pagamenti", "Incassi e quote");
+    renderNav("quote", "Quote mensili", "Chi ha pagato la quota del mese e chi no");
   </script>
-  <script src="js/pagamenti.js"></script>
+  <script src="js/quote.js"></script>
 </body>
 </html>

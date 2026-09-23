@@ -1,14 +1,18 @@
 package com.fullprojectstudio.backend.controller;
 
 import com.fullprojectstudio.backend.dto.PagamentoDto;
+import com.fullprojectstudio.backend.dto.QuoteMeseDto;
 import com.fullprojectstudio.backend.model.StatoPagamento;
 import com.fullprojectstudio.backend.service.PagamentoService;
+import com.fullprojectstudio.backend.service.QuoteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -17,6 +21,12 @@ import java.util.List;
 public class PagamentoController {
 
     private final PagamentoService pagamentoService;
+    private final QuoteService quoteService;
+
+    @GetMapping("/quote")
+    public QuoteMeseDto quote(@RequestParam YearMonth mese, @RequestParam(required = false) Long stagioneId) {
+        return quoteService.situazione(mese, stagioneId, LocalDate.now());
+    }
 
     @GetMapping
     public List<PagamentoDto> findAll(@RequestParam(required = false) Long studenteId,

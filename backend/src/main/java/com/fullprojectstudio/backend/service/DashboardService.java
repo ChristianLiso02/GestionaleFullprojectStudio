@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class DashboardService {
     private final PagamentoRepository pagamentoRepository;
     private final IscrizioneService iscrizioneService;
     private final StagioneRepository stagioneRepository;
+    private final QuoteService quoteService;
 
     public DashboardStatsDto getStats() {
         LocalDate oggi = LocalDate.now();
@@ -53,6 +55,7 @@ public class DashboardService {
                 .iscrizioniAttive(iscrizioniAttive)
                 .incassiMeseCorrente(incassiMese)
                 .pagamentiInSospeso(pagamentoRepository.findByStato(StatoPagamento.IN_SOSPESO).size())
+                .quoteNonPagateMese(quoteService.contaNonPagate(YearMonth.from(oggi), oggi))
                 .iscrizioniInScadenza(inScadenza)
                 .build();
     }

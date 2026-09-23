@@ -96,6 +96,27 @@ function formatUominiDonne(uomini, donne, totale) {
     </div>`;
 }
 
+const NOMI_MESI = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+
+// "2026-10" -> "Ottobre 2026"
+function formatMese(annoMese) {
+  if (!annoMese) return "-";
+  const [anno, mese] = annoMese.split("-");
+  return `${NOMI_MESI[parseInt(mese, 10) - 1]} ${anno}`;
+}
+
+function aggiungiMesi(annoMese, n) {
+  const [anno, mese] = annoMese.split("-").map(Number);
+  const totale = anno * 12 + (mese - 1) + n;
+  return `${Math.floor(totale / 12)}-${String((totale % 12) + 1).padStart(2, "0")}`;
+}
+
+function formatPeriodo(annoMese, mesi) {
+  if (!annoMese) return "-";
+  return mesi > 1 ? `${formatMese(annoMese)} – ${formatMese(aggiungiMesi(annoMese, mesi - 1))}` : formatMese(annoMese);
+}
+
 function pillClass(stato) {
   const map = {
     "ATTIVA": "pill-success", "ATTIVO": "pill-success", "PAGATO": "pill-success",

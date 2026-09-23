@@ -41,6 +41,12 @@ public class Pagamento {
 
     private String causale;
 
+    // Primo giorno del mese a cui si riferisce la quota. Nullable per i pagamenti registrati prima di questo campo.
+    private LocalDate meseRiferimento;
+
+    // Mesi coperti a partire da meseRiferimento (1 = mensile, 3 = trimestrale). Null equivale a 1.
+    private Integer mesiCoperti;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private StatoPagamento stato = StatoPagamento.PAGATO;

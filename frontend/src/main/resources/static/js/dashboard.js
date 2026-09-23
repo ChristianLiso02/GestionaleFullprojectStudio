@@ -12,14 +12,14 @@
       { num: stats.corsiAttivi, lbl: "Corsi attivi" },
       { num: stats.iscrizioniAttive, lbl: "Iscrizioni attive" },
       { num: formatEuro(stats.incassiMeseCorrente), lbl: "Incassi mese corrente", accent: true },
+      { num: stats.quoteNonPagateMese, lbl: "Quote non pagate (mese)", href: "quote.html", allarme: stats.quoteNonPagateMese > 0 },
       { num: stats.pagamentiInSospeso, lbl: "Pagamenti in sospeso" }
     ];
-    document.getElementById("statGrid").innerHTML = cards.map(c => `
-      <div class="stat${c.accent ? " accent" : ""}">
-        <div class="num">${c.num}</div>
-        <div class="lbl">${c.lbl}</div>
-      </div>
-    `).join("");
+    document.getElementById("statGrid").innerHTML = cards.map(c => {
+      const classi = `stat${c.accent ? " accent" : ""}${c.allarme ? " allarme" : ""}`;
+      const contenuto = `<div class="num">${c.num}</div><div class="lbl">${c.lbl}</div>`;
+      return c.href ? `<a class="${classi}" href="${c.href}">${contenuto}</a>` : `<div class="${classi}">${contenuto}</div>`;
+    }).join("");
 
     const body = document.getElementById("scadenzeBody");
     const rows = stats.iscrizioniInScadenza || [];

@@ -27,6 +27,9 @@ app:
   backup:
     dir: ${BACKUP_DIR:./backup}
     cron: ${BACKUP_CRON:0 0 2 * * *}
+  pagamenti:
+    # Giorno del mese entro cui va pagata la quota mensile
+    giorno-scadenza: ${PAGAMENTI_GIORNO_SCADENZA:7}
 
 ---
 spring:

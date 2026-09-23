@@ -13,11 +13,12 @@ function renderPagamenti() {
   const body = document.getElementById("pagamentiBody");
   const rows = [...pagamentiCache].sort((a, b) => (a.dataPagamento < b.dataPagamento ? 1 : -1));
   body.innerHTML = rows.length === 0
-    ? `<tr><td colspan="7" class="empty-state">Nessun pagamento registrato.</td></tr>`
+    ? `<tr><td colspan="8" class="empty-state">Nessun pagamento registrato.</td></tr>`
     : rows.map(p => `
         <tr>
           <td><b>${escapeHtml(p.studenteNomeCompleto)}</b></td>
           <td>${formatDate(p.dataPagamento)}</td>
+          <td>${formatPeriodo(p.meseRiferimento, p.mesiCoperti)}</td>
           <td>${formatEuro(p.importo)}</td>
           <td>${p.metodo}</td>
           <td>${escapeHtml(p.causale)}</td>

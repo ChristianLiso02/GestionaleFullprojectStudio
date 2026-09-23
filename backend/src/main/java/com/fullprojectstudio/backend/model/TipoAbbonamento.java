@@ -34,4 +34,8 @@ public class TipoAbbonamento {
 
     @Builder.Default
     private boolean attivo = true;
+
+    public int mesiCoperti() {
+        return durataGiorni == null ? 1 : Math.max(1, Math.round(durataGiorni / 30f));
+    }
 }

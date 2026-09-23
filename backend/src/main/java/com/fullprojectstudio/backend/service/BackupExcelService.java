@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -212,7 +213,7 @@ public class BackupExcelService {
     }
 
     private void scriviPagamenti(Workbook wb, CellStyle headerStyle, LocalDate inizioPeriodo, LocalDate oggi) {
-        String[] headers = {"ID", "Studente", "Data", "Importo", "Metodo", "Causale", "Stato", "Note"};
+        String[] headers = {"ID", "Studente", "Data", "Mese riferimento", "Mesi coperti", "Importo", "Metodo", "Causale", "Stato", "Note"};
         List<Pagamento> pagamenti = pagamentoRepository.findByDataPagamentoBetween(inizioPeriodo, oggi);
         Sheet sheet = nuovoSheet(wb, "Pagamenti", headers, headerStyle);
         int r = 1;
@@ -222,6 +223,8 @@ public class BackupExcelService {
             set(row, c++, p.getId());
             set(row, c++, p.getStudente().getNome() + " " + p.getStudente().getCognome());
             set(row, c++, formatta(p.getDataPagamento()));
+            set(row, c++, p.getMeseRiferimento() != null ? YearMonth.from(p.getMeseRiferimento()).toString() : null);
+            set(row, c++, p.getMesiCoperti() != null ? p.getMesiCoperti() : 1);
             set(row, c++, p.getImporto());
             set(row, c++, p.getMetodo() != null ? p.getMetodo().name() : null);
             set(row, c++, p.getCausale());

@@ -23,6 +23,16 @@
               <div class="field"><label>Data pagamento</label><input id="fData" type="date"></div>
             </div>
             <div class="row2">
+              <div class="field"><label>Mese di riferimento</label><input id="fMese" type="month" required></div>
+              <div class="field">
+                <label>Mesi coperti</label>
+                <select id="fMesi">
+                  <option value="1">1 mese (mensile)</option>
+                  <option value="3">3 mesi (trimestrale)</option>
+                </select>
+              </div>
+            </div>
+            <div class="row2">
               <div class="field"><label>Metodo</label><select id="fMetodo"></select></div>
               <div class="field"><label>Stato</label><select id="fStato"></select></div>
             </div>
@@ -30,7 +40,7 @@
             <div class="field"><label>Note</label><textarea id="fNote" rows="2"></textarea></div>
             <div class="form-actions">
               <button type="submit" class="btn btn-accent">Salva</button>
-              <a class="btn btn-ghost" href="pagamenti.html">Annulla</a>
+              <a class="btn btn-ghost" id="linkAnnulla" href="pagamenti.html">Annulla</a>
             </div>
           </form>
         </div>

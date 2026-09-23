@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
@@ -79,6 +80,8 @@ public class PagamentoService {
         }
         pagamento.setMetodo(dto.getMetodo());
         pagamento.setCausale(dto.getCausale());
+        pagamento.setMeseRiferimento(dto.getMeseRiferimento() != null ? dto.getMeseRiferimento().atDay(1) : null);
+        pagamento.setMesiCoperti(dto.getMesiCoperti() != null ? dto.getMesiCoperti() : 1);
         pagamento.setStato(dto.getStato() != null ? dto.getStato() : StatoPagamento.PAGATO);
         pagamento.setNote(dto.getNote());
     }
@@ -98,6 +101,8 @@ public class PagamentoService {
                 .dataPagamento(p.getDataPagamento())
                 .metodo(p.getMetodo())
                 .causale(p.getCausale())
+                .meseRiferimento(p.getMeseRiferimento() != null ? YearMonth.from(p.getMeseRiferimento()) : null)
+                .mesiCoperti(p.getMesiCoperti() != null ? p.getMesiCoperti() : 1)
                 .stato(p.getStato())
                 .note(p.getNote())
                 .build();

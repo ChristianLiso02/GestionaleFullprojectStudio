@@ -6,6 +6,7 @@ const NAV_ITEMS = [
     { view: "studenti", href: "studenti.html", label: "Studenti" },
     { view: "iscrizioni", href: "iscrizioni.html", label: "Iscrizioni" },
     { view: "pagamenti", href: "pagamenti.html", label: "Pagamenti" },
+    { view: "quote", href: "quote.html", label: "Quote mensili" },
     { view: "presenze", href: "presenze.html", label: "Presenze" }
   ]},
   { group: "Organizzazione", items: [

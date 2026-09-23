@@ -154,6 +154,18 @@ tbody tr:hover { background: var(--grigio-chiaro); }
 .riepilogo-sesso { padding: 12px 18px; border-bottom: 1px solid var(--grigio-bordo); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 0.86rem; }
 .riepilogo-sesso .bilancia { width: 240px; }
 
+/* ---- quote mensili ---- */
+.riepilogo-quote { display: flex; gap: 10px; flex-wrap: wrap; padding: 14px 18px 6px; }
+.chip-quota { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--grigio-bordo); border-radius: 8px; background: var(--bianco); cursor: pointer; font-family: inherit; font-size: 0.84rem; }
+.chip-quota b { font-size: 1.1rem; }
+.chip-quota:hover { border-color: var(--ink-faint); }
+.chip-quota.attivo { border-color: var(--nero); box-shadow: inset 0 0 0 1px var(--nero); }
+.nota-quote { padding: 6px 18px 14px; font-size: 0.8rem; color: var(--ink-faint); border-bottom: 1px solid var(--grigio-bordo); }
+.testo-tenue { font-size: 0.78rem; color: var(--ink-faint); }
+a.stat { display: block; }
+a.stat:hover { border-color: var(--rosso); }
+.stat.allarme .num { color: var(--rosso); }
+
 @media (max-width: 840px) {
     .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: 78vw; max-width: 280px; transform: translateX(-100%); transition: transform .2s ease; }
     .sidebar.open { transform: translateX(0); }

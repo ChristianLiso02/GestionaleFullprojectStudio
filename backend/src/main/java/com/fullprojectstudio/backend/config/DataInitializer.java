@@ -100,17 +100,11 @@ public class DataInitializer implements CommandLineRunner {
 
             if (tipoAbbonamentoRepository.count() == 0) {
                 tipoAbbonamentoRepository.save(TipoAbbonamento.builder()
-                        .nome("Mensile").descrizione("Abbonamento mensile, corsi illimitati")
+                        .nome("Mensile").descrizione("Quota mensile del corso")
                         .durataGiorni(30).prezzo(new BigDecimal("60.00")).attivo(true).build());
                 tipoAbbonamentoRepository.save(TipoAbbonamento.builder()
-                        .nome("Trimestrale").descrizione("Abbonamento trimestrale, corsi illimitati")
+                        .nome("Trimestrale").descrizione("Quota trimestrale del corso (copre 3 mesi)")
                         .durataGiorni(90).prezzo(new BigDecimal("160.00")).attivo(true).build());
-                tipoAbbonamentoRepository.save(TipoAbbonamento.builder()
-                        .nome("Annuale").descrizione("Abbonamento annuale, corsi illimitati")
-                        .durataGiorni(365).prezzo(new BigDecimal("550.00")).attivo(true).build());
-                tipoAbbonamentoRepository.save(TipoAbbonamento.builder()
-                        .nome("Pacchetto 10 lezioni").descrizione("10 lezioni da utilizzare liberamente")
-                        .numeroLezioni(10).prezzo(new BigDecimal("120.00")).attivo(true).build());
             }
 
             corsoRepository.save(Corso.builder()

@@ -10,6 +10,7 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Iscrizioni** (studente ↔ corso, con scadenza calcolata dall'abbonamento)
 - **Pagamenti** (metodo, stato, causale)
 - **Presenze** (appello per corso/data)
+- **Quote mensili**: per ogni mese, chi ha pagato in tempo (entro il 7), in ritardo o non ha ancora pagato; il trimestrale copre 3 mesi
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, iscrizioni in scadenza, pagamenti in sospeso)
 - **Backup Excel automatico** ogni notte, così la segreteria può continuare a lavorare da un file locale anche se il gestionale non fosse raggiungibile (vedi sezione dedicata)
 
@@ -169,6 +170,7 @@ docker compose start backend frontend
 | `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
 | `BACKUP_DIR` | Cartella dove scrivere i backup Excel | `./backup` |
 | `BACKUP_CRON` | Orario di generazione automatica (formato cron) | `0 0 2 * * *` (ogni notte alle 02:00) |
+| `PAGAMENTI_GIORNO_SCADENZA` | Giorno del mese entro cui va pagata la quota (pagina "Quote mensili") | `7` |
 
 ## Build
 

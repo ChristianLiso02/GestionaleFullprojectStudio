@@ -131,6 +131,8 @@ public class IscrizioneService {
                 .stagioneNome(i.getCorso().getStagione() != null ? i.getCorso().getStagione().getNome() : null)
                 .tipoAbbonamentoId(i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().getId() : null)
                 .tipoAbbonamentoNome(i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().getNome() : null)
+                .quotaImporto(i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().getPrezzo() : i.getCorso().getPrezzoMensile())
+                .quotaMesi(i.getTipoAbbonamento() != null ? i.getTipoAbbonamento().mesiCoperti() : 1)
                 .dataIscrizione(i.getDataIscrizione())
                 .dataScadenza(i.getDataScadenza())
                 .stato(i.getStato())
