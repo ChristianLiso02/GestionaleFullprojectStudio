@@ -77,6 +77,26 @@ async function loadPresenzeDelGiorno() {
   }
 }
 
+// Statistiche del corso nella sua stagione, fino al mese corrente (o all'ultimo mese della stagione).
+async function loadAndamento(corso) {
+  if (!corso.stagioneId) return;
+  try {
+    const statistiche = await api.get(`/api/statistiche?stagioneId=${corso.stagioneId}`);
+    const datiCorso = statistiche.corsi.find(c => c.corsoId === corso.id);
+    if (!datiCorso || datiCorso.mesi.length === 0) return;
+    const mesi = datiCorso.mesi;
+    const ultimoMese = mesi[mesi.length - 1].mese;
+
+    document.getElementById("sezioneAndamento").hidden = false;
+    document.getElementById("titoloAndamento").textContent = `Andamento del corso · Stagione ${statistiche.stagioneNome}`;
+    document.getElementById("linkStatistiche").href = `statistiche.html?stagione=${corso.stagioneId}&corso=${corso.id}`;
+    renderKpiStatistiche(mesi, ultimoMese, false);
+    renderGraficiStatistiche(mesi, ultimoMese, false);
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
 async function init() {
   if (!corsoId) { showError("Corso non specificato."); return; }
   try {
@@ -86,6 +106,7 @@ async function init() {
     ]);
     renderCorsoInfo(corso);
     renderIscritti(iscrizioni);
+    loadAndamento(corso);
     iscrittiAttiviCache = iscrizioni.filter(i => i.stato === "ATTIVA");
 
     document.getElementById("linkGestisciPresenze").href = `presenze.html?corsoId=${corsoId}`;

@@ -37,6 +37,33 @@
           </div>
         </div>
 
+        <div id="sezioneAndamento" hidden>
+          <div class="sezione-titolo">
+            <h2 id="titoloAndamento">Andamento del corso</h2>
+            <a class="btn btn-ghost" id="linkStatistiche" href="statistiche.html">Apri nelle statistiche</a>
+          </div>
+          <h3 class="kpi-titolo" id="kpiTitolo"></h3>
+          <div class="kpi-grid" id="kpi"></div>
+          <div class="grafici-griglia">
+            <div class="panel grafico-card">
+              <div class="panel-head"><h2>Iscritti attivi</h2></div>
+              <div class="grafico-corpo" id="graficoIscritti"></div>
+            </div>
+            <div class="panel grafico-card">
+              <div class="panel-head"><h2>Incassi</h2></div>
+              <div class="grafico-corpo" id="graficoIncassi"></div>
+            </div>
+            <div class="panel grafico-card">
+              <div class="panel-head"><h2>Nuove iscrizioni e ritiri</h2></div>
+              <div class="grafico-corpo" id="graficoMovimenti"></div>
+            </div>
+            <div class="panel grafico-card">
+              <div class="panel-head"><h2>Stato delle quote</h2></div>
+              <div class="grafico-corpo" id="graficoQuote"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="panel">
           <div class="panel-head">
             <h2>Presenze</h2>
@@ -60,6 +87,8 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <script src="js/helpers.js"></script>
+  <script src="js/grafici.js"></script>
+  <script src="js/statistiche-comuni.js"></script>
   <script src="js/nav.js"></script>
   <script>
     requireAuth();
