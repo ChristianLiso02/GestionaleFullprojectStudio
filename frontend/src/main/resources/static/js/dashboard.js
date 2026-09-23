@@ -12,8 +12,7 @@
       { num: stats.corsiAttivi, lbl: "Corsi attivi" },
       { num: stats.iscrizioniAttive, lbl: "Iscrizioni attive" },
       { num: formatEuro(stats.incassiMeseCorrente), lbl: "Incassi mese corrente", accent: true },
-      { num: stats.quoteScadute, lbl: "Quote scadute da verificare", href: "#quoteScaduteBody", allarme: stats.quoteScadute > 0 },
-      { num: stats.pagamentiInSospeso, lbl: "Pagamenti in sospeso" }
+      { num: stats.quoteScadute, lbl: "Quote scadute da verificare", href: "#quoteScaduteBody", allarme: stats.quoteScadute > 0 }
     ];
     document.getElementById("statGrid").innerHTML = cards.map(c => {
       const classi = `stat${c.accent ? " accent" : ""}${c.allarme ? " allarme" : ""}`;

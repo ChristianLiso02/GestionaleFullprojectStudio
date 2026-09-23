@@ -120,7 +120,6 @@ function formatPeriodo(annoMese, mesi) {
 function pillClass(stato) {
   const map = {
     "ATTIVA": "pill-success", "ATTIVO": "pill-success", "PAGATO": "pill-success",
-    "IN_SOSPESO": "pill-warning", "RIMBORSATO": "pill-danger",
     "RITIRATO": "pill-muted", "INATTIVO": "pill-muted"
   };
   return map[stato] || "pill-muted";
@@ -190,4 +189,12 @@ async function riattivaIscrizione(id) {
     await api.put(`/api/iscrizioni/${id}/riattiva?data=${data}`);
     window.location.reload();
   } catch (err) { showError(err.message); }
+}
+
+// I pagamenti hanno un solo stato (effettuato). Quelli salvati in passato come "in sospeso" o
+// "rimborsato" non contano come incasso: lo si segnala sotto l'importo.
+function notaVecchioStatoPagamento(p) {
+  if (!p.stato || p.stato === "PAGATO") return "";
+  const nome = p.stato === "IN_SOSPESO" ? "in sospeso" : "rimborsato";
+  return `<br><span class="testo-tenue">${nome} · non conta</span>`;
 }

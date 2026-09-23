@@ -31,8 +31,16 @@ public class StudenteService {
     }
 
     public StudenteDto create(StudenteDto dto) {
+        String codiceFiscale = normalizzaCodiceFiscale(dto.getCodiceFiscale());
+        if (codiceFiscale == null) {
+            throw new IllegalArgumentException("Il codice fiscale è obbligatorio.");
+        }
+        if (studenteRepository.existsByCodiceFiscaleIgnoreCase(codiceFiscale)) {
+            throw new IllegalArgumentException("Esiste già uno studente con il codice fiscale " + codiceFiscale + ".");
+        }
         Studente studente = fromDto(dto);
         studente.setId(null);
+        studente.setCodiceFiscale(codiceFiscale);
         return toDto(studenteRepository.save(studente));
     }
 
@@ -41,7 +49,16 @@ public class StudenteService {
         studente.setNome(dto.getNome());
         studente.setCognome(dto.getCognome());
         studente.setSesso(dto.getSesso());
-        studente.setCodiceFiscale(blankToNull(dto.getCodiceFiscale()));
+        // Obbligatorio solo in creazione: gli studenti inseriti prima si possono modificare anche senza,
+        // ma un codice fiscale già presente non si può togliere.
+        String codiceFiscale = normalizzaCodiceFiscale(dto.getCodiceFiscale());
+        if (codiceFiscale == null && studente.getCodiceFiscale() != null) {
+            throw new IllegalArgumentException("Il codice fiscale non può essere tolto.");
+        }
+        if (codiceFiscale != null && studenteRepository.existsByCodiceFiscaleIgnoreCaseAndIdNot(codiceFiscale, id)) {
+            throw new IllegalArgumentException("Esiste già uno studente con il codice fiscale " + codiceFiscale + ".");
+        }
+        studente.setCodiceFiscale(codiceFiscale);
         studente.setDataNascita(dto.getDataNascita());
         studente.setTelefono(dto.getTelefono());
         studente.setEmail(dto.getEmail());
@@ -57,8 +74,8 @@ public class StudenteService {
         studenteRepository.delete(studente);
     }
 
-    private String blankToNull(String value) {
-        return (value == null || value.isBlank()) ? null : value;
+    private String normalizzaCodiceFiscale(String value) {
+        return (value == null || value.isBlank()) ? null : value.trim().toUpperCase();
     }
 
     private Studente getEntity(Long id) {
@@ -90,7 +107,7 @@ public class StudenteService {
                 .nome(dto.getNome())
                 .cognome(dto.getCognome())
                 .sesso(dto.getSesso())
-                .codiceFiscale(blankToNull(dto.getCodiceFiscale()))
+                .codiceFiscale(normalizzaCodiceFiscale(dto.getCodiceFiscale()))
                 .dataNascita(dto.getDataNascita())
                 .telefono(dto.getTelefono())
                 .email(dto.getEmail())

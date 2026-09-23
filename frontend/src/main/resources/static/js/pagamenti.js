@@ -13,16 +13,15 @@ function renderPagamenti() {
   const body = document.getElementById("pagamentiBody");
   const rows = [...pagamentiCache].sort((a, b) => (a.dataPagamento < b.dataPagamento ? 1 : -1));
   body.innerHTML = rows.length === 0
-    ? `<tr><td colspan="8" class="empty-state">Nessun pagamento registrato.</td></tr>`
+    ? `<tr><td colspan="7" class="empty-state">Nessun pagamento registrato.</td></tr>`
     : rows.map(p => `
         <tr>
           <td><b>${escapeHtml(p.studenteNomeCompleto)}</b></td>
           <td>${formatDate(p.dataPagamento)}</td>
           <td>${formatPeriodo(p.meseRiferimento, p.mesiCoperti)}</td>
-          <td>${formatEuro(p.importo)}</td>
+          <td>${formatEuro(p.importo)}${notaVecchioStatoPagamento(p)}</td>
           <td>${p.metodo}</td>
           <td>${escapeHtml(p.causale)}</td>
-          <td><span class="pill ${pillClass(p.stato)}">${p.stato}</span></td>
           <td class="cell-actions">
             <a class="btn btn-ghost btn-sm" href="pagamento-form.html?id=${p.id}">Modifica</a>
             <button class="btn btn-ghost btn-sm" onclick="eliminaPagamento(${p.id})">Elimina</button>

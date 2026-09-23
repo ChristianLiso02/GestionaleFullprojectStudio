@@ -53,7 +53,6 @@ public class DashboardService {
                 .corsiAttivi(corsiAttivi)
                 .iscrizioniAttive(iscrizioniAttive)
                 .incassiMeseCorrente(incassiMese)
-                .pagamentiInSospeso(pagamentoRepository.findByStato(StatoPagamento.IN_SOSPESO).size())
                 .quoteScadute(quoteScadute.size())
                 .quoteScaduteDaVerificare(quoteScadute)
                 .build();

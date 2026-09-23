@@ -206,6 +206,8 @@ a.stat:hover { border-color: var(--rosso); }
 .sezione-titolo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 6px 0 12px; }
 .sezione-titolo h2 { margin: 0; font-size: 1.15rem; }
 
+.avviso { background: var(--giallo-soft); color: #6b4a08; border-radius: 8px; padding: 10px 12px; font-size: 0.84rem; margin-bottom: 12px; }
+
 @media (max-width: 600px) {
     .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .kpi-grid .stat .num { font-size: 1.5rem; }

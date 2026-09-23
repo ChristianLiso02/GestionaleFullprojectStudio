@@ -1,5 +1,4 @@
 const METODI_PAGAMENTO = ["CONTANTI", "CARTA", "BONIFICO", "ALTRO"];
-const STATI_PAGAMENTO = ["PAGATO", "IN_SOSPESO", "RIMBORSATO"];
 const pagamentoId = new URLSearchParams(window.location.search).get("id");
 const studenteIdIniziale = new URLSearchParams(window.location.search).get("studenteId");
 const iscrizioneIdIniziale = new URLSearchParams(window.location.search).get("iscrizioneId");
@@ -19,7 +18,6 @@ async function loadStudenti() {
   });
 
   document.getElementById("fMetodo").innerHTML = METODI_PAGAMENTO.map(m => `<option value="${m}">${m}</option>`).join("");
-  document.getElementById("fStato").innerHTML = STATI_PAGAMENTO.map(s => `<option value="${s}">${s}</option>`).join("");
 }
 
 async function loadIscrizioniStudente(studenteId, iscrizioneSelezionata) {
@@ -74,7 +72,13 @@ function fillForm(p) {
   document.getElementById("fImporto").value = p.importo ?? "";
   document.getElementById("fData").value = p.dataPagamento || todayISO();
   document.getElementById("fMetodo").value = p.metodo || "CONTANTI";
-  document.getElementById("fStato").value = p.stato || "PAGATO";
+  if (p.stato && p.stato !== "PAGATO") {
+    const nome = p.stato === "IN_SOSPESO" ? "in sospeso" : "rimborsato";
+    const avviso = document.getElementById("avvisoStato");
+    avviso.textContent = `Questo pagamento era segnato come "${nome}" e per ora non conta come incasso. ` +
+      `Se lo salvi diventa un pagamento effettuato; se i soldi non sono stati ricevuti (o sono stati restituiti), eliminalo dalla lista Pagamenti.`;
+    avviso.hidden = false;
+  }
   document.getElementById("fCausale").value = p.causale || "";
   document.getElementById("fMese").value = p.meseRiferimento || "";
   impostaMesi(p.mesiCoperti || 1);
@@ -90,7 +94,7 @@ function readForm() {
     meseRiferimento: document.getElementById("fMese").value || null,
     mesiCoperti: parseInt(document.getElementById("fMesi").value) || 1,
     metodo: document.getElementById("fMetodo").value,
-    stato: document.getElementById("fStato").value,
+    stato: "PAGATO",
     causale: document.getElementById("fCausale").value.trim(),
     note: document.getElementById("fNote").value.trim()
   };
