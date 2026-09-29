@@ -177,8 +177,9 @@ Sul server, nella cartella `GestionaleFullprojectStudio/backup/`, si creano ogni
 - alle **03:00** la copia completa del database in `backup/postgres/` (7 giorni, 4 settimane, 6 mesi): è quella
   che serve per ricostruire tutto.
 
-**Importante: una copia deve stare anche fuori dal server.** Il modo più semplice, una volta alla settimana, dal
-PC (PowerShell o Terminale, non dentro il server):
+**Importante: una copia deve stare anche fuori dal server.** Il modo più semplice: nel gestionale, pagina
+**Backup** (menu a sinistra, in fondo) → **Scarica** sul backup più recente, una volta alla settimana.
+In alternativa, dal PC (PowerShell o Terminale, non dentro il server) si scarica tutta la cartella:
 
 ```bash
 scp -r gestionale@95.110.x.x:GestionaleFullprojectStudio/backup ./backup-gestionale
@@ -222,7 +223,7 @@ Il database non è raggiungibile da internet: DBeaver ci arriva passando dalla c
 | "Troppi tentativi sbagliati" al login | Dopo 5 password sbagliate il login di quell'utente si blocca per 15 minuti da quel dispositivo: aspetta, oppure entra da un'altra rete |
 | Password dimenticata | Entra con l'altro utente (admin o segreteria), oppure chiedi assistenza: le password nel `.env` valgono solo al primo avvio |
 
-Per cambiare password dall'interno del gestionale: pulsante **Cambia password** in alto a destra.
+Per cambiare password dall'interno del gestionale: clicca sul tuo nome in alto a destra → **Impostazioni**.
 
 ---
 

@@ -41,18 +41,25 @@ function render() {
 
 function renderTabellaMesi(mesi) {
   const scuola = vista === "scuola";
+  // Colonne raggruppate (uomini/donne, movimenti, quote) per stare nella pagina senza scorrere di lato.
   document.getElementById("mesiHead").innerHTML = `<tr>
-    <th>Mese</th><th>Iscritti attivi</th>${scuola ? "<th>Studenti distinti</th>" : ""}<th>Uomini</th><th>Donne</th>
-    <th>Nuove</th><th>Ritiri</th><th>Rientri</th><th>Incassi</th>
-    <th>In tempo</th><th>In ritardo</th><th>Scadute</th><th>Da rinnovare</th><th>Puntualità</th></tr>`;
+    <th>Mese</th><th>Iscritti attivi</th>${scuola ? "<th>Studenti distinti</th>" : ""}<th>Uomini / Donne</th>
+    <th>Nuove · Ritiri · Rientri</th><th>Incassi</th>
+    <th>Quote<br><span class="legenda-quote"><i class="q-tempo"></i>in tempo <i class="q-ritardo"></i>in ritardo <i class="q-scadute"></i>scadute <i class="q-rinnovare"></i>da rinnovare</span></th>
+    <th>Puntualità</th></tr>`;
+  const quote = m => `<span class="conteggi-quote">
+      <span class="q-tempo" title="Pagate in tempo">${m.quotePagateInTempo}</span>
+      <span class="q-ritardo" title="Pagate in ritardo">${m.quotePagateInRitardo}</span>
+      <span class="q-scadute" title="Scadute">${m.quoteScadute}</span>
+      <span class="q-rinnovare" title="Da rinnovare">${m.quoteDaRinnovare}</span></span>`;
   const riga = (m, classe = "") => `
     <tr class="${classe}">
       <td>${m.mese ? `<b>${formatMese(m.mese)}</b>` : "<b>Totale stagione</b>"}</td>
       <td>${m.iscrittiAttivi ?? "–"}</td>${scuola ? `<td>${m.studentiAttivi ?? "–"}</td>` : ""}
-      <td>${m.uomini ?? "–"}</td><td>${m.donne ?? "–"}</td>
-      <td>${m.nuoveIscrizioni}</td><td>${m.ritiri}</td><td>${m.rientri}</td>
+      <td>${m.uomini == null ? "–" : `${m.uomini} / ${m.donne}`}</td>
+      <td>${m.nuoveIscrizioni} · ${m.ritiri} · ${m.rientri}</td>
       <td>${formatEuro(m.incassi)}</td>
-      <td>${m.quotePagateInTempo}</td><td>${m.quotePagateInRitardo}</td><td>${m.quoteScadute}</td><td>${m.quoteDaRinnovare}</td>
+      <td>${quote(m)}</td>
       <td>${formatPercentuale(puntualita(m.quotePagateInTempo, m.quotePagateInRitardo, m.quoteScadute))}</td>
     </tr>`;
   const totali = {
@@ -78,7 +85,7 @@ function renderConfrontoCorsi() {
         const punt = puntualita(somma(c.mesi, "quotePagateInTempo"), somma(c.mesi, "quotePagateInRitardo"), somma(c.mesi, "quoteScadute"));
         return `
           <tr>
-            <td><b>${escapeHtml(c.corsoNome)}</b>${c.attivo ? "" : `<br><span class="testo-tenue">corso non attivo</span>`}</td>
+            <td style="min-width:150px"><b>${escapeHtml(c.corsoNome)}</b>${c.attivo ? "" : `<br><span class="testo-tenue">corso non attivo</span>`}</td>
             <td>${formatPosti(m.iscrittiAttivi || 0, c.capienzaMax)}</td>
             <td>${formatUominiDonne(m.uomini, m.donne, m.iscrittiAttivi)}</td>
             <td>${m.quoteScadute ? `<span class="pill pill-danger">${m.quoteScadute}</span>` : "0"}</td>

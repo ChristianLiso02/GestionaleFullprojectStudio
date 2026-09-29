@@ -23,14 +23,14 @@ function renderAbbonamenti() {
           <td><span class="pill ${a.attivo ? "pill-success" : "pill-muted"}">${a.attivo ? "Attivo" : "Inattivo"}</span></td>
           <td class="cell-actions">
             <a class="btn btn-ghost btn-sm" href="abbonamento-form.html?id=${a.id}">Modifica</a>
-            <button class="btn btn-ghost btn-sm" onclick="eliminaAbbonamento(${a.id})">Elimina</button>
+            <button class="btn btn-elimina btn-sm" onclick="eliminaAbbonamento(${a.id})">Elimina</button>
           </td>
         </tr>
       `).join("");
 }
 
 async function eliminaAbbonamento(id) {
-  if (!confirm("Eliminare questo tipo di abbonamento?")) return;
+  if (!await confermaEliminazione("questo tipo di abbonamento")) return;
   try {
     await api.del(`/api/abbonamenti/${id}`);
     await loadAbbonamenti();

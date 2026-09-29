@@ -156,8 +156,8 @@ function chiediData({ titolo, testo, conferma, valore }) {
         <p>${testo}</p>
         <div class="field"><label>Data</label><input type="date" name="data" value="${valore || oggi}" max="${oggi}" required></div>
         <div class="dialogo-azioni">
-          <button value="annulla" class="btn btn-ghost" formnovalidate>Annulla</button>
-          <button value="ok" class="btn btn-accent">${conferma}</button>
+          <button value="annulla" class="btn btn-annulla" formnovalidate>Annulla</button>
+          <button value="ok" class="btn btn-salva">${conferma}</button>
         </div>
       </form>`;
     document.body.appendChild(dialogo);
@@ -204,4 +204,88 @@ function notaVecchioStatoPagamento(p) {
   if (!p.stato || p.stato === "PAGATO") return "";
   const nome = p.stato === "IN_SOSPESO" ? "in sospeso" : "rimborsato";
   return `<br><span class="testo-tenue">${nome} · non conta</span>`;
+}
+
+// Finestra di conferma al posto di confirm() del browser. Con pericolo=true il pulsante di conferma è rosso
+// (eliminazioni). Restituisce true se si conferma, false se si annulla o si chiude.
+function conferma({ titolo, testo, conferma = "Conferma", pericolo = false }) {
+  return new Promise(resolve => {
+    const dialogo = document.createElement("dialog");
+    dialogo.className = "dialogo";
+    dialogo.innerHTML = `
+      <form method="dialog">
+        <h3>${escapeHtml(titolo)}</h3>
+        <p>${escapeHtml(testo)}</p>
+        <div class="dialogo-azioni">
+          <button value="annulla" class="btn btn-annulla">Annulla</button>
+          <button value="ok" class="btn ${pericolo ? "btn-elimina-pieno" : "btn-salva"}">${escapeHtml(conferma)}</button>
+        </div>
+      </form>`;
+    document.body.appendChild(dialogo);
+    dialogo.addEventListener("close", () => {
+      const ok = dialogo.returnValue === "ok";
+      dialogo.remove();
+      resolve(ok);
+    });
+    dialogo.showModal();
+    // Il fuoco va su "Annulla": un Invio distratto non elimina niente.
+    dialogo.querySelector('button[value="annulla"]').focus();
+  });
+}
+
+function confermaEliminazione(cosa, dettaglio) {
+  return conferma({
+    titolo: `Eliminare ${cosa}?`,
+    testo: (dettaglio ? dettaglio + " " : "") + "L'operazione non si può annullare.",
+    conferma: "Elimina",
+    pericolo: true
+  });
+}
+
+// Righe di tabella che aprono una pagina di dettaglio: tutta la riga è cliccabile (anche da tastiera),
+// tranne i pulsanti e i link al suo interno, che mantengono la loro azione.
+function attributiRiga(href) {
+  return `class="riga-link" data-href="${escapeHtml(href)}" tabindex="0"`;
+}
+
+document.addEventListener("click", e => {
+  const riga = e.target.closest("tr.riga-link");
+  if (!riga || e.target.closest("a, button, input, select, textarea, label")) return;
+  if (e.ctrlKey || e.metaKey) window.open(riga.dataset.href, "_blank");
+  else window.location.href = riga.dataset.href;
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  const riga = e.target.closest && e.target.closest("tr.riga-link");
+  if (riga && e.target === riga) window.location.href = riga.dataset.href;
+});
+
+// "19:00:00" -> "19:00"
+function formatOra(t) {
+  return t ? String(t).slice(0, 5) : "";
+}
+
+const GIORNI_BREVI = { MONDAY: "Lun", TUESDAY: "Mar", WEDNESDAY: "Mer", THURSDAY: "Gio", FRIDAY: "Ven", SATURDAY: "Sab", SUNDAY: "Dom" };
+const ORDINE_GIORNI = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+
+// "Lun · Mer" e "19:00–20:00" di un corso
+function formatGiorni(giorni) {
+  return [...(giorni || [])].sort((a, b) => ORDINE_GIORNI.indexOf(a) - ORDINE_GIORNI.indexOf(b)).map(g => GIORNI_BREVI[g]).join(" · ");
+}
+function formatFasciaOraria(c) {
+  return c.orarioInizio ? `${formatOra(c.orarioInizio)}–${formatOra(c.orarioFine)}` : "";
+}
+
+// "STILE_DI_BALLO" -> "Stile di ballo"
+function formatEnum(v) {
+  if (!v) return "";
+  const t = String(v).toLowerCase().replace(/_/g, " ");
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function formatDimensione(byte) {
+  if (byte == null) return "-";
+  if (byte < 1024) return byte + " B";
+  if (byte < 1024 * 1024) return Math.round(byte / 1024) + " KB";
+  return (byte / (1024 * 1024)).toLocaleString("it-IT", { maximumFractionDigits: 1 }) + " MB";
 }

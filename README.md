@@ -15,6 +15,8 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, quote scadute da verificare)
 - **Statistiche** mese per mese, per tutta la scuola e per singolo corso: iscritti attivi (uomini/donne), nuove iscrizioni, ritiri e rientri, incassi, puntualità delle quote, con grafici e tabella
 - **Esportazione Excel di ogni corso** (pulsante "Scarica Excel" nel dettaglio corso): dati del corso, iscritti con contatti, griglia delle quote mese per mese, pagamenti, presenze e statistiche. Contiene dati personali e sanitari (note mediche): va conservato e condiviso con attenzione
+- **Pagina Backup** (menu a sinistra, sezione Sistema): elenco dei backup con pulsante per scaricarli e per crearne uno subito
+- **Profilo e impostazioni** dal menu che si apre cliccando sul proprio nome in alto a destra: modifica di nome, cognome ed email, cambio password
 - **Backup Excel automatico** ogni notte, così la segreteria può continuare a lavorare da un file locale anche se il gestionale non fosse raggiungibile (vedi sezione dedicata)
 
 Backend in **Java**, frontend statico (HTML/CSS/JS) — due progetti indipendenti.

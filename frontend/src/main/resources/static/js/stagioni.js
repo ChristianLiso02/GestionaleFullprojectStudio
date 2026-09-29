@@ -21,14 +21,14 @@ function renderStagioni() {
           <td class="cell-actions">
             ${s.corrente ? "" : `<button class="btn btn-ghost btn-sm" onclick="rendiCorrente(${s.id})">Rendi corrente</button>`}
             <a class="btn btn-ghost btn-sm" href="stagione-form.html?id=${s.id}">Modifica</a>
-            <button class="btn btn-ghost btn-sm" onclick="eliminaStagione(${s.id})">Elimina</button>
+            <button class="btn btn-elimina btn-sm" onclick="eliminaStagione(${s.id})">Elimina</button>
           </td>
         </tr>
       `).join("");
 }
 
 async function rendiCorrente(id) {
-  if (!confirm("Rendere questa la stagione corrente? Le pagine Corsi, Iscrizioni e Dashboard mostreranno di default i dati di questa stagione.")) return;
+  if (!await conferma({ titolo: "Rendere corrente questa stagione?", testo: "Le pagine Corsi, Iscrizioni e Dashboard mostreranno di default i dati di questa stagione.", conferma: "Rendi corrente" })) return;
   try {
     await api.put(`/api/stagioni/${id}/corrente`);
     await loadStagioni();
@@ -36,7 +36,7 @@ async function rendiCorrente(id) {
 }
 
 async function eliminaStagione(id) {
-  if (!confirm("Eliminare questa stagione? Possibile solo se non ha corsi collegati.")) return;
+  if (!await confermaEliminazione("questa stagione", "Possibile solo se non ha corsi collegati.")) return;
   try {
     await api.del(`/api/stagioni/${id}`);
     await loadStagioni();

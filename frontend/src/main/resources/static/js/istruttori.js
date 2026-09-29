@@ -22,14 +22,14 @@ function renderIstruttori() {
           <td><span class="pill ${i.attivo ? "pill-success" : "pill-muted"}">${i.attivo ? "Attivo" : "Inattivo"}</span></td>
           <td class="cell-actions">
             <a class="btn btn-ghost btn-sm" href="istruttore-form.html?id=${i.id}">Modifica</a>
-            <button class="btn btn-ghost btn-sm" onclick="eliminaIstruttore(${i.id})">Elimina</button>
+            <button class="btn btn-elimina btn-sm" onclick="eliminaIstruttore(${i.id})">Elimina</button>
           </td>
         </tr>
       `).join("");
 }
 
 async function eliminaIstruttore(id) {
-  if (!confirm("Eliminare questo istruttore?")) return;
+  if (!await confermaEliminazione("questo istruttore")) return;
   try {
     await api.del(`/api/istruttori/${id}`);
     await loadIstruttori();

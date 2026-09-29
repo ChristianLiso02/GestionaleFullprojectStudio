@@ -86,4 +86,20 @@ class AuthServiceTest {
         assertThat(utente.getPassword()).isEqualTo("hashNuovo");
         verify(utenteRepository).save(utente);
     }
+
+    @Test
+    void ilProfiloAggiornaNomeCognomeEmailMaNonUsername() {
+        Utente u = utente();
+        when(utenteRepository.findByUsername("admin")).thenReturn(Optional.of(u));
+        when(utenteRepository.save(any(Utente.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        com.fullprojectstudio.backend.dto.ProfiloDto dto = com.fullprojectstudio.backend.dto.ProfiloDto.builder()
+                .username("altro").ruolo("SEGRETERIA").nome("  Maria ").cognome("Rossi").email(" ").build();
+        com.fullprojectstudio.backend.dto.ProfiloDto risultato = authService.aggiornaProfilo("admin", dto);
+
+        assertThat(risultato.getNome()).isEqualTo("Maria");
+        assertThat(risultato.getEmail()).isNull();
+        assertThat(risultato.getUsername()).isEqualTo("admin");
+        assertThat(risultato.getRuolo()).isEqualTo("ADMIN");
+    }
 }

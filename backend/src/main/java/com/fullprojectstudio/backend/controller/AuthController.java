@@ -3,6 +3,7 @@ package com.fullprojectstudio.backend.controller;
 import com.fullprojectstudio.backend.dto.CambioPasswordRequest;
 import com.fullprojectstudio.backend.dto.LoginRequest;
 import com.fullprojectstudio.backend.dto.LoginResponse;
+import com.fullprojectstudio.backend.dto.ProfiloDto;
 import com.fullprojectstudio.backend.exception.TroppiTentativiException;
 import com.fullprojectstudio.backend.security.LimiteTentativiLogin;
 import com.fullprojectstudio.backend.service.AuthService;
@@ -50,6 +51,16 @@ public class AuthController {
             return inoltrato.split(",")[0].trim();
         }
         return http.getRemoteAddr();
+    }
+
+    @GetMapping("/profilo")
+    public ProfiloDto profilo(Authentication authentication) {
+        return authService.profilo(authentication.getName());
+    }
+
+    @PutMapping("/profilo")
+    public ProfiloDto aggiornaProfilo(@Valid @RequestBody ProfiloDto dto, Authentication authentication) {
+        return authService.aggiornaProfilo(authentication.getName(), dto);
     }
 
     @PutMapping("/password")

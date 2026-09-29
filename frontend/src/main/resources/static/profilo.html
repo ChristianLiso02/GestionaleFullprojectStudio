@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FullProject Studio - Profilo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+        <div id="successBox" class="successo" hidden></div>
+        <div class="panel" style="max-width:620px">
+          <div class="profilo-testa">
+            <div class="avatar" id="profiloAvatar"></div>
+            <div><b id="profiloNome"></b><span id="profiloAccount"></span></div>
+          </div>
+          <form id="profiloForm" class="scheda" novalidate>
+            <h3 style="margin:0 0 12px;font-size:1rem">Modifica i tuoi dati</h3>
+            <div class="row2">
+              <div class="field"><label for="fNome">Nome</label><input id="fNome" required maxlength="100" autocomplete="given-name"></div>
+              <div class="field"><label for="fCognome">Cognome</label><input id="fCognome" required maxlength="100" autocomplete="family-name"></div>
+            </div>
+            <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" maxlength="150" autocomplete="email"></div>
+            <div class="field"><label>Nome utente (per il login)</label><input id="fUsername" disabled></div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-salva">Salva</button>
+              <a class="btn btn-annulla" href="dashboard.html">Annulla</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("profilo", "Profilo", "I dati del tuo account");
+  </script>
+  <script src="js/profilo.js"></script>
+</body>
+</html>

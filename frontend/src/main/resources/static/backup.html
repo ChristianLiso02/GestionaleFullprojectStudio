@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FullProject Studio - Backup</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Backup automatici</h2>
+            <button type="button" class="btn btn-accent" id="btnGenera">Crea backup Excel adesso</button>
+          </div>
+          <div class="scheda">
+            <p class="nota-pagina" id="spiegazione">Ogni notte il gestionale salva da solo una copia dei dati.</p>
+            <p class="nota-pagina testo-tenue" id="cartella" style="margin-top:8px"></p>
+          </div>
+        </div>
+        <div id="successBox" class="successo" hidden></div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Backup disponibili</h2>
+            <span class="testo-tenue">Scaricane uno ogni tanto e conservalo fuori da questo computer</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tipo</th><th>Data</th><th>File</th><th>Dimensione</th><th><span class="sr-only">Azioni</span></th></tr></thead>
+              <tbody id="backupBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("backup", "Backup", "Copie di sicurezza dei dati");
+  </script>
+  <script src="js/backup.js"></script>
+</body>
+</html>

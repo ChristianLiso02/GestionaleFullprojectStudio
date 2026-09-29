@@ -38,8 +38,8 @@ function renderIscritti(iscrizioni) {
   body.innerHTML = iscrizioni.length === 0
     ? `<tr><td colspan="5" class="empty-state">Nessuno studente iscritto a questo corso.</td></tr>`
     : iscrizioni.map(i => `
-        <tr>
-          <td><a href="studente-dettaglio.html?id=${i.studenteId}"><b>${escapeHtml(i.studenteNomeCompleto)}</b></a></td>
+        <tr ${attributiRiga(`iscrizione-dettaglio.html?id=${i.id}`)}>
+          <td><b>${escapeHtml(i.studenteNomeCompleto)}</b></td>
           <td>${escapeHtml(i.tipoAbbonamentoNome) || "-"}</td>
           <td>${formatDate(i.dataIscrizione)}</td>
           <td>${statoIscrizioneHtml(i)}</td>

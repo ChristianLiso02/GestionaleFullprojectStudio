@@ -24,14 +24,14 @@ function renderPagamenti() {
           <td>${escapeHtml(p.causale)}</td>
           <td class="cell-actions">
             <a class="btn btn-ghost btn-sm" href="pagamento-form.html?id=${p.id}">Modifica</a>
-            <button class="btn btn-ghost btn-sm" onclick="eliminaPagamento(${p.id})">Elimina</button>
+            <button class="btn btn-elimina btn-sm" onclick="eliminaPagamento(${p.id})">Elimina</button>
           </td>
         </tr>
       `).join("");
 }
 
 async function eliminaPagamento(id) {
-  if (!confirm("Eliminare questo pagamento?")) return;
+  if (!await confermaEliminazione("questo pagamento", "La quota coperta tornerà da pagare.")) return;
   try {
     await api.del(`/api/pagamenti/${id}`);
     await loadPagamenti();

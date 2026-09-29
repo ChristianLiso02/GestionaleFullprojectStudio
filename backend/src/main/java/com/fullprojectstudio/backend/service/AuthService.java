@@ -3,6 +3,7 @@ package com.fullprojectstudio.backend.service;
 import com.fullprojectstudio.backend.dto.CambioPasswordRequest;
 import com.fullprojectstudio.backend.dto.LoginRequest;
 import com.fullprojectstudio.backend.dto.LoginResponse;
+import com.fullprojectstudio.backend.dto.ProfiloDto;
 import com.fullprojectstudio.backend.exception.ResourceNotFoundException;
 import com.fullprojectstudio.backend.model.Utente;
 import com.fullprojectstudio.backend.repository.UtenteRepository;
@@ -38,6 +39,33 @@ public class AuthService {
                 .nome(utente.getNome())
                 .cognome(utente.getCognome())
                 .ruolo(utente.getRuolo().name())
+                .build();
+    }
+
+    public ProfiloDto profilo(String username) {
+        return toProfilo(utente(username));
+    }
+
+    public ProfiloDto aggiornaProfilo(String username, ProfiloDto dto) {
+        Utente utente = utente(username);
+        utente.setNome(dto.getNome().trim());
+        utente.setCognome(dto.getCognome().trim());
+        utente.setEmail(dto.getEmail() == null || dto.getEmail().isBlank() ? null : dto.getEmail().trim());
+        return toProfilo(utenteRepository.save(utente));
+    }
+
+    private Utente utente(String username) {
+        return utenteRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
+    }
+
+    private ProfiloDto toProfilo(Utente u) {
+        return ProfiloDto.builder()
+                .username(u.getUsername())
+                .ruolo(u.getRuolo().name())
+                .nome(u.getNome())
+                .cognome(u.getCognome())
+                .email(u.getEmail())
                 .build();
     }
 

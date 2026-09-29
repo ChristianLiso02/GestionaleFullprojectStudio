@@ -126,8 +126,8 @@ public class DataInitializer implements CommandLineRunner {
                 + "===========================================\r\n\r\n"
                 + "Indirizzo:  http://localhost:" + porta + "\r\n\r\n"
                 + String.join("\r\n", credenziali) + "\r\n\r\n"
-                + "IMPORTANTE: dopo il primo accesso cambia le password con il pulsante \"Cambia password\"\r\n"
-                + "in alto a destra, poi CANCELLA questo file.\r\n";
+                + "IMPORTANTE: dopo il primo accesso cambia le password: clicca sul tuo nome in alto a destra,\r\n"
+                + "poi Impostazioni. Fatto questo, CANCELLA questo file.\r\n";
         try {
             Files.createDirectories(file.toAbsolutePath().getParent());
             Files.writeString(file, testo, StandardCharsets.UTF_8);

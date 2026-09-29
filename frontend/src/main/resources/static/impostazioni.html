@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FullProject Studio - Impostazioni</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+        <div id="successBox" class="successo" hidden></div>
+        <div class="panel" style="max-width:620px">
+          <div class="panel-head"><h2>Cambia password</h2></div>
+          <form id="passwordForm" class="scheda" novalidate>
+            <p class="nota-pagina" style="margin-bottom:14px">Usa almeno 8 caratteri. Dopo 5 tentativi sbagliati il login si blocca per 15 minuti.</p>
+            <div class="field"><label for="fVecchia">Password attuale</label><input id="fVecchia" type="password" required autocomplete="current-password"></div>
+            <div class="field"><label for="fNuova">Nuova password</label><input id="fNuova" type="password" required minlength="8" autocomplete="new-password"></div>
+            <div class="field"><label for="fConferma">Conferma nuova password</label><input id="fConferma" type="password" required minlength="8" autocomplete="new-password"></div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-salva">Salva nuova password</button>
+              <a class="btn btn-annulla" href="dashboard.html">Annulla</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("impostazioni", "Impostazioni", "Sicurezza del tuo account");
+  </script>
+  <script src="js/impostazioni.js"></script>
+</body>
+</html>

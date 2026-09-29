@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FullProject Studio - Corsi</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,14 +18,14 @@
           <div class="panel-head">
             <h2>Corsi</h2>
             <div class="toolbar">
-              <select id="stagioneSelect"></select>
+              <label class="filtro">Stagione <select id="stagioneSelect"></select></label>
               <a class="btn btn-accent" href="corso-form.html">+ Nuovo corso</a>
             </div>
           </div>
           <div class="riepilogo-sesso" id="riepilogoSesso" hidden></div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Nome</th><th>Stile</th><th>Livello</th><th>Istruttore</th><th>Sala</th><th>Orario</th><th>Posti</th><th>Uomini / Donne</th><th>Prezzo/mese</th><th>Stato</th><th></th></tr></thead>
+              <thead><tr><th>Corso</th><th>Istruttori</th><th>Sala</th><th>Giorni e orario</th><th>Posti</th><th>Uomini / Donne</th><th>Prezzo/mese</th><th><span class="sr-only">Azioni</span></th></tr></thead>
               <tbody id="corsiBody"></tbody>
             </table>
           </div>

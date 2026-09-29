@@ -20,14 +20,14 @@ function renderSale() {
           <td>${escapeHtml(s.note)}</td>
           <td class="cell-actions">
             <a class="btn btn-ghost btn-sm" href="sala-form.html?id=${s.id}">Modifica</a>
-            <button class="btn btn-ghost btn-sm" onclick="eliminaSala(${s.id})">Elimina</button>
+            <button class="btn btn-elimina btn-sm" onclick="eliminaSala(${s.id})">Elimina</button>
           </td>
         </tr>
       `).join("");
 }
 
 async function eliminaSala(id) {
-  if (!confirm("Eliminare questa sala?")) return;
+  if (!await confermaEliminazione("questa sala")) return;
   try {
     await api.del(`/api/sale/${id}`);
     await loadSale();

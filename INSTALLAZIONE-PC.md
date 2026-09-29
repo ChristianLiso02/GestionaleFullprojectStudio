@@ -46,7 +46,7 @@ Cosa trovi dopo l'installazione:
 
 1. Menu Start → **FullProject Studio** → **Password iniziali**: si apre un file con utente e password
    (`admin` per te, `segreteria` per la segreteria), create a caso durante l'installazione.
-2. Entra con `segreteria`, poi clicca **Cambia password** in alto a destra e scegline una nuova.
+2. Entra con `segreteria`, poi clicca sul tuo nome in alto a destra → **Impostazioni** e scegli una nuova password.
    Fai lo stesso con `admin`.
 3. **Cancella il file** delle password iniziali (Start → *Cartella dati e backup* → `credenziali-iniziali.txt`).
 4. Inserisci i dati di base, in quest'ordine: **sale**, **istruttori**, **abbonamenti** ("Mensile" con durata
@@ -70,6 +70,9 @@ Nella cartella scelta all'installazione il gestionale salva:
 
 **Se il PC di notte è spento** (il caso più comune) non si perde niente: all'accensione, dopo pochi minuti,
 il gestionale si accorge che manca il backup e lo fa subito.
+
+Tutti i backup si vedono anche dentro il gestionale, nella pagina **Backup** (menu a sinistra, in fondo):
+da lì si possono scaricare con un clic o crearne uno subito.
 
 **Se la cartella non è su Drive/OneDrive**, una volta alla settimana copia la cartella dei backup su una
 chiavetta (menu Start → FullProject Studio → *Cartella dati e backup* → cartella `backup`).

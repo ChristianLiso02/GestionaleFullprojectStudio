@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FullProject Studio - Iscrizione</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <div id="sidebar-container"></div>
+    <div class="main">
+      <div id="topbar-container"></div>
+      <div class="content">
+        <div id="errorBox" hidden></div>
+        <div class="panel">
+          <div class="intestazione-dettaglio">
+            <div class="relazione" id="relazione"></div>
+            <div class="toolbar" id="azioniIscrizione"></div>
+          </div>
+        </div>
+        <div class="griglia-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Studente</h2><a class="btn btn-ghost btn-sm" id="linkStudente" href="#">Apri scheda studente</a></div>
+            <div class="scheda" id="schedaStudente"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Corso</h2><a class="btn btn-ghost btn-sm" id="linkCorso" href="#">Apri corso</a></div>
+            <div class="scheda" id="schedaCorso"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Dettagli dell&#39;iscrizione</h2></div>
+          <div class="scheda" id="schedaIscrizione"></div>
+        </div>
+        <div class="panel" id="pannelloScadute" hidden>
+          <div class="panel-head"><h2>Quote scadute</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Mese</th><th>Quota</th><th><span class="sr-only">Azioni</span></th></tr></thead>
+              <tbody id="scaduteBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="griglia-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Pagamenti</h2><a class="btn btn-accent btn-sm" id="linkNuovoPagamento" href="#">+ Registra pagamento</a></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Data</th><th>Riferimento</th><th>Importo</th></tr></thead>
+                <tbody id="pagamentiBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Presenze</h2><span class="testo-tenue" id="riepilogoPresenze"></span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Lezione</th><th>Presenza</th></tr></thead>
+                <tbody id="presenzeBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    requireAuth();
+    renderNav("iscrizioni", "Iscrizione", "Lo studente e il corso a cui è iscritto");
+  </script>
+  <script src="js/iscrizione-dettaglio.js"></script>
+</body>
+</html>

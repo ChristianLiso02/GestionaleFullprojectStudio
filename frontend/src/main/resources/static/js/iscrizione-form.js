@@ -55,7 +55,7 @@ function renderRitiri(i) {
 }
 
 async function annullaRitiro(periodoId) {
-  if (!confirm("Annullare questo periodo di ritiro? I mesi che copriva torneranno dovuti.")) return;
+  if (!await conferma({ titolo: "Annullare questo periodo di ritiro?", testo: "I mesi che copriva torneranno dovuti.", conferma: "Annulla il ritiro", pericolo: true })) return;
   try {
     const i = await api.del(`/api/iscrizioni/${iscrizioneId}/ritiri/${periodoId}`);
     renderRitiri(i);
