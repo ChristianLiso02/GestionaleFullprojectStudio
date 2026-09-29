@@ -11,6 +11,8 @@ spring:
     default-property-inclusion: non_null
 
 app:
+  # Cartella dei dati quando i file vivono fuori dalla cartella del programma (installer Windows)
+  data-dir: ${FPS_DATA_DIR:./data}
   jwt:
     secret: ${JWT_SECRET:cambiaQuestaChiaveSegretaInProduzioneFullProjectStudio2026!}
     expiration-ms: ${JWT_EXPIRATION_MS:28800000}
@@ -77,3 +79,52 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+---
+# Installazione su un PC Windows (vedi ../installer): tutto sul PC, raggiungibile solo da quel PC.
+# Dati, backup, log e file di configurazione stanno in C:\ProgramData\FullProjectStudio (o in FPS_DATA_DIR):
+# il percorso lo calcola AvvioDesktop all'avvio e lo passa qui come fps.data-dir, sempre con le "/".
+# Le impostazioni si possono cambiare nel file <cartella dati>\config\application.properties.
+spring:
+  config:
+    activate:
+      on-profile: desktop
+    import: optional:file:${fps.data-dir}/config/application.properties
+  datasource:
+    url: jdbc:h2:file:${fps.data-dir}/db/fullprojectstudio;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  h2:
+    console:
+      enabled: false
+
+server:
+  port: ${PORTA:8081}
+  address: 127.0.0.1
+
+app:
+  data-dir: ${fps.data-dir}
+  # Vuote: al primo avvio vengono create password casuali, scritte in credenziali-iniziali.txt
+  admin:
+    password: ${ADMIN_PASSWORD:}
+  segreteria:
+    password: ${SEGRETERIA_PASSWORD:}
+  backup:
+    dir: ${BACKUP_DIR:${fps.data-dir}/backup}
+    # Copia completa del database (oltre all'Excel), ogni notte e al primo avvio dopo un PC rimasto spento
+    database-cron: ${BACKUP_DATABASE_CRON:0 0 3 * * *}
+    ore-massime-tra-backup: ${BACKUP_ORE_MASSIME:20}
+    copie-database-da-tenere: ${BACKUP_COPIE_DATABASE:30}
+
+logging:
+  file:
+    name: ${fps.data-dir}/log/gestionale.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 14

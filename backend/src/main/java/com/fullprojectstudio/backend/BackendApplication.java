@@ -9,6 +9,18 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class BackendApplication {
 
     public static void main(String[] args) {
+        if (AvvioDesktop.attivo()) {
+            AvvioDesktop.impostaCartellaDati();
+            boolean apri = AvvioDesktop.apriBrowser(args);
+            if (AvvioDesktop.giaAcceso()) {
+                // Icona cliccata con il gestionale già acceso: basta aprire il browser.
+                if (apri) AvvioDesktop.apri();
+                return;
+            }
+            SpringApplication.run(BackendApplication.class, AvvioDesktop.senzaArgomentiDesktop(args));
+            if (apri) AvvioDesktop.apri();
+            return;
+        }
         SpringApplication.run(BackendApplication.class, args);
     }
 }

@@ -92,6 +92,35 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <!--
+            Profilo per l'installer Windows (vedi ../installer): il backend include anche le pagine del frontend,
+            così un solo programma serve pagine e API sullo stesso indirizzo. config.js viene sostituito da una
+            versione con API_BASE_URL vuoto (stesso indirizzo). Non usato da Docker né da mvn spring-boot:run.
+        -->
+        <profile>
+            <id>installer</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                    <resource>
+                        <directory>../frontend/src/main/resources/static</directory>
+                        <targetPath>static</targetPath>
+                        <excludes>
+                            <exclude>js/config.js</exclude>
+                        </excludes>
+                    </resource>
+                    <resource>
+                        <directory>src/installer/static</directory>
+                        <targetPath>static</targetPath>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <finalName>backend</finalName>
         <plugins>

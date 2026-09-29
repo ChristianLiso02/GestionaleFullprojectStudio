@@ -15,3 +15,6 @@ HELP.md
 
 # Password del server (modello: .env.example)
 .env
+
+# Installer Windows (generato da GitHub Actions)
+build/

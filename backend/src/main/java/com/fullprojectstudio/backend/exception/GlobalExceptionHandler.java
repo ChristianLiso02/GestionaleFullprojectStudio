@@ -1,5 +1,6 @@
 package com.fullprojectstudio.backend.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -51,6 +53,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        // Al chiamante si dice solo "errore interno", ma la causa deve restare nel log per chi fa assistenza.
+        log.error("Errore interno del server", ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Errore interno del server", null);
     }
 

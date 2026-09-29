@@ -81,12 +81,23 @@ mvn spring-boot:run
 
 Poi apri il browser su **http://localhost:8081** ed effettua il login.
 
+## Installazione sul PC della segreteria (Windows)
+
+Un solo file, `FullProjectStudio-Setup.exe`, installa tutto (Java e database inclusi): il gestionale parte da
+solo all'accensione del PC, si apre dall'icona sul desktop e fa da solo i backup (anche se il PC di notte è
+spento). È raggiungibile solo da quel PC. L'installer lo crea GitHub Actions (workflow *Installer Windows*,
+file `installer/`); guida completa in **[INSTALLAZIONE-PC.md](INSTALLAZIONE-PC.md)**.
+
+In questa modalità backend e pagine sono un unico programma (profilo Maven `installer`, profilo Spring
+`desktop`): database H2 in `C:\ProgramData\FullProjectStudio`, password iniziali casuali scritte in
+`credenziali-iniziali.txt`, copia completa del database ogni notte con recupero all'accensione.
+
 ## Messa online su un server
 
 Per l'uso reale il gestionale va installato su un server con `docker-compose.prod.yml`: HTTPS automatico
 (Caddy), database non esposto su internet, riavvio automatico dei servizi, password lette dal file `.env`
-(modello in `.env.example`) e backup notturni. La guida passo passo, per un server gratuito Oracle Cloud
-con indirizzo DuckDNS, è in **[INSTALLAZIONE-SERVER.md](INSTALLAZIONE-SERVER.md)**.
+(modello in `.env.example`) e backup notturni. La guida passo passo, per una VPS Aruba (con alternativa gratuita
+su Oracle Cloud), è in **[INSTALLAZIONE-SERVER.md](INSTALLAZIONE-SERVER.md)**.
 
 ## Avvio con PostgreSQL
 

@@ -1,0 +1,117 @@
+# Crea l'installer Windows FullProjectStudio-Setup.exe (vedi installer/ e INSTALLAZIONE-PC.md).
+# - Avvio manuale (scheda Actions → "Installer Windows" → Run workflow): l'installer si scarica dagli "Artifacts".
+# - Tag "v1.2.3" (git tag v1.2.3 && git push origin v1.2.3): l'installer viene anche allegato a una Release.
+name: Installer Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Versione
+        id: versione
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") { $v = "${{ github.ref_name }}".TrimStart("v") } else { $v = "1.0.${{ github.run_number }}" }
+          "numero=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "Versione $v"
+
+      - name: Test e programma unico (backend + pagine)
+        working-directory: backend
+        run: mvn -B -Pinstaller package
+
+      - name: Java ridotto da includere
+        shell: pwsh
+        run: |
+          jlink --add-modules java.se,jdk.crypto.ec,jdk.unsupported,jdk.localedata,jdk.management,jdk.zipfs `
+            --strip-debug --no-header-files --no-man-pages --compress=zip-6 --output build/runtime
+
+      - name: Programma Windows (jpackage)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build/input | Out-Null
+          Copy-Item backend/target/backend.jar build/input/
+          jpackage --type app-image --name FullProjectStudio `
+            --input build/input --main-jar backend.jar --runtime-image build/runtime `
+            --icon installer/fullprojectstudio.ico `
+            --java-options "-Dspring.profiles.active=desktop" `
+            --java-options "-Duser.timezone=Europe/Rome" `
+            --java-options "-Dfile.encoding=UTF-8" `
+            --java-options "-Xmx768m" `
+            --app-version ${{ steps.versione.outputs.numero }} --vendor "FullProject Studio" `
+            --dest build/app
+
+      - name: Prova di avvio del programma
+        shell: pwsh
+        run: |
+          $dati = Join-Path $env:RUNNER_TEMP "dati-prova"
+          $env:FPS_DATA_DIR = $dati
+          $p = Start-Process -FilePath "build/app/FullProjectStudio/FullProjectStudio.exe" -PassThru
+          $ok = $false
+          for ($i = 0; $i -lt 60; $i++) {
+            Start-Sleep -Seconds 3
+            try { if ((Invoke-WebRequest -UseBasicParsing http://localhost:8081/login.html).StatusCode -eq 200) { $ok = $true; break } } catch {}
+          }
+          if (-not $ok) { Get-Content "$dati/log/gestionale.log" -ErrorAction SilentlyContinue | Select-Object -Last 60; throw "Il gestionale non risponde" }
+          $cred = Get-Content "$dati/credenziali-iniziali.txt" -Raw
+          $pw = [regex]::Match($cred, "segreteria\s+password\s+(\S+)").Groups[1].Value
+          $body = @{ username = "segreteria"; password = $pw } | ConvertTo-Json
+          $login = Invoke-RestMethod -Method Post -Uri http://localhost:8081/api/auth/login -ContentType "application/json" -Body $body
+          if (-not $login.token) { throw "Login con la password generata non riuscito" }
+          $h = @{ Authorization = "Bearer $($login.token)" }
+          $backup = Invoke-RestMethod -Method Post -Uri http://localhost:8081/api/backup/genera -Headers $h
+          Write-Host "Backup: $($backup.percorsoFile)"
+          if (-not (Test-Path "$dati/backup/backup-ultimo.xlsx")) { throw "Backup Excel non creato" }
+          # Seconda apertura con il gestionale già acceso: deve terminare subito senza avviarne un altro
+          $secondo = Start-Process -FilePath "build/app/FullProjectStudio/FullProjectStudio.exe" -PassThru
+          if (-not $secondo.WaitForExit(30000)) { throw "La seconda apertura non si chiude da sola" }
+          Stop-Process -Id $p.Id -Force
+          Write-Host "Prova di avvio superata"
+
+      - name: Installer (Inno Setup)
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc "/DAppVersion=${{ steps.versione.outputs.numero }}" "/DAppImage=$pwd\build\app\FullProjectStudio" installer\FullProjectStudio.iss
+          if ($LASTEXITCODE -ne 0) { throw "Compilazione dell'installer fallita" }
+
+      - name: Prova dell'installer (installazione silenziosa)
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath build\FullProjectStudio-Setup.exe -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/NORESTART","/LOG=$env:RUNNER_TEMP\setup.log" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { Get-Content "$env:RUNNER_TEMP\setup.log" | Select-Object -Last 40; throw "Installazione fallita ($($p.ExitCode))" }
+          $controlli = @(
+            "$env:ProgramFiles\FullProject Studio\FullProjectStudio.exe",
+            "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\FullProject Studio.lnk",
+            "$env:ProgramData\FullProjectStudio\config\application.properties"
+          )
+          foreach ($f in $controlli) { if (-not (Test-Path $f)) { throw "Manca: $f" } else { Write-Host "OK $f" } }
+          Get-Content "$env:ProgramData\FullProjectStudio\config\application.properties"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FullProjectStudio-Setup-${{ steps.versione.outputs.numero }}
+          path: build/FullProjectStudio-Setup.exe
+
+      - name: Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/FullProjectStudio-Setup.exe
