@@ -1,0 +1,105 @@
+# Installazione su server (vedi INSTALLAZIONE-SERVER.md).
+# Da internet si raggiunge solo Caddy (porte 80 e 443), che ottiene da solo il certificato HTTPS
+# e smista le richieste: /api/... al backend, tutto il resto alle pagine del gestionale.
+# Database, backend e frontend non espongono porte: sono raggiungibili solo tra loro.
+# Password e dominio si leggono dal file .env (modello: .env.example).
+
+x-riavvio: &riavvio
+  restart: unless-stopped
+
+services:
+  caddy:
+    <<: *riavvio
+    image: caddy:2
+    environment:
+      DOMINIO: ${DOMINIO:?Imposta DOMINIO nel file .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - frontend
+      - backend
+
+  db:
+    <<: *riavvio
+    image: postgres:16
+    environment:
+      POSTGRES_DB: fullprojectstudio
+      POSTGRES_USER: fullprojectstudio
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Imposta DB_PASSWORD nel file .env}
+      TZ: Europe/Rome
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # Solo per DBeaver tramite tunnel SSH: la porta è aperta sul server ma non verso internet.
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fullprojectstudio -d fullprojectstudio"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Copia completa del database ogni notte, con rotazione (7 giorni, 4 settimane, 6 mesi).
+  db-backup:
+    <<: *riavvio
+    image: prodrigestivill/postgres-backup-local:16
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: fullprojectstudio
+      POSTGRES_USER: fullprojectstudio
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      SCHEDULE: "0 3 * * *"
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+      TZ: Europe/Rome
+    volumes:
+      - ./backup/postgres:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    <<: *riavvio
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_URL: jdbc:postgresql://db:5432/fullprojectstudio
+      DB_USERNAME: fullprojectstudio
+      DB_PASSWORD: ${DB_PASSWORD}
+      CORS_ALLOWED_ORIGINS: https://${DOMINIO}
+      JWT_SECRET: ${JWT_SECRET:?Imposta JWT_SECRET nel file .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Imposta ADMIN_PASSWORD nel file .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@fullprojectstudio.it}
+      SEGRETERIA_USERNAME: ${SEGRETERIA_USERNAME:-segreteria}
+      SEGRETERIA_PASSWORD: ${SEGRETERIA_PASSWORD:?Imposta SEGRETERIA_PASSWORD nel file .env}
+      SEGRETERIA_EMAIL: ${SEGRETERIA_EMAIL:-segreteria@fullprojectstudio.it}
+      BACKUP_DIR: /app/backup
+      BACKUP_CRON: ${BACKUP_CRON:-0 0 2 * * *}
+      # Date e orari (scadenze delle quote, backup notturno) all'ora italiana.
+      TZ: Europe/Rome
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Europe/Rome
+    volumes:
+      - ./backup:/app/backup
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    <<: *riavvio
+    build: ./frontend
+    environment:
+      # Vuoto: le pagine chiamano /api sullo stesso indirizzo, e Caddy le gira al backend.
+      API_BASE_URL: ""
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:

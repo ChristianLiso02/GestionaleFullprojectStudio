@@ -1,0 +1,21 @@
+# Configurazione di Caddy per docker-compose.prod.yml.
+# {$DOMINIO} arriva dal file .env: Caddy chiede e rinnova da solo il certificato HTTPS per quel dominio.
+{$DOMINIO} {
+	encode gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "same-origin"
+		-Server
+	}
+
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+
+	handle {
+		reverse_proxy frontend:8081
+	}
+}

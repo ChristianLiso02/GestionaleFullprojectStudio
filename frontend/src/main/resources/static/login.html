@@ -45,7 +45,9 @@
           body: JSON.stringify({ username, password })
         });
         if (!response.ok) {
-          showError(response.status === 401 ? "Username o password non validi." : "Impossibile contattare il server.");
+          if (response.status === 401) showError("Username o password non validi.");
+          else if (response.status === 429) showError((await response.json()).message);
+          else showError("Impossibile contattare il server.");
           return;
         }
         const data = await response.json();

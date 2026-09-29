@@ -81,6 +81,13 @@ mvn spring-boot:run
 
 Poi apri il browser su **http://localhost:8081** ed effettua il login.
 
+## Messa online su un server
+
+Per l'uso reale il gestionale va installato su un server con `docker-compose.prod.yml`: HTTPS automatico
+(Caddy), database non esposto su internet, riavvio automatico dei servizi, password lette dal file `.env`
+(modello in `.env.example`) e backup notturni. La guida passo passo, per un server gratuito Oracle Cloud
+con indirizzo DuckDNS, è in **[INSTALLAZIONE-SERVER.md](INSTALLAZIONE-SERVER.md)**.
+
 ## Avvio con PostgreSQL
 
 ```bash
@@ -179,6 +186,7 @@ docker compose start backend frontend
 | `SEGRETERIA_USERNAME` / `SEGRETERIA_PASSWORD` / `SEGRETERIA_EMAIL` | Credenziali dell'utente SEGRETERIA creato al primo avvio | `segreteria` / `Segreteria2026!` / `segreteria@fullprojectstudio.it` — **da cambiare in produzione** |
 | `BACKUP_DIR` | Cartella dove scrivere i backup Excel | `./backup` |
 | `BACKUP_CRON` | Orario di generazione automatica (formato cron) | `0 0 2 * * *` (ogni notte alle 02:00) |
+| `LOGIN_MAX_TENTATIVI` / `LOGIN_MINUTI_BLOCCO` | Password sbagliate consentite (per utente e indirizzo) prima di bloccare il login, e durata del blocco in minuti | `5` / `15` |
 | `PAGAMENTI_GIORNO_SCADENZA` | Ultimo giorno del mese in cui la quota non pagata è "da rinnovare"; dal giorno dopo è "scaduta" | `7` |
 | `PAGAMENTI_MESI_SCADUTI_DA_VERIFICARE` | Mesi consecutivi scaduti dopo i quali lo studente compare in dashboard tra le quote da verificare (ha pagato o si è ritirato senza avvisare?) | `1` |
 

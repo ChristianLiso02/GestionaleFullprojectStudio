@@ -25,6 +25,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.UNAUTHORIZED, "Credenziali non valide", null);
     }
 
+    @ExceptionHandler(TroppiTentativiException.class)
+    public ResponseEntity<ErrorResponse> handleTroppiTentativi(TroppiTentativiException ex) {
+        return build(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage(), null);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();

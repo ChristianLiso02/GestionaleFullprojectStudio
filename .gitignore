@@ -12,3 +12,6 @@ backend/backup/
 backup/
 *.xlsx
 HELP.md
+
+# Password del server (modello: .env.example)
+.env
