@@ -49,6 +49,7 @@ function fillForm(c) {
   document.getElementById("fOrarioInizio").value = c.orarioInizio || "";
   document.getElementById("fOrarioFine").value = c.orarioFine || "";
   document.getElementById("fPrezzo").value = c.prezzoMensile ?? "";
+  document.getElementById("fPrezzoLezione").value = c.prezzoLezioneSingola ?? "";
   document.getElementById("fDataInizio").value = c.dataInizio || "";
   document.getElementById("fAttivo").checked = c.attivo !== false;
   const giorni = new Set(c.giorniSettimana || []);
@@ -70,6 +71,7 @@ function readForm() {
     orarioInizio: document.getElementById("fOrarioInizio").value || null,
     orarioFine: document.getElementById("fOrarioFine").value || null,
     prezzoMensile: document.getElementById("fPrezzo").value ? parseFloat(document.getElementById("fPrezzo").value) : null,
+    prezzoLezioneSingola: document.getElementById("fPrezzoLezione").value ? parseFloat(document.getElementById("fPrezzoLezione").value) : null,
     dataInizio: document.getElementById("fDataInizio").value || null,
     giorniSettimana: Array.from(document.querySelectorAll(".fGiorno:checked")).map(el => el.value),
     attivo: document.getElementById("fAttivo").checked

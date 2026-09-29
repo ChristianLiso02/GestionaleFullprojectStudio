@@ -149,7 +149,7 @@ public class BackupExcelService {
 
     private void scriviCorsi(Workbook wb, CellStyle headerStyle) {
         String[] headers = {"ID", "Nome", "Stagione", "Stile", "Livello", "Istruttore", "Sala", "Giorni", "Orario inizio",
-                "Orario fine", "Capienza max", "Prezzo mensile", "Attivo"};
+                "Orario fine", "Capienza max", "Prezzo mensile", "Prezzo lezione singola", "Attivo"};
         List<Corso> corsi = corsoRepository.findAll();
         Sheet sheet = nuovoSheet(wb, "Corsi", headers, headerStyle);
         int r = 1;
@@ -170,6 +170,7 @@ public class BackupExcelService {
             set(row, c++, co.getOrarioFine() != null ? co.getOrarioFine().toString() : null);
             set(row, c++, co.getCapienzaMax());
             set(row, c++, co.getPrezzoMensile());
+            set(row, c++, co.getPrezzoLezioneSingola());
             set(row, c, co.isAttivo() ? "Si" : "No");
         }
         larghezzaColonne(sheet, headers.length);
@@ -221,7 +222,7 @@ public class BackupExcelService {
     }
 
     private void scriviPagamenti(Workbook wb, CellStyle headerStyle, LocalDate inizioPeriodo, LocalDate oggi) {
-        String[] headers = {"ID", "Studente", "Data", "Mese riferimento", "Mesi coperti", "Importo", "Metodo", "Causale", "Stato", "Note"};
+        String[] headers = {"ID", "Studente", "Data", "Tipo", "Corso", "Mese riferimento", "Mesi coperti", "Data lezione", "Importo", "Metodo", "Causale", "Stato", "Note"};
         List<Pagamento> pagamenti = pagamentoRepository.findByDataPagamentoBetween(inizioPeriodo, oggi);
         Sheet sheet = nuovoSheet(wb, "Pagamenti", headers, headerStyle);
         int r = 1;
@@ -231,8 +232,11 @@ public class BackupExcelService {
             set(row, c++, p.getId());
             set(row, c++, p.getStudente().getNome() + " " + p.getStudente().getCognome());
             set(row, c++, formatta(p.getDataPagamento()));
-            set(row, c++, p.getMeseRiferimento() != null ? formatta(YearMonth.from(p.getMeseRiferimento())) : null);
-            set(row, c++, p.getMesiCoperti() != null ? p.getMesiCoperti() : 1);
+            set(row, c++, tipo(p));
+            set(row, c++, p.getCorso() != null ? p.getCorso().getNome() : p.getIscrizione() != null ? p.getIscrizione().getCorso().getNome() : null);
+            set(row, c++, p.isLezioneSingola() || p.getMeseRiferimento() == null ? null : formatta(YearMonth.from(p.getMeseRiferimento())));
+            set(row, c++, p.isLezioneSingola() ? null : p.getMesiCoperti() != null ? p.getMesiCoperti() : 1);
+            set(row, c++, formatta(p.getDataLezione()));
             set(row, c++, p.getImporto());
             set(row, c++, p.getMetodo() != null ? p.getMetodo().name() : null);
             set(row, c++, p.getCausale());

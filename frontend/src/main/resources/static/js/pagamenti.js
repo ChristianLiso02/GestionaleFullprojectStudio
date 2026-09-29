@@ -18,7 +18,7 @@ function renderPagamenti() {
         <tr>
           <td><b>${escapeHtml(p.studenteNomeCompleto)}</b></td>
           <td>${formatDate(p.dataPagamento)}</td>
-          <td>${formatPeriodo(p.meseRiferimento, p.mesiCoperti)}</td>
+          <td>${formatRiferimentoPagamento(p)}</td>
           <td>${formatEuro(p.importo)}${notaVecchioStatoPagamento(p)}</td>
           <td>${p.metodo}</td>
           <td>${escapeHtml(p.causale)}</td>

@@ -117,6 +117,13 @@ function formatPeriodo(annoMese, mesi) {
   return mesi > 1 ? `${formatMese(annoMese)} – ${formatMese(aggiungiMesi(annoMese, mesi - 1))}` : formatMese(annoMese);
 }
 
+// A cosa si riferisce un pagamento: il periodo della quota oppure il giorno della lezione singola, con il corso sotto.
+function formatRiferimentoPagamento(p) {
+  const corso = p.corsoNome ? `<div class="testo-tenue">${escapeHtml(p.corsoNome)}</div>` : "";
+  if (p.tipo === "LEZIONE_SINGOLA") return `Lezione singola del ${formatDate(p.dataLezione)}${corso}`;
+  return formatPeriodo(p.meseRiferimento, p.mesiCoperti) + corso;
+}
+
 function pillClass(stato) {
   const map = {
     "ATTIVA": "pill-success", "ATTIVO": "pill-success", "PAGATO": "pill-success",

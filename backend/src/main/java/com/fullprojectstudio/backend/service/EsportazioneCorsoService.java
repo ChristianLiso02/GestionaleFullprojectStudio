@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.fullprojectstudio.backend.service.ExcelSupport.*;
 
@@ -66,6 +67,7 @@ public class EsportazioneCorsoService {
                 .findByIscrizioneIdInAndStato(iscrizioni.stream().map(Iscrizione::getId).toList(), StatoPagamento.PAGATO);
         Map<Long, List<Pagamento>> pagamentiPerIscrizione = pagamenti.stream()
                 .collect(Collectors.groupingBy(p -> p.getIscrizione().getId()));
+        List<Pagamento> lezioniSingole = pagamentoRepository.findByCorsoIdInAndStato(List.of(corsoId), StatoPagamento.PAGATO);
         List<StatisticaMeseDto> statistiche = statisticheCorso(corso, oggi);
         List<YearMonth> mesi = statistiche.stream().map(StatisticaMeseDto::getMese).toList();
 
@@ -74,7 +76,7 @@ public class EsportazioneCorsoService {
             scriviCorso(wb, corso, statistiche, oggi);
             scriviIscritti(wb, intestazione, iscrizioni, pagamentiPerIscrizione, oggi);
             scriviQuote(wb, intestazione, iscrizioni, pagamentiPerIscrizione, mesi, oggi);
-            scriviPagamenti(wb, intestazione, pagamenti);
+            scriviPagamenti(wb, intestazione, Stream.concat(pagamenti.stream(), lezioniSingole.stream()).toList());
             scriviPresenze(wb, intestazione, corsoId);
             scriviStatistiche(wb, intestazione, statistiche);
             wb.write(out);
@@ -115,6 +117,7 @@ public class EsportazioneCorsoService {
                 {"Orario", corso.getOrarioInizio() != null ? corso.getOrarioInizio() + " - " + corso.getOrarioFine() : null},
                 {"Capienza massima", corso.getCapienzaMax()},
                 {"Prezzo mensile", corso.getPrezzoMensile()},
+                {"Prezzo lezione singola", corso.getPrezzoLezioneSingola()},
                 {"Stato del corso", corso.isAttivo() ? "Attivo" : "Non attivo"},
                 {"Iscritti attivi (" + ultimoMese.map(m -> formatta(m.getMese())).orElse("-") + ")", ultimoMese.map(StatisticaMeseDto::getIscrittiAttivi).orElse(null)},
                 {"Uomini / Donne", ultimoMese.map(m -> m.getUomini() + " / " + m.getDonne()).orElse(null)},
@@ -209,7 +212,7 @@ public class EsportazioneCorsoService {
     }
 
     private void scriviPagamenti(Workbook wb, CellStyle intestazione, List<Pagamento> pagamenti) {
-        String[] colonne = {"Data", "Studente", "Mese di riferimento", "Mesi coperti", "Importo", "Metodo", "Causale", "Note"};
+        String[] colonne = {"Data", "Studente", "Tipo", "Mese di riferimento", "Mesi coperti", "Data lezione", "Importo", "Metodo", "Causale", "Note"};
         Sheet sheet = nuovoSheet(wb, "Pagamenti", colonne, intestazione);
         int r = 1;
         for (Pagamento p : pagamenti.stream().sorted(Comparator.comparing(Pagamento::getDataPagamento)).toList()) {
@@ -217,16 +220,18 @@ public class EsportazioneCorsoService {
             int c = 0;
             set(row, c++, formatta(p.getDataPagamento()));
             set(row, c++, p.getStudente().getCognome() + " " + p.getStudente().getNome());
-            set(row, c++, p.getMeseRiferimento() != null ? formatta(YearMonth.from(p.getMeseRiferimento())) : null);
-            set(row, c++, p.getMesiCoperti() != null ? p.getMesiCoperti() : 1);
+            set(row, c++, tipo(p));
+            set(row, c++, p.isLezioneSingola() || p.getMeseRiferimento() == null ? null : formatta(YearMonth.from(p.getMeseRiferimento())));
+            set(row, c++, p.isLezioneSingola() ? null : p.getMesiCoperti() != null ? p.getMesiCoperti() : 1);
+            set(row, c++, formatta(p.getDataLezione()));
             set(row, c++, p.getImporto());
             set(row, c++, p.getMetodo() != null ? p.getMetodo().name() : null);
             set(row, c++, p.getCausale());
             set(row, c, p.getNote());
         }
         Row totale = sheet.createRow(r + 1);
-        set(totale, 3, "Totale");
-        set(totale, 4, pagamenti.stream().map(Pagamento::getImporto).reduce(BigDecimal.ZERO, BigDecimal::add));
+        set(totale, 5, "Totale");
+        set(totale, 6, pagamenti.stream().map(Pagamento::getImporto).reduce(BigDecimal.ZERO, BigDecimal::add));
         larghezzaColonne(sheet, colonne.length);
     }
 

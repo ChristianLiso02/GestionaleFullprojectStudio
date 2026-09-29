@@ -43,10 +43,11 @@ function renderIscrizioni(iscrizioni) {
 function renderPagamenti(pagamenti) {
   const body = document.getElementById("pagamentiBody");
   body.innerHTML = pagamenti.length === 0
-    ? `<tr><td colspan="5" class="empty-state">Nessun pagamento registrato.</td></tr>`
+    ? `<tr><td colspan="6" class="empty-state">Nessun pagamento registrato.</td></tr>`
     : pagamenti.map(p => `
         <tr>
           <td>${formatDate(p.dataPagamento)}</td>
+          <td>${formatRiferimentoPagamento(p)}</td>
           <td>${formatEuro(p.importo)}${notaVecchioStatoPagamento(p)}</td>
           <td>${p.metodo}</td>
           <td>${escapeHtml(p.causale) || "-"}</td>

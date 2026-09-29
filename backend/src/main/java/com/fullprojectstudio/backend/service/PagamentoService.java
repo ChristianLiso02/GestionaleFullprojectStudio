@@ -2,10 +2,13 @@ package com.fullprojectstudio.backend.service;
 
 import com.fullprojectstudio.backend.dto.PagamentoDto;
 import com.fullprojectstudio.backend.exception.ResourceNotFoundException;
+import com.fullprojectstudio.backend.model.Corso;
 import com.fullprojectstudio.backend.model.Iscrizione;
 import com.fullprojectstudio.backend.model.Pagamento;
 import com.fullprojectstudio.backend.model.StatoPagamento;
 import com.fullprojectstudio.backend.model.Studente;
+import com.fullprojectstudio.backend.model.TipoPagamento;
+import com.fullprojectstudio.backend.repository.CorsoRepository;
 import com.fullprojectstudio.backend.repository.IscrizioneRepository;
 import com.fullprojectstudio.backend.repository.PagamentoRepository;
 import com.fullprojectstudio.backend.repository.StudenteRepository;
@@ -25,6 +28,7 @@ public class PagamentoService {
     private final PagamentoRepository pagamentoRepository;
     private final StudenteRepository studenteRepository;
     private final IscrizioneRepository iscrizioneRepository;
+    private final CorsoRepository corsoRepository;
 
     public List<PagamentoDto> findAll() {
         return pagamentoRepository.findAll().stream().map(this::toDto).toList();
@@ -66,12 +70,12 @@ public class PagamentoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Studente non trovato: " + dto.getStudenteId()));
         pagamento.setStudente(studente);
 
-        if (dto.getIscrizioneId() != null) {
-            Iscrizione iscrizione = iscrizioneRepository.findById(dto.getIscrizioneId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Iscrizione non trovata: " + dto.getIscrizioneId()));
-            pagamento.setIscrizione(iscrizione);
+        TipoPagamento tipo = dto.getTipo() != null ? dto.getTipo() : TipoPagamento.QUOTA_CORSO;
+        pagamento.setTipo(tipo);
+        if (tipo == TipoPagamento.LEZIONE_SINGOLA) {
+            applicaLezioneSingola(pagamento, dto);
         } else {
-            pagamento.setIscrizione(null);
+            applicaQuota(pagamento, dto);
         }
 
         pagamento.setImporto(dto.getImporto());
@@ -80,10 +84,39 @@ public class PagamentoService {
         }
         pagamento.setMetodo(dto.getMetodo());
         pagamento.setCausale(dto.getCausale());
-        pagamento.setMeseRiferimento(dto.getMeseRiferimento() != null ? dto.getMeseRiferimento().atDay(1) : null);
-        pagamento.setMesiCoperti(dto.getMesiCoperti() != null ? dto.getMesiCoperti() : 1);
         pagamento.setStato(dto.getStato() != null ? dto.getStato() : StatoPagamento.PAGATO);
         pagamento.setNote(dto.getNote());
+    }
+
+    private void applicaQuota(Pagamento pagamento, PagamentoDto dto) {
+        if (dto.getIscrizioneId() != null) {
+            Iscrizione iscrizione = iscrizioneRepository.findById(dto.getIscrizioneId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Iscrizione non trovata: " + dto.getIscrizioneId()));
+            pagamento.setIscrizione(iscrizione);
+        } else {
+            pagamento.setIscrizione(null);
+        }
+        pagamento.setCorso(null);
+        pagamento.setDataLezione(null);
+        pagamento.setMeseRiferimento(dto.getMeseRiferimento() != null ? dto.getMeseRiferimento().atDay(1) : null);
+        pagamento.setMesiCoperti(dto.getMesiCoperti() != null ? dto.getMesiCoperti() : 1);
+    }
+
+    // Una lezione singola non è legata a un'iscrizione, quindi non conta per le quote mensili.
+    private void applicaLezioneSingola(Pagamento pagamento, PagamentoDto dto) {
+        if (dto.getCorsoId() == null) {
+            throw new IllegalArgumentException("Indica il corso della lezione singola.");
+        }
+        if (dto.getDataLezione() == null) {
+            throw new IllegalArgumentException("Indica il giorno della lezione singola.");
+        }
+        Corso corso = corsoRepository.findById(dto.getCorsoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Corso non trovato: " + dto.getCorsoId()));
+        pagamento.setIscrizione(null);
+        pagamento.setCorso(corso);
+        pagamento.setDataLezione(dto.getDataLezione());
+        pagamento.setMeseRiferimento(YearMonth.from(dto.getDataLezione()).atDay(1));
+        pagamento.setMesiCoperti(1);
     }
 
     private Pagamento getEntity(Long id) {
@@ -92,11 +125,16 @@ public class PagamentoService {
     }
 
     private PagamentoDto toDto(Pagamento p) {
+        Corso corso = p.getCorso() != null ? p.getCorso() : p.getIscrizione() != null ? p.getIscrizione().getCorso() : null;
         return PagamentoDto.builder()
                 .id(p.getId())
                 .studenteId(p.getStudente().getId())
                 .studenteNomeCompleto(p.getStudente().getNome() + " " + p.getStudente().getCognome())
                 .iscrizioneId(p.getIscrizione() != null ? p.getIscrizione().getId() : null)
+                .tipo(p.isLezioneSingola() ? TipoPagamento.LEZIONE_SINGOLA : TipoPagamento.QUOTA_CORSO)
+                .corsoId(corso != null ? corso.getId() : null)
+                .corsoNome(corso != null ? corso.getNome() : null)
+                .dataLezione(p.getDataLezione())
                 .importo(p.getImporto())
                 .dataPagamento(p.getDataPagamento())
                 .metodo(p.getMetodo())

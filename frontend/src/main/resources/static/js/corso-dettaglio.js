@@ -6,6 +6,7 @@ function renderCorsoInfo(c) {
   document.getElementById("corsoNome").textContent = c.nome;
   document.getElementById("linkModifica").href = `corso-form.html?id=${c.id}`;
   document.getElementById("linkNuovaIscrizione").href = `iscrizione-form.html?corsoId=${c.id}`;
+  document.getElementById("linkLezioneSingola").href = `pagamento-form.html?corsoId=${c.id}`;
 
   const giorni = (c.giorniSettimana || []).map(g => GIORNI_LABEL_DETT[g]).join(" · ");
   document.getElementById("corsoInfo").innerHTML = `
@@ -19,6 +20,7 @@ function renderCorsoInfo(c) {
     </div>
     <div class="row2">
       <div class="field"><label>Stagione</label><div>${escapeHtml(c.stagioneNome) || "-"}</div></div>
+      <div class="field"><label>Prezzo lezione singola</label><div>${c.prezzoLezioneSingola != null ? formatEuro(c.prezzoLezioneSingola) : "-"}</div></div>
     </div>
     <div class="row2">
       <div class="field"><label>Prezzo mensile</label><div>${c.prezzoMensile != null ? formatEuro(c.prezzoMensile) : "-"}</div></div>

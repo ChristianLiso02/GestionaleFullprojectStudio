@@ -71,6 +71,7 @@ public class CorsoService {
         corso.setOrarioFine(dto.getOrarioFine());
         corso.setCapienzaMax(dto.getCapienzaMax());
         corso.setPrezzoMensile(dto.getPrezzoMensile());
+        corso.setPrezzoLezioneSingola(dto.getPrezzoLezioneSingola());
         corso.setDataInizio(dto.getDataInizio());
         corso.setDataFine(dto.getDataFine());
         corso.setAttivo(dto.isAttivo());
@@ -135,6 +136,7 @@ public class CorsoService {
                 .iscrittiUomini((int) iscrizioneRepository.countByCorsoIdAndStatoAndStudente_Sesso(c.getId(), StatoIscrizione.ATTIVA, Sesso.UOMO))
                 .iscrittiDonne((int) iscrizioneRepository.countByCorsoIdAndStatoAndStudente_Sesso(c.getId(), StatoIscrizione.ATTIVA, Sesso.DONNA))
                 .prezzoMensile(c.getPrezzoMensile())
+                .prezzoLezioneSingola(c.getPrezzoLezioneSingola())
                 .dataInizio(c.getDataInizio())
                 .dataFine(c.getDataFine())
                 .attivo(c.isAttivo())

@@ -37,6 +37,7 @@ public class CorsoDto {
     private int iscrittiUomini;
     private int iscrittiDonne;
     private BigDecimal prezzoMensile;
+    private BigDecimal prezzoLezioneSingola;
     private LocalDate dataInizio;
     private LocalDate dataFine;
     private boolean attivo;

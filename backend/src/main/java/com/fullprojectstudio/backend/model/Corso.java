@@ -71,6 +71,9 @@ public class Corso {
 
     private BigDecimal prezzoMensile;
 
+    // Proposto in automatico quando si registra una lezione singola di questo corso.
+    private BigDecimal prezzoLezioneSingola;
+
     private LocalDate dataInizio;
 
     private LocalDate dataFine;

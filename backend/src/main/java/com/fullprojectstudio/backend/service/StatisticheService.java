@@ -69,6 +69,10 @@ public class StatisticheService {
                 .collect(Collectors.groupingBy(p -> p.getIscrizione().getId()));
         Map<Long, List<Iscrizione>> iscrizioniPerCorso = iscrizioni.stream()
                 .collect(Collectors.groupingBy(i -> i.getCorso().getId()));
+        Map<Long, List<Pagamento>> lezioniSingole = corsi.isEmpty() ? Map.of() : pagamentoRepository
+                .findByCorsoIdInAndStato(corsi.stream().map(Corso::getId).toList(), StatoPagamento.PAGATO)
+                .stream()
+                .collect(Collectors.groupingBy(p -> p.getCorso().getId()));
 
         List<YearMonth> mesi = mesiDellaStagione(stagione, iscrizioni, oggi);
 
@@ -79,7 +83,11 @@ public class StatisticheService {
                         .capienzaMax(c.getCapienzaMax())
                         .attivo(c.isAttivo())
                         .mesi(mesi.stream()
-                                .map(m -> mese(m, iscrizioniPerCorso.getOrDefault(c.getId(), List.of()), pagamenti, oggi))
+                                .map(m -> {
+                                    StatisticaMeseDto s = mese(m, iscrizioniPerCorso.getOrDefault(c.getId(), List.of()), pagamenti, oggi);
+                                    s.setIncassi(s.getIncassi().add(totaleNelMese(lezioniSingole.getOrDefault(c.getId(), List.of()), m)));
+                                    return s;
+                                })
                                 .toList())
                         .build())
                 .toList();
@@ -126,13 +134,16 @@ public class StatisticheService {
                 if (nelMese(p.getDataRitiro(), mese)) s.setRitiri(s.getRitiri() + 1);
                 if (nelMese(p.getDataRientro(), mese)) s.setRientri(s.getRientri() + 1);
             }
-            for (Pagamento p : pagamentiIscrizione) {
-                if (nelMese(p.getDataPagamento(), mese)) {
-                    s.setIncassi(s.getIncassi().add(p.getImporto()));
-                }
-            }
+            s.setIncassi(s.getIncassi().add(totaleNelMese(pagamentiIscrizione, mese)));
         }
         return s;
+    }
+
+    private BigDecimal totaleNelMese(List<Pagamento> pagamenti, YearMonth mese) {
+        return pagamenti.stream()
+                .filter(p -> nelMese(p.getDataPagamento(), mese))
+                .map(Pagamento::getImporto)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private int studentiAttivi(YearMonth mese, List<Iscrizione> iscrizioni, Map<Long, List<Pagamento>> pagamenti, LocalDate oggi) {
@@ -145,7 +156,8 @@ public class StatisticheService {
         return studenti.size();
     }
 
-    // Incassi non legati a un'iscrizione (es. quote associative, eventi): contano solo nel totale della scuola.
+    // Incassi non legati a un'iscrizione: lezioni singole (che contano anche nel loro corso) e incassi liberi
+    // come quote associative o eventi, che contano solo nel totale della scuola.
     private BigDecimal altriIncassi(YearMonth mese) {
         return pagamentoRepository
                 .findByIscrizioneIsNullAndStatoAndDataPagamentoBetween(StatoPagamento.PAGATO, mese.atDay(1), mese.atEndOfMonth())

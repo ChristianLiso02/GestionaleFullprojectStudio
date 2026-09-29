@@ -11,6 +11,7 @@ import com.fullprojectstudio.backend.model.Stagione;
 import com.fullprojectstudio.backend.model.StatoIscrizione;
 import com.fullprojectstudio.backend.model.StatoPagamento;
 import com.fullprojectstudio.backend.model.Studente;
+import com.fullprojectstudio.backend.model.TipoPagamento;
 import com.fullprojectstudio.backend.repository.CorsoRepository;
 import com.fullprojectstudio.backend.repository.IscrizioneRepository;
 import com.fullprojectstudio.backend.repository.PagamentoRepository;
@@ -90,9 +91,15 @@ class StatisticheServiceTest {
                 pagamento(marcoSalsa, LocalDate.of(2026, 9, 3), YearMonth.of(2026, 9)),
                 pagamento(marcoSalsa, LocalDate.of(2026, 10, 10), YearMonth.of(2026, 10)),
                 pagamento(annaSalsa, LocalDate.of(2026, 9, 10), YearMonth.of(2026, 9))));
+        // Una lezione singola di Salsa a ottobre: non è legata a un'iscrizione ma al corso.
+        Pagamento lezioneSingola = Pagamento.builder().tipo(TipoPagamento.LEZIONE_SINGOLA).corso(salsa).studente(anna)
+                .importo(new BigDecimal("15")).dataPagamento(LocalDate.of(2026, 10, 15)).dataLezione(LocalDate.of(2026, 10, 15))
+                .stato(StatoPagamento.PAGATO).build();
+        when(pagamentoRepository.findByCorsoIdInAndStato(anyCollection(), eq(StatoPagamento.PAGATO))).thenReturn(List.of(lezioneSingola));
         lenient().when(pagamentoRepository.findByIscrizioneIsNullAndStatoAndDataPagamentoBetween(eq(StatoPagamento.PAGATO),
                 eq(LocalDate.of(2026, 10, 1)), eq(LocalDate.of(2026, 10, 31))))
-                .thenReturn(List.of(Pagamento.builder().importo(new BigDecimal("20")).dataPagamento(LocalDate.of(2026, 10, 5)).stato(StatoPagamento.PAGATO).build()));
+                .thenReturn(List.of(Pagamento.builder().importo(new BigDecimal("20")).dataPagamento(LocalDate.of(2026, 10, 5)).stato(StatoPagamento.PAGATO).build(),
+                        lezioneSingola));
 
         return statisticheService.statistiche(null, OGGI);
     }
@@ -126,7 +133,7 @@ class StatisticheServiceTest {
         assertThat(ottobre.getRitiri()).isEqualTo(1);
         assertThat(ottobre.getQuotePagateInRitardo()).isEqualTo(1);
         assertThat(ottobre.getQuoteScadute()).isEqualTo(1);
-        assertThat(ottobre.getIncassi()).isEqualByComparingTo("80"); // 60 quota + 20 incasso non legato a un corso
+        assertThat(ottobre.getIncassi()).isEqualByComparingTo("95"); // 60 quota + 20 incasso libero + 15 lezione singola
     }
 
     @Test
@@ -137,7 +144,7 @@ class StatisticheServiceTest {
 
         assertThat(ottobre.getIscrittiAttivi()).isEqualTo(1);
         assertThat(ottobre.getRitiri()).isEqualTo(1);
-        assertThat(ottobre.getIncassi()).isEqualByComparingTo("60");
+        assertThat(ottobre.getIncassi()).isEqualByComparingTo("75"); // 60 quota + 15 lezione singola
         assertThat(ottobre.getStudentiAttivi()).isNull();
     }
 

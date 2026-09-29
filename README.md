@@ -5,10 +5,11 @@ Gestionale interno per la scuola di ballo **FullProject Studio** (salsa, bachata
 - **Studenti** (anagrafica con codice fiscale obbligatorio e unico, contatti, note mediche, storico)
 - **Istruttori** (anagrafica, specializzazioni, compenso orario)
 - **Sale**
-- **Corsi** (stile di ballo, livello, istruttore, sala, orari, capienza, prezzo)
+- **Corsi** (stile di ballo, livello, istruttore, sala, orari, capienza, prezzo mensile e prezzo della lezione singola)
 - **Tipi di abbonamento** (mensile, trimestrale, annuale, pacchetti a lezioni)
 - **Iscrizioni** (studente ↔ corso): si fanno una volta e restano attive finché lo studente non viene segnato come *ritirato* (riattivabile in qualsiasi momento)
 - **Pagamenti** (metodo, mese di riferimento, mesi coperti, causale): un pagamento registrato è sempre un incasso effettivo
+- **Lezioni singole**: chi non è iscritto può pagare una sola lezione (tipo di pagamento "Lezione singola", con corso e giorno della lezione, importo proposto dal prezzo del corso). Non crea iscrizioni né quote mensili, ma conta negli incassi del corso e della scuola e compare nell'Excel del corso e nel backup
 - **Presenze** (appello per corso/data)
 - **Quote mensili**: per ogni mese, chi ha pagato in tempo (entro il 7), in ritardo o non ha ancora pagato; il trimestrale copre 3 mesi
 - **Dashboard** con statistiche (studenti attivi, incassi del mese, quote scadute da verificare)

@@ -1,5 +1,6 @@
 package com.fullprojectstudio.backend.service;
 
+import com.fullprojectstudio.backend.model.Pagamento;
 import org.apache.poi.ss.usermodel.*;
 
 import java.time.DayOfWeek;
@@ -72,6 +73,11 @@ final class ExcelSupport {
         return giorni.stream().sorted()
                 .map(g -> { String n = g.getDisplayName(TextStyle.FULL, ITALIANO); return Character.toUpperCase(n.charAt(0)) + n.substring(1); })
                 .collect(Collectors.joining(", "));
+    }
+
+    static String tipo(Pagamento p) {
+        if (p.isLezioneSingola()) return "Lezione singola";
+        return p.getIscrizione() != null ? "Quota corso" : "Altro incasso";
     }
 
     static Cell set(Row row, int col, Object value) {

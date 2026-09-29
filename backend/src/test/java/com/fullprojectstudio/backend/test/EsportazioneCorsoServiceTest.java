@@ -5,6 +5,7 @@ import com.fullprojectstudio.backend.repository.*;
 import com.fullprojectstudio.backend.service.EsportazioneCorsoService;
 import com.fullprojectstudio.backend.service.QuoteService;
 import com.fullprojectstudio.backend.service.StatisticheService;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -64,6 +65,10 @@ class EsportazioneCorsoServiceTest {
         when(corsoRepository.findById(1L)).thenReturn(Optional.of(corso));
         when(iscrizioneRepository.findByCorsoId(1L)).thenReturn(List.of(iscrMarco, iscrAnna));
         when(pagamentoRepository.findByIscrizioneIdInAndStato(anyCollection(), any())).thenReturn(List.of(pagamentoAnna));
+        Pagamento lezioneMarco = Pagamento.builder().tipo(TipoPagamento.LEZIONE_SINGOLA).corso(corso).studente(marco)
+                .importo(new BigDecimal("15")).dataPagamento(LocalDate.of(2026, 9, 17)).dataLezione(LocalDate.of(2026, 9, 17))
+                .meseRiferimento(LocalDate.of(2026, 9, 1)).mesiCoperti(1).metodo(MetodoPagamento.CONTANTI).stato(StatoPagamento.PAGATO).build();
+        when(pagamentoRepository.findByCorsoIdInAndStato(anyCollection(), any())).thenReturn(List.of(lezioneMarco));
         when(stagioneRepository.findById(1L)).thenReturn(Optional.of(stagione));
         when(corsoRepository.findByStagioneId(1L)).thenReturn(List.of(corso));
         when(iscrizioneRepository.findByCorso_StagioneId(1L)).thenReturn(List.of(iscrMarco, iscrAnna));
@@ -89,8 +94,18 @@ class EsportazioneCorsoServiceTest {
             assertThat(testo(quote.getRow(1), 2)).isEqualTo("Pagata");
             assertThat(testo(quote.getRow(2), 2)).isEqualTo("Scaduta");
 
+            // La lezione singola compare tra i pagamenti del corso, senza mese di riferimento, e conta nel totale.
+            Sheet pagamenti = wb.getSheet("Pagamenti");
+            assertThat(testo(pagamenti.getRow(1), 2)).isEqualTo("Quota corso");
+            assertThat(testo(pagamenti.getRow(2), 1)).isEqualTo("Rossi Marco");
+            assertThat(testo(pagamenti.getRow(2), 2)).isEqualTo("Lezione singola");
+            assertThat(pagamenti.getRow(2).getCell(3).getCellType()).isEqualTo(CellType.BLANK);
+            assertThat(testo(pagamenti.getRow(2), 5)).isEqualTo("17/09/2026");
+            assertThat(pagamenti.getRow(4).getCell(6).getNumericCellValue()).isEqualTo(75);
+
             assertThat(testo(wb.getSheet("Presenze").getRow(1), 1)).isEqualTo("Bianchi Anna");
             assertThat(wb.getSheet("Statistiche").getRow(1).getCell(1).getNumericCellValue()).isEqualTo(2);
+            assertThat(wb.getSheet("Statistiche").getRow(1).getCell(7).getNumericCellValue()).isEqualTo(75);
         }
     }
 

@@ -16,13 +16,24 @@
         <div class="panel">
           <div class="panel-head"><h2 id="formTitle">Nuovo pagamento</h2></div>
           <form id="pagamentoForm" class="panel-body" style="padding:18px 20px" novalidate>
+            <div class="field">
+              <label>Tipo di pagamento</label>
+              <div class="scelta-sesso" id="fTipo">
+                <label><input type="radio" name="tipo" value="QUOTA_CORSO" checked> Quota corso</label>
+                <label><input type="radio" name="tipo" value="LEZIONE_SINGOLA"> Lezione singola</label>
+              </div>
+            </div>
             <div class="field"><label>Studente</label><select id="fStudente" required><option value="">-- seleziona --</option></select></div>
-            <div class="field"><label>Iscrizione collegata</label><select id="fIscrizione" disabled><option value="">-- seleziona prima uno studente --</option></select></div>
+            <div class="field" id="bloccoIscrizione"><label>Iscrizione collegata</label><select id="fIscrizione" disabled><option value="">-- seleziona prima uno studente --</option></select></div>
+            <div class="row2" id="bloccoLezione" hidden>
+              <div class="field"><label>Corso</label><select id="fCorso"><option value="">-- seleziona --</option></select></div>
+              <div class="field"><label>Giorno della lezione</label><input id="fDataLezione" type="date"></div>
+            </div>
             <div class="row2">
               <div class="field"><label>Importo (€)</label><input id="fImporto" type="number" step="0.01" required></div>
               <div class="field"><label>Data pagamento</label><input id="fData" type="date"></div>
             </div>
-            <div class="row2">
+            <div class="row2" id="bloccoMesi">
               <div class="field"><label>Mese di riferimento</label><input id="fMese" type="month" required></div>
               <div class="field">
                 <label>Mesi coperti</label>

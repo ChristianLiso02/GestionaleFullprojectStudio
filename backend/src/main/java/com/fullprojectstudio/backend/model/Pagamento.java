@@ -29,6 +29,18 @@ public class Pagamento {
     @JoinColumn(name = "iscrizione_id")
     private Iscrizione iscrizione;
 
+    // Null per i pagamenti registrati prima di questo campo: valgono come QUOTA_CORSO.
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private TipoPagamento tipo = TipoPagamento.QUOTA_CORSO;
+
+    // Solo per le lezioni singole: il corso e il giorno della lezione.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "corso_id")
+    private Corso corso;
+
+    private LocalDate dataLezione;
+
     @Column(nullable = false)
     private BigDecimal importo;
 
@@ -53,4 +65,8 @@ public class Pagamento {
 
     @Column(length = 1000)
     private String note;
+
+    public boolean isLezioneSingola() {
+        return tipo == TipoPagamento.LEZIONE_SINGOLA;
+    }
 }

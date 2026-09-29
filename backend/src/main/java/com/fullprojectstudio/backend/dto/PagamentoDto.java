@@ -2,6 +2,7 @@ package com.fullprojectstudio.backend.dto;
 
 import com.fullprojectstudio.backend.model.MetodoPagamento;
 import com.fullprojectstudio.backend.model.StatoPagamento;
+import com.fullprojectstudio.backend.model.TipoPagamento;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,11 @@ public class PagamentoDto {
     private Long studenteId;
     private String studenteNomeCompleto;
     private Long iscrizioneId;
+    private TipoPagamento tipo;
+    // Corso della lezione singola, oppure dell'iscrizione per le quote (sola lettura).
+    private Long corsoId;
+    private String corsoNome;
+    private LocalDate dataLezione;
     private BigDecimal importo;
     private LocalDate dataPagamento;
     private MetodoPagamento metodo;
