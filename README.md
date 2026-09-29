@@ -62,7 +62,12 @@ variabili d'ambiente (vedi tabella sotto) — se non impostate, valgono questi d
 
 - utente `admin` / `FullProject2026!` (ruolo ADMIN)
 - utente `segreteria` / `Segreteria2026!` (ruolo SEGRETERIA)
-- 2 sale, 2 istruttori, 4 tipi di abbonamento, 2 corsi di esempio
+- la stagione corrente (es. "2026/2027", calcolata dalla data di avvio)
+
+Nessun dato di esempio: sale, istruttori, tipi di abbonamento e corsi li inserisce la segreteria
+dal gestionale. Conviene partire da sale e istruttori, poi gli abbonamenti (es. "Mensile" con
+durata 30 giorni, "Trimestrale" con durata 90 giorni: la durata decide quanti mesi copre la quota)
+e infine i corsi.
 
 **Prima di un uso reale con dati veri, cambia sempre `ADMIN_PASSWORD` e `SEGRETERIA_PASSWORD`**
 tramite variabili d'ambiente — non lasciare quelle di default.

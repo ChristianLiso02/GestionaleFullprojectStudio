@@ -8,20 +8,17 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Set;
 
+/**
+ * Prepara un'installazione nuova: gli utenti di accesso e la stagione corrente.
+ * Sale, istruttori, abbonamenti e corsi li inserisce la segreteria dal gestionale.
+ */
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
     private final UtenteRepository utenteRepository;
-    private final SalaRepository salaRepository;
-    private final IstruttoreRepository istruttoreRepository;
-    private final TipoAbbonamentoRepository tipoAbbonamentoRepository;
     private final CorsoRepository corsoRepository;
     private final StagioneRepository stagioneRepository;
     private final PasswordEncoder passwordEncoder;
@@ -83,44 +80,6 @@ public class DataInitializer implements CommandLineRunner {
                     c.setStagione(stagioneCorrente);
                     corsoRepository.save(c);
                 });
-
-        if (salaRepository.count() == 0) {
-            Sala salaA = salaRepository.save(Sala.builder().nome("Sala Rossa").capienza(25).note("Sala principale con specchi").build());
-            Sala salaB = salaRepository.save(Sala.builder().nome("Sala Nera").capienza(15).note("Sala per lezioni private").build());
-
-            Istruttore m1 = istruttoreRepository.save(Istruttore.builder()
-                    .nome("Marco").cognome("Rossi").telefono("3331234567").email("marco.rossi@fullprojectstudio.it")
-                    .specializzazioni(Set.of(StileBallo.SALSA_CUBANA, StileBallo.RUEDA_DE_CASINO))
-                    .compensoOrario(new BigDecimal("25.00")).attivo(true).build());
-
-            Istruttore m2 = istruttoreRepository.save(Istruttore.builder()
-                    .nome("Giulia").cognome("Bianchi").telefono("3339876543").email("giulia.bianchi@fullprojectstudio.it")
-                    .specializzazioni(Set.of(StileBallo.BACHATA, StileBallo.SALSA_LOS_ANGELES))
-                    .compensoOrario(new BigDecimal("28.00")).attivo(true).build());
-
-            if (tipoAbbonamentoRepository.count() == 0) {
-                tipoAbbonamentoRepository.save(TipoAbbonamento.builder()
-                        .nome("Mensile").descrizione("Quota mensile del corso")
-                        .durataGiorni(30).prezzo(new BigDecimal("60.00")).attivo(true).build());
-                tipoAbbonamentoRepository.save(TipoAbbonamento.builder()
-                        .nome("Trimestrale").descrizione("Quota trimestrale del corso (copre 3 mesi)")
-                        .durataGiorni(90).prezzo(new BigDecimal("160.00")).attivo(true).build());
-            }
-
-            corsoRepository.save(Corso.builder()
-                    .nome("Salsa Cubana Base").stile(StileBallo.SALSA_CUBANA).livello(Livello.BASE)
-                    .istruttori(Set.of(m1, m2)).sala(salaA).stagione(stagioneCorrente)
-                    .giorniSettimana(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
-                    .orarioInizio(LocalTime.of(19, 0)).orarioFine(LocalTime.of(20, 0))
-                    .capienzaMax(25).prezzoMensile(new BigDecimal("60.00")).attivo(true).build());
-
-            corsoRepository.save(Corso.builder()
-                    .nome("Bachata Intermedio").stile(StileBallo.BACHATA).livello(Livello.INTERMEDIO)
-                    .istruttori(Set.of(m2)).sala(salaB).stagione(stagioneCorrente)
-                    .giorniSettimana(Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY))
-                    .orarioInizio(LocalTime.of(20, 0)).orarioFine(LocalTime.of(21, 0))
-                    .capienzaMax(15).prezzoMensile(new BigDecimal("60.00")).attivo(true).build());
-        }
     }
 
     private String calcolaNomeStagioneCorrente() {
