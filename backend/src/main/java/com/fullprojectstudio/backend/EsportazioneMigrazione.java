@@ -1,5 +1,7 @@
 package com.fullprojectstudio.backend;
 
+import com.fullprojectstudio.backend.config.EsportatoreSql;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,6 +30,7 @@ final class EsportazioneMigrazione {
 
     static final String OPZIONE = "--esporta-migrazione";
     static final String NOME_FILE = "fullprojectstudio-dati.zip";
+    static final String NOME_FILE_SQL = "fullprojectstudio-dati.sql";
     private static final DateTimeFormatter DATA_ORA = DateTimeFormatter.ofPattern("dd/MM/yyyy 'alle' HH:mm");
 
     private EsportazioneMigrazione() {
@@ -57,7 +60,10 @@ final class EsportazioneMigrazione {
             }
             Path finale = destinazione.resolve(NOME_FILE);
             Path temporaneo = destinazione.resolve(NOME_FILE + ".tmp");
+            Path finaleSql = destinazione.resolve(NOME_FILE_SQL);
+            Path temporaneoSql = destinazione.resolve(NOME_FILE_SQL + ".tmp");
             Files.deleteIfExists(temporaneo);
+            Files.deleteIfExists(temporaneoSql);
 
             Map<String, Long> righe;
             // AUTO_SERVER: se il gestionale è acceso ci si collega al suo database senza fermarlo.
@@ -67,10 +73,12 @@ final class EsportazioneMigrazione {
                 try (Statement st = c.createStatement()) {
                     st.execute("BACKUP TO '" + temporaneo.toAbsolutePath().toString().replace('\\', '/').replace("'", "''") + "'");
                 }
+                EsportatoreSql.esporta(c, temporaneoSql, LocalDateTime.now().format(DATA_ORA));
             }
-            // Solo a copia completa si sostituisce il file precedente: un errore a metà non lascia file rovinati.
+            // Solo a copie complete si sostituiscono i file precedenti: un errore a metà non lascia file rovinati.
             Files.move(temporaneo, finale, StandardCopyOption.REPLACE_EXISTING);
-            scrivi(esito, testoRiuscito(finale, righe));
+            Files.move(temporaneoSql, finaleSql, StandardCopyOption.REPLACE_EXISTING);
+            scrivi(esito, testoRiuscito(finale, finaleSql, righe));
             return 0;
         } catch (Exception e) {
             try {
@@ -99,14 +107,16 @@ final class EsportazioneMigrazione {
         return righe;
     }
 
-    private static String testoRiuscito(Path file, Map<String, Long> righe) {
+    private static String testoRiuscito(Path file, Path fileSql, Map<String, Long> righe) {
         StringBuilder sb = new StringBuilder();
         sb.append("ESPORTAZIONE COMPLETATA il ").append(LocalDateTime.now().format(DATA_ORA)).append("\r\n\r\n");
-        sb.append("File: ").append(file.toAbsolutePath()).append("\r\n\r\n");
+        sb.append("File:\r\n");
+        sb.append("  ").append(file.toAbsolutePath()).append("   (per il trasferimento automatico)\r\n");
+        sb.append("  ").append(fileSql.toAbsolutePath()).append("   (SQL per PostgreSQL)\r\n\r\n");
         sb.append("Contenuto:\r\n");
         righe.forEach((nome, n) -> sb.append(String.format("  %-12s %d%n", nome, n).replace("\n", "\r\n")));
         sb.append("\r\nPer portare questi dati sul server segui INSTALLAZIONE-SERVER.md, punto 6-bis:\r\n");
-        sb.append("copia il file ").append(NOME_FILE).append(" sul server e lancia il trasferimento.\r\n");
+        sb.append("copia il file ").append(NOME_FILE).append(" (oppure ").append(NOME_FILE_SQL).append(") sul server.\r\n");
         sb.append("Ogni nuova esportazione sostituisce questo file con i dati aggiornati.\r\n");
         return sb.toString();
     }

@@ -132,8 +132,10 @@ verranno usate). Va fatto **prima** del primo avvio del punto 7.
 
 1. Sul PC della scuola, **a fine giornata** (quello che si registra dopo non verrà trasferito): menu Start →
    FullProject Studio → **Esporta dati per il server**. Si apre una finestra che copia tutti i dati nel file
-   `fullprojectstudio-dati.zip`, sempre nella stessa cartella (`C:\ProgramData\FullProjectStudio\migrazione`);
-   alla fine mostra quanti studenti, iscrizioni, pagamenti… ha esportato e apre la cartella.
+   due file, sempre nella stessa cartella (`C:\ProgramData\FullProjectStudio\migrazione`):
+   `fullprojectstudio-dati.zip` (per il trasferimento automatico) e `fullprojectstudio-dati.sql` (SQL per PostgreSQL,
+   leggibile con qualsiasi editor o con DBeaver). Alla fine la finestra mostra quanti studenti, iscrizioni,
+   pagamenti… ha esportato e apre la cartella.
 2. Dal PC copia il file sul server:
    ```bash
    scp "C:\ProgramData\FullProjectStudio\migrazione\fullprojectstudio-dati.zip" gestionale@95.110.x.x:GestionaleFullprojectStudio/
@@ -145,6 +147,19 @@ verranno usate). Va fatto **prima** del primo avvio del punto 7.
    ```
    Alla fine deve comparire **TRASFERIMENTO COMPLETATO** con il numero di righe copiate per ogni tabella.
    (Al posto dell'export si può usare anche un backup notturno `database-<data>.zip`: il comando è lo stesso.)
+
+   **In alternativa, con il file SQL.** Il file `fullprojectstudio-dati.sql` contiene solo comandi `INSERT` in
+   sintassi PostgreSQL. Le tabelle le crea il gestionale al primo avvio, quindi si importa **dopo** aver fatto
+   partire il gestionale una volta (punto 7):
+   ```bash
+   scp "C:\ProgramData\FullProjectStudio\migrazione\fullprojectstudio-dati.sql" gestionale@95.110.x.x:GestionaleFullprojectStudio/
+   cd GestionaleFullprojectStudio
+   docker compose -f docker-compose.prod.yml exec -T db psql -v ON_ERROR_STOP=1 -U fullprojectstudio -d fullprojectstudio < fullprojectstudio-dati.sql
+   ```
+   Il file sostituisce gli utenti e la stagione creati al primo avvio con quelli esportati (si entra con le stesse
+   password di prima). Se il server contiene già dei dati, l'importazione **si ferma senza modificare niente**
+   (`Il database del server contiene già dei dati: importazione annullata`). Se c'è un errore a metà, non resta
+   niente di importato a metà. Contiene dati personali e sanitari: cancellalo dal server a importazione finita.
 4. Da quel momento si lavora **solo sul server**: sul PC disinstalla il gestionale (o almeno non usarlo più),
    così nessuno registra dati nel posto sbagliato. I suoi backup restano comunque nella cartella scelta.
 

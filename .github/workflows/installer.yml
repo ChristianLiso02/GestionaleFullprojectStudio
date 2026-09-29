@@ -82,7 +82,8 @@ jobs:
           $export = Join-Path $env:RUNNER_TEMP "export-prova"
           $e = Start-Process -FilePath "build/app/FullProjectStudio/FullProjectStudio.exe" -ArgumentList "--esporta-migrazione=$export" -Wait -PassThru
           Get-Content "$export/esito.txt"
-          if ($e.ExitCode -ne 0 -or -not (Test-Path "$export/fullprojectstudio-dati.zip")) { throw "Esportazione per il server non riuscita" }
+          if ($e.ExitCode -ne 0 -or -not (Test-Path "$export/fullprojectstudio-dati.zip") -or -not (Test-Path "$export/fullprojectstudio-dati.sql")) { throw "Esportazione per il server non riuscita" }
+          if (-not (Select-String -Path "$export/fullprojectstudio-dati.sql" -Pattern "INSERT INTO utenti" -Quiet)) { throw "Il file SQL non contiene gli utenti" }
           # Seconda apertura con il gestionale già acceso: deve terminare subito senza avviarne un altro
           $secondo = Start-Process -FilePath "build/app/FullProjectStudio/FullProjectStudio.exe" -PassThru
           if (-not $secondo.WaitForExit(30000)) { throw "La seconda apertura non si chiude da sola" }
