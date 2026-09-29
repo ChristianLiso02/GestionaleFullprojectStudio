@@ -66,16 +66,16 @@ jobs:
           $ok = $false
           for ($i = 0; $i -lt 60; $i++) {
             Start-Sleep -Seconds 3
-            try { if ((Invoke-WebRequest -UseBasicParsing http://localhost:8081/login.html).StatusCode -eq 200) { $ok = $true; break } } catch {}
+            try { if ((Invoke-WebRequest -UseBasicParsing http://localhost:8765/login.html).StatusCode -eq 200) { $ok = $true; break } } catch {}
           }
           if (-not $ok) { Get-Content "$dati/log/gestionale.log" -ErrorAction SilentlyContinue | Select-Object -Last 60; throw "Il gestionale non risponde" }
           $cred = Get-Content "$dati/credenziali-iniziali.txt" -Raw
           $pw = [regex]::Match($cred, "segreteria\s+password\s+(\S+)").Groups[1].Value
           $body = @{ username = "segreteria"; password = $pw } | ConvertTo-Json
-          $login = Invoke-RestMethod -Method Post -Uri http://localhost:8081/api/auth/login -ContentType "application/json" -Body $body
+          $login = Invoke-RestMethod -Method Post -Uri http://localhost:8765/api/auth/login -ContentType "application/json" -Body $body
           if (-not $login.token) { throw "Login con la password generata non riuscito" }
           $h = @{ Authorization = "Bearer $($login.token)" }
-          $backup = Invoke-RestMethod -Method Post -Uri http://localhost:8081/api/backup/genera -Headers $h
+          $backup = Invoke-RestMethod -Method Post -Uri http://localhost:8765/api/backup/genera -Headers $h
           Write-Host "Backup: $($backup.percorsoFile)"
           if (-not (Test-Path "$dati/backup/backup-ultimo.xlsx")) { throw "Backup Excel non creato" }
           # Esportazione per il server con il gestionale acceso

@@ -57,7 +57,7 @@ Cosa trovi dopo l'installazione:
 - Doppio clic sull'icona **FullProject Studio** sul desktop: si apre il gestionale nel browser.
 - Il gestionale **parte da solo** quando si accende il PC e si entra in Windows: non c'è niente da avviare.
 - Si può chiudere il browser quando si vuole: il gestionale resta acceso in sottofondo, i dati non si perdono.
-- L'indirizzo è sempre **http://localhost:8081** (si può aggiungere ai preferiti).
+- L'indirizzo è sempre **http://localhost:8765** (si può aggiungere ai preferiti).
 
 ## 5. Backup (automatici)
 
