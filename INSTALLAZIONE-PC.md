@@ -97,8 +97,18 @@ Su un **PC nuovo**: prima installa il gestionale (punto 2), poi segui questi pas
 ## Passare a un server in futuro
 
 Se un domani il gestionale deve essere usato anche da casa o dal telefono, si sposta su un server
-([INSTALLAZIONE-SERVER.md](INSTALLAZIONE-SERVER.md)) **portandosi dietro tutti i dati**: basta l'ultimo backup
-`database-<data>.zip` (punto *6-bis* di quella guida). Anche utenti e password restano gli stessi.
+([INSTALLAZIONE-SERVER.md](INSTALLAZIONE-SERVER.md)) **portandosi dietro tutti i dati**, compresi utenti e password.
+
+Per farlo c'è **Esporta dati per il server** (menu Start → FullProject Studio): copia tutti i dati nel file
+`fullprojectstudio-dati.zip`, **sempre nella stessa cartella** (`C:\ProgramData\FullProjectStudio\migrazione`), sostituendo
+ogni volta l'export precedente. Funziona anche con il gestionale acceso e si può lanciare quante volte si vuole:
+l'ultimo export è quello da portare sul server (punto *6-bis* di quella guida).
+
+- **Cartella diversa** (per esempio Google Drive): copia `C:\Program Files\FullProject Studio\Esporta dati per il server.bat`
+  sul desktop, aprila con il Blocco note e cambia la riga `set "DEST=..."`; da quel momento usa la copia.
+  (Così gli aggiornamenti del gestionale non cancellano la tua modifica.)
+- **In automatico** (per avere sempre un export aggiornato): *Utilità di pianificazione* di Windows → *Crea attività
+  di base* → ogni giorno → *Avvio programma* → il file `.bat` (quello originale o la tua copia), con argomento `/silenzioso`.
 
 ## Impostazioni avanzate
 

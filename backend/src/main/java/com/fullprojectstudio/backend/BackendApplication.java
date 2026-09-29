@@ -11,6 +11,11 @@ public class BackendApplication {
     public static void main(String[] args) {
         if (AvvioDesktop.attivo()) {
             AvvioDesktop.impostaCartellaDati();
+            java.nio.file.Path esportaIn = EsportazioneMigrazione.cartellaRichiesta(args, AvvioDesktop.cartellaDati());
+            if (esportaIn != null) {
+                // "Esporta dati per il server": copia tutti i dati ed esce, senza avviare il gestionale.
+                System.exit(EsportazioneMigrazione.esegui(AvvioDesktop.cartellaDati(), esportaIn));
+            }
             boolean apri = AvvioDesktop.apriBrowser(args);
             if (AvvioDesktop.giaAcceso()) {
                 // Icona cliccata con il gestionale già acceso: basta aprire il browser.

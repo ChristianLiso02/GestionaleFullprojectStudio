@@ -8,6 +8,7 @@
 ;   NON viene toccata da aggiornamenti e disinstallazione, così i dati non si perdono mai
 ; - icona sul desktop e nel menu Start, avvio automatico all'accesso a Windows
 ; - alla prima installazione chiede in quale cartella salvare i backup
+; - "Esporta dati per il server" (menu Start): tutti i dati in un file, per il passaggio a PostgreSQL
 
 #ifndef AppVersion
   #define AppVersion "1.0.0"
@@ -59,12 +60,15 @@ Name: "{#DataDir}\config"; Permissions: users-modify
 [Files]
 Source: "{#AppImage}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "fullprojectstudio.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Esporta dati per il server.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Parameters: "--apri"; IconFilename: "{app}\fullprojectstudio.ico"
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"; Parameters: "--apri"; IconFilename: "{app}\fullprojectstudio.ico"
 Name: "{group}\Password iniziali"; Filename: "{#DataDir}\credenziali-iniziali.txt"
 Name: "{group}\Cartella dati e backup"; Filename: "{#DataDir}"
+; Esporta tutti i dati in un file per il passaggio al server (sempre stesso file, sostituito ogni volta)
+Name: "{group}\Esporta dati per il server"; Filename: "{app}\Esporta dati per il server.bat"; WorkingDir: "{app}"; IconFilename: "{app}\fullprojectstudio.ico"
 Name: "{group}\Disinstalla {#AppName}"; Filename: "{uninstallexe}"
 ; Avvio automatico all'accesso a Windows, senza aprire il browser
 Name: "{commonstartup}\{#AppName}"; Filename: "{app}\{#AppExe}"; IconFilename: "{app}\fullprojectstudio.ico"

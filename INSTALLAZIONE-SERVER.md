@@ -130,19 +130,21 @@ i dati si trasferiscono tutti sul server: anagrafiche, iscrizioni, pagamenti, pr
 le loro password** (si entra con le stesse di prima; `ADMIN_PASSWORD` e `SEGRETERIA_PASSWORD` del `.env` non
 verranno usate). Va fatto **prima** del primo avvio del punto 7.
 
-1. Sul PC della scuola apri la cartella dei backup → `database` e prendi lo ZIP **più recente**
-   (`database-<data>.zip`). Meglio farlo a fine giornata: quello che si registra sul PC dopo non verrà trasferito.
-2. Dal PC copia lo ZIP sul server:
+1. Sul PC della scuola, **a fine giornata** (quello che si registra dopo non verrà trasferito): menu Start →
+   FullProject Studio → **Esporta dati per il server**. Si apre una finestra che copia tutti i dati nel file
+   `fullprojectstudio-dati.zip`, sempre nella stessa cartella (`C:\ProgramData\FullProjectStudio\migrazione`);
+   alla fine mostra quanti studenti, iscrizioni, pagamenti… ha esportato e apre la cartella.
+2. Dal PC copia il file sul server:
    ```bash
-   scp database-AAAA-MM-GG-HHMM.zip gestionale@95.110.x.x:GestionaleFullprojectStudio/
+   scp "C:\ProgramData\FullProjectStudio\migrazione\fullprojectstudio-dati.zip" gestionale@95.110.x.x:GestionaleFullprojectStudio/
    ```
 3. Nel server:
    ```bash
    cd GestionaleFullprojectStudio
-   mkdir -p import && unzip database-*.zip -d import
-   docker compose -f docker-compose.prod.yml run --rm -v "$PWD/import:/import" backend --trasferisci-da-h2=/import/fullprojectstudio.mv.db
+   docker compose -f docker-compose.prod.yml run --rm -v "$PWD:/import" backend --trasferisci-da-h2=/import/fullprojectstudio-dati.zip
    ```
    Alla fine deve comparire **TRASFERIMENTO COMPLETATO** con il numero di righe copiate per ogni tabella.
+   (Al posto dell'export si può usare anche un backup notturno `database-<data>.zip`: il comando è lo stesso.)
 4. Da quel momento si lavora **solo sul server**: sul PC disinstalla il gestionale (o almeno non usarlo più),
    così nessuno registra dati nel posto sbagliato. I suoi backup restano comunque nella cartella scelta.
 

@@ -78,6 +78,11 @@ jobs:
           $backup = Invoke-RestMethod -Method Post -Uri http://localhost:8081/api/backup/genera -Headers $h
           Write-Host "Backup: $($backup.percorsoFile)"
           if (-not (Test-Path "$dati/backup/backup-ultimo.xlsx")) { throw "Backup Excel non creato" }
+          # Esportazione per il server con il gestionale acceso
+          $export = Join-Path $env:RUNNER_TEMP "export-prova"
+          $e = Start-Process -FilePath "build/app/FullProjectStudio/FullProjectStudio.exe" -ArgumentList "--esporta-migrazione=$export" -Wait -PassThru
+          Get-Content "$export/esito.txt"
+          if ($e.ExitCode -ne 0 -or -not (Test-Path "$export/fullprojectstudio-dati.zip")) { throw "Esportazione per il server non riuscita" }
           # Seconda apertura con il gestionale già acceso: deve terminare subito senza avviarne un altro
           $secondo = Start-Process -FilePath "build/app/FullProjectStudio/FullProjectStudio.exe" -PassThru
           if (-not $secondo.WaitForExit(30000)) { throw "La seconda apertura non si chiude da sola" }
@@ -104,6 +109,14 @@ jobs:
           )
           foreach ($f in $controlli) { if (-not (Test-Path $f)) { throw "Manca: $f" } else { Write-Host "OK $f" } }
           Get-Content "$env:ProgramData\FullProjectStudio\config\application.properties"
+          # Il file .bat installato esporta i dati (qui quelli della prova di avvio) nella cartella fissa
+          $env:FPS_DATA_DIR = Join-Path $env:RUNNER_TEMP "dati-prova"
+          $bat = "$env:ProgramFiles\FullProject Studio\Esporta dati per il server.bat"
+          if (-not (Test-Path $bat)) { throw "Manca: $bat" }
+          cmd /c "`"$bat`" /silenzioso"
+          if ($LASTEXITCODE -ne 0) { throw "Il file .bat di esportazione non ha funzionato ($LASTEXITCODE)" }
+          $zip = "$env:ProgramData\FullProjectStudio\migrazione\fullprojectstudio-dati.zip"
+          if (-not (Test-Path $zip)) { throw "Manca: $zip" } else { Write-Host "OK $zip" }
 
       - uses: actions/upload-artifact@v4
         with:

@@ -10,6 +10,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -34,7 +40,9 @@ import java.util.TreeMap;
  * utenti con le loro password.
  *
  * <p>Si usa una volta sola, sul server, con il database ancora vuoto:
- * <pre>java -jar backend.jar --spring.profiles.active=postgres --trasferisci-da-h2=/percorso/fullprojectstudio.mv.db</pre>
+ * <pre>java -jar backend.jar --spring.profiles.active=postgres --trasferisci-da-h2=/percorso/fullprojectstudio-dati.zip</pre>
+ * Il file può essere lo zip creato sul PC da "Esporta dati per il server", un backup notturno database-....zip
+ * oppure direttamente fullprojectstudio.mv.db.
  * Le tabelle del server le crea l'applicazione all'avvio (sono le stesse del PC). Poi il programma copia le righe
  * tabella per tabella rispettando i collegamenti, riallinea i contatori degli id e si chiude.
  * Si rifiuta di partire se nel server ci sono già dati, per non mescolarli.</p>
@@ -64,7 +72,7 @@ public class TrasferimentoDaH2 implements ApplicationRunner {
         String file = args.getOptionValues(OPZIONE).get(0);
         int esito = 0;
         try {
-            Map<String, Integer> copiate = trasferisci(urlH2(file));
+            Map<String, Integer> copiate = trasferisci(urlH2(databaseDa(file)));
             log.info("Trasferimento completato: {}", copiate);
             System.out.println("\nTRASFERIMENTO COMPLETATO. Righe copiate per tabella: " + copiate + "\n");
         } catch (Exception e) {
@@ -75,6 +83,33 @@ public class TrasferimentoDaH2 implements ApplicationRunner {
         // È un'operazione una tantum: finito il trasferimento il programma si chiude.
         int codice = esito;
         System.exit(SpringApplication.exit(context, () -> codice));
+    }
+
+    /**
+     * Se viene indicato lo zip esportato dal PC ("Esporta dati per il server") o un backup notturno
+     * database-....zip, ne estrae il database in una cartella temporanea; altrimenti usa il file così com'è.
+     */
+    static String databaseDa(String file) throws IOException {
+        Path percorso = Path.of(file);
+        if (!file.toLowerCase(Locale.ROOT).endsWith(".zip")) {
+            return file;
+        }
+        if (!Files.isRegularFile(percorso)) {
+            throw new IllegalStateException("File non trovato: " + file);
+        }
+        Path cartella = Files.createTempDirectory("fps-trasferimento");
+        try (ZipInputStream zip = new ZipInputStream(Files.newInputStream(percorso))) {
+            ZipEntry voce;
+            while ((voce = zip.getNextEntry()) != null) {
+                String nome = Path.of(voce.getName()).getFileName().toString();
+                if (!voce.isDirectory() && nome.endsWith(".mv.db")) {
+                    Path estratto = cartella.resolve(nome);
+                    Files.copy(zip, estratto, StandardCopyOption.REPLACE_EXISTING);
+                    return estratto.toString();
+                }
+            }
+        }
+        throw new IllegalStateException("Lo zip " + file + " non contiene un database del gestionale (.mv.db).");
     }
 
     /** Accetta sia il file "fullprojectstudio.mv.db" sia il percorso senza estensione. */
