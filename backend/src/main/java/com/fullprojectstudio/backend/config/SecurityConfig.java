@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/h2-console/**", "/actuator/health").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/sistema", "/h2-console/**", "/actuator/health").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         // Tutto il resto sono le pagine statiche (nell'installer Windows servite dal backend stesso):
                         // il contenuto riservato passa solo dalle API, che richiedono il login.

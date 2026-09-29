@@ -4,6 +4,13 @@ server:
 spring:
   application:
     name: fullprojectstudio-backend
+  # Il browser ricontrolla sempre pagine e script (risposta "non modificato" se uguali): dopo un aggiornamento
+  # o un cambio di installazione non restano in uso file vecchi, come un config.js che punta al server sbagliato.
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          no-cache: true
   profiles:
     active: dev
   jackson:

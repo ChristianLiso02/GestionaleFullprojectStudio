@@ -80,19 +80,41 @@ final class AvvioDesktop {
         return Path.of(dir);
     }
 
-    /** Vero se su questo PC il gestionale risponde già. */
-    static boolean giaAcceso() {
+    enum StatoPorta { LIBERA, GESTIONALE_ACCESO, OCCUPATA_DA_ALTRO }
+
+    /**
+     * Chi risponde sulla porta del gestionale: nessuno (si può avviare), questo stesso gestionale installato
+     * (basta aprire il browser) oppure un altro programma, ad esempio una versione di prova avviata con Docker.
+     */
+    static StatoPorta statoPorta() {
         try {
-            HttpURLConnection c = (HttpURLConnection) URI.create(indirizzo() + "/login.html").toURL().openConnection();
+            HttpURLConnection c = (HttpURLConnection) URI.create(indirizzo() + "/api/sistema").toURL().openConnection();
             c.setConnectTimeout(1500);
             c.setReadTimeout(3000);
             try {
-                return c.getResponseCode() == 200;
+                if (c.getResponseCode() != 200) return StatoPorta.OCCUPATA_DA_ALTRO;
+                String risposta = new String(c.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                return risposta.contains("FullProjectStudio") && risposta.contains("desktop")
+                        ? StatoPorta.GESTIONALE_ACCESO : StatoPorta.OCCUPATA_DA_ALTRO;
             } finally {
                 c.disconnect();
             }
+        } catch (java.net.ConnectException e) {
+            return StatoPorta.LIBERA;
         } catch (IOException e) {
-            return false;
+            // Qualcosa ha accettato la connessione ma non risponde come il gestionale
+            return StatoPorta.OCCUPATA_DA_ALTRO;
+        }
+    }
+
+    /** Finestra di errore per la segreteria (il programma non ha una console dove scrivere). */
+    static void avvisa(String messaggio) {
+        System.err.println(messaggio);
+        if (java.awt.GraphicsEnvironment.isHeadless()) return;
+        try {
+            javax.swing.JOptionPane.showMessageDialog(null, messaggio, "FullProject Studio", javax.swing.JOptionPane.WARNING_MESSAGE);
+        } catch (Exception e) {
+            // senza interfaccia grafica resta il messaggio sulla console
         }
     }
 

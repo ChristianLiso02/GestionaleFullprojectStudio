@@ -48,14 +48,15 @@
         if (!response.ok) {
           if (response.status === 401) showError("Username o password non validi.");
           else if (response.status === 429) showError((await response.json()).message);
-          else showError("Impossibile contattare il server.");
+          else showError("Il gestionale ha risposto con un errore (" + response.status + "). Riprova tra poco; se continua, riavvia il PC.");
           return;
         }
         const data = await response.json();
         saveSession(data);
         window.location.href = "dashboard.html";
       } catch (err) {
-        showError("Impossibile contattare il server. Verifica che il backend sia avviato.");
+        showError("Il gestionale non risponde. Chiudi il browser e riaprilo dall'icona FullProject Studio (o riavvia il PC). " +
+          "Se hai usato una versione di prova, chiudila e svuota la cache del browser.");
       }
     });
   </script>
