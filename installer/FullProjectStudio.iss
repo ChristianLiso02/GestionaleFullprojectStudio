@@ -133,7 +133,7 @@ begin
       'app.backup.dir=' + Cartella + #13#10 +
       '#' + #13#10 +
       '# Altre impostazioni possibili (togli il # davanti per attivarle):' + #13#10 +
-      '# server.port=8081' + #13#10 +
+      '# server.port=8765' + #13#10 +
       '# app.backup.copie-database-da-tenere=30' + #13#10 +
       '# app.pagamenti.giorno-scadenza=7' + #13#10;
     SaveStringToFile(FileConfigurazione(), Testo, False);

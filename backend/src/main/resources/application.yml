@@ -111,7 +111,9 @@ spring:
       enabled: false
 
 server:
-  port: ${PORTA:8081}
+  # Porta diversa da quelle delle versioni di sviluppo/prova (8080 e 8081): se sullo stesso PC è accesa anche una
+  # di quelle (es. con Docker) i due gestionali non si scontrano e il browser non mescola pagine, cache e login.
+  port: ${PORTA:8765}
   address: 127.0.0.1
 
 app:

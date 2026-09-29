@@ -21,7 +21,7 @@ import java.util.Properties;
 final class AvvioDesktop {
 
     static final String APRI_BROWSER = "--apri";
-    private static final int PORTA_PREDEFINITA = 8081;
+    private static final int PORTA_PREDEFINITA = 8765;
 
     private AvvioDesktop() {
     }

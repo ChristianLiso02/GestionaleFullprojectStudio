@@ -57,7 +57,7 @@ Cosa trovi dopo l'installazione:
 - Doppio clic sull'icona **FullProject Studio** sul desktop: si apre il gestionale nel browser.
 - Il gestionale **parte da solo** quando si accende il PC e si entra in Windows: non c'è niente da avviare.
 - Si può chiudere il browser quando si vuole: il gestionale resta acceso in sottofondo, i dati non si perdono.
-- L'indirizzo è sempre **http://localhost:8081** (si può aggiungere ai preferiti).
+- L'indirizzo è sempre **http://localhost:8765** (si può aggiungere ai preferiti).
 
 ## 5. Backup (automatici)
 
@@ -99,8 +99,9 @@ Su un **PC nuovo**: prima installa il gestionale (punto 2), poi segui questi pas
 Se un domani il gestionale deve essere usato anche da casa o dal telefono, si sposta su un server
 ([INSTALLAZIONE-SERVER.md](INSTALLAZIONE-SERVER.md)) **portandosi dietro tutti i dati**, compresi utenti e password.
 
-Per farlo c'è **Esporta dati per il server** (menu Start → FullProject Studio): copia tutti i dati nel file
-`fullprojectstudio-dati.zip`, **sempre nella stessa cartella** (`C:\ProgramData\FullProjectStudio\migrazione`), sostituendo
+Per farlo c'è **Esporta dati per il server** (menu Start → FullProject Studio): copia tutti i dati in due file,
+`fullprojectstudio-dati.zip` e `fullprojectstudio-dati.sql` (SQL per PostgreSQL, apribile con DBeaver o con il Blocco
+note), **sempre nella stessa cartella** (`C:\ProgramData\FullProjectStudio\migrazione`), sostituendo
 ogni volta l'export precedente. Funziona anche con il gestionale acceso e si può lanciare quante volte si vuole:
 l'ultimo export è quello da portare sul server (punto *6-bis* di quella guida).
 
